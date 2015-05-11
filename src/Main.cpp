@@ -15,7 +15,7 @@ int main() {
 
 
 	Vect v1(3,4,5);
-	Vect v2(4,2,0);
+	Vect v2(4,2,4);
 	 Vect v3=v1+v2;
 	 v3.show();
 
