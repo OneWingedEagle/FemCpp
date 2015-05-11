@@ -132,12 +132,12 @@ public:
 	}
 
 
-	int getLength(){
+	 int getLength() const{
 		return this->length;
 	}
 
 
-	double get(int i){
+	double get(int i)const {
 		return this->el[i];
 	}
 
