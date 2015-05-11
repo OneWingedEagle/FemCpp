@@ -15,6 +15,7 @@ using namespace std;
 class Vect{
 public:
 	Vect(){};
+
 	Vect(double a, double b){
 		length=2;
 		el.resize(length);
@@ -60,6 +61,8 @@ public:
 		return Vect(c,this->length);
 
 	};
+
+
 	Vect sub(Vect b){
 		if(this->length!=b.length)
 			cout<<"Vectors have different length";
@@ -101,6 +104,15 @@ public:
 		return this->add(b);
 	}
 
+	void operator+=(Vect  b){
+
+		if(this->length!=b.length)
+					cout<<"Vectors have different length";
+
+		for(int i=0;i<length;i++)
+		this->set(this->get(i)+b.get(i),i);
+		}
+
 	Vect operator-(Vect  b){
 		return this->sub(b);
 	}
@@ -108,6 +120,22 @@ public:
 	Vect operator*(double  a){
 		return times(a);
 	}
+
+	void operator-(){
+		for(int i=0;i<length;i++)
+					el[i]=-el[i];
+	}
+
+	void operator++(){
+		for(int i=0;i<length;i++)
+					el[i]+=1;
+	}
+
+	double operator[](int k){
+		return this->get(k);
+	}
+
+
 
 	Vect inv(){
 
@@ -145,6 +173,8 @@ public:
 	void set(double a, int i){
 		el[i]=a;
 	}
+
+
 
 	void hshow(){
 		int L=this->length;
