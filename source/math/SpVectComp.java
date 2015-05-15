@@ -276,6 +276,17 @@ public class SpVectComp {
 		return b;
 	}
 	
+	public SpVectComp times(Complex a){
+		
+		SpVectComp b=this.deepCopy();
+		for(int i=0;i<b.nzLength;i++){
+		b.el[i]=el[i].times(a);
+	
+		}
+		
+		return b;
+	}
+	
 	public void trim(int nzLnew){
 		
 		SpVectComp b=new SpVectComp(length,nzLnew);

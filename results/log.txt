@@ -1,0 +1,21 @@
+
+Loading mesh file completed.
+
+Loading data file completed.
+Computing Symmetric Complex Preconditioner..
+COICCG iteration:    50	 error : 1.83E-05	 res max: 1.60E-07
+COICCG iteration:    78	 error : 9.62E-09	 res max: 8.41E-11
+Bmax ( linear analysis): 0.3337401431953841
+ Magnetic flux density was written to C:\Users\Hassan Ebrahimi\JavaWorks\MagFem\fluxes\flux0.txt
+ >>>>>>>>>> Bmax >>>>>>>0.3337401431953841
+Fmax 0.2548656470327648at node 1092 with coordinates
+       -0.00045	        0.00300	
+Force vector :
+        0.00020	        0.25487	
+FMsmax 0.0at node 0 with coordinates
+torque >>>>>>>0.0
+
+ Bun data was written to:
+    C:\Users\Hassan Ebrahimi\JavaWorks\MagFem\results\bun0.txt
+
+ Magnetic flux density was written to C:\Users\Hassan Ebrahimi\JavaWorks\MagFem\results\flux0.txt

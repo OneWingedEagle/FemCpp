@@ -42,13 +42,14 @@ public class MeshFactory {
 		//mf.assemble(b1, b2);
 	//	mf.connect(b1, b2);
 	//	mf.reRegion();
-		int[] nr={1,2};
+		int[] nr={1,3,4};
 		//mf.dropUnusedNodes();
 //jjjj
-	//mf.extractReg(nr);
+//	mf.extractReg(nr); mf.dropUnusedNodes();
 		//mf.extendFlip(0);
 		//mf.translate(new Vect(200e-3,0));
-		//mf.meshQ();
+	//	mf.meshQ();
+		
 		
 		double[] ar={1,1.5,2,3,3.5,4,5};
 		Vect v=new Vect(ar);
@@ -8998,7 +8999,10 @@ return Rs;
 		
 		
 			//double[][] bb={{471,492.32,0,12.5},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25}};
-
+		//	double[][] bb={{0,1000,-1000,1000},{-1000,1000,-1000,-300},{-400,-300,0,100},{300,400,0,100}};
+			double[][] bb={{-10,10,0,12},{-10,10,0,3},{-4,-3,4,5},{3,4,4,5}};
+			
+			
 			double[] bair={470,700,0,12.5};
 			double[] balum={0,2.8,0,5.7};
 			 double[][] bb1=new double[4][4];
@@ -9035,7 +9039,7 @@ return Rs;
 
 
 			double scale=1;
-		//	scale=1000;
+			scale=1000;
 
 			for(int j=0;j<bb12.length;j++)
 				for(int k=0;k<bb12[0].length;k++){
@@ -9045,26 +9049,51 @@ return Rs;
 					//if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 				}
 
-			ModelGeo mg=new ModelGeo(bb12);
+			ModelGeo mg=new ModelGeo(bb);
 	/*			mg.blockName[0]="air";
 			mg.blockName[2]="air";
 
 					mg.blockName[4]="air";*/
 
 			mg.blockName[0]="air";
-			for(int j=1;j<bb12.length;j++)
-				mg.blockName[j]="coil";
+		//	for(int j=1;j<bb12.length;j++)
+				//mg.blockName[j]="coil";
 	
 
-/*			mg.blockName[3]="air";
-			mg.blockName[4]="air";
-			mg.blockName[5]="coil1";
+			mg.blockName[1]="conduct";
+			mg.blockName[2]="coil1";
+			mg.blockName[3]="coil2";
+		/*	mg.blockName[5]="coil1";
 			mg.blockName[6]="coil2";*/
 
 			
+for(int j=0;j<bb.length;j++){
+				
+				for(int k=0;k<bb[0].length;k++){
+				
+			
+				mg.baseLeft[j][k]=1.3;
+				mg.baseRight[j][k]=1.3;
+					
+			
+			
+		
+				if(j<2){
+				mg.minMeshRight[j][k]=5.e-2;
+				mg.minMeshLeft[j][k]=5.e-2;
+				}
+				else{
+					mg.minMeshRight[j][k]=2.e-1;
+					mg.minMeshLeft[j][k]=2.e-1;
+					
+				}
+				}
+			
+				}			
+
 		
 
-			for(int j=0;j<bb12.length;j++){
+/*			for(int j=0;j<bb12.length;j++){
 				
 				for(int k=0;k<bb12[0].length;k++){
 				
@@ -9079,10 +9108,10 @@ return Rs;
 				
 	
 					
-	/*			if(k<2){
+				if(k<2){
 					mg.minMeshRight[j][k]=.9;
 					mg.minMeshLeft[j][k]=.9;
-				}*/
+				}
 					}
 			
 			
@@ -9090,7 +9119,7 @@ return Rs;
 				}
 			
 				}			
-
+*/
 
 			
 

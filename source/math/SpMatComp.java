@@ -613,8 +613,19 @@ public class SpMatComp  {
 		for(int i=0;i<nRow;i++)
 			row[i]=row[i].times(a);
 	}
+	
+	public void times(Complex a){
+		for(int i=0;i<nRow;i++)
+			row[i]=row[i].times(a);
+	}
 
 	public SpMatComp timesNew(double a){
+		SpMatComp B=this.deepCopy();
+		B.times(a);
+		return B;
+	}
+	
+	public SpMatComp timesNew(Complex a){
 		SpMatComp B=this.deepCopy();
 		B.times(a);
 		return B;

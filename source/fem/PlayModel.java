@@ -79,7 +79,8 @@ public class PlayModel {
 	
 	
 
-	reversal();
+	//reversal();
+	curves();
 
 	}
 	
@@ -95,15 +96,19 @@ public class PlayModel {
 		Random r=new Random(3564656);
 		
 		double[][] a=new double[M][2];
+		double[] DM=new double[M];
 		boolean[] on=new boolean[M];
 		
 		for(int j=0;j<M;j++){
 			/*a[j][0]=30*r.nextGaussian()-100;//*(.5-r.nextGaussian());
 			a[j][1]=30*r.nextGaussian()+100;//*(.5+.2*r.nextGaussian());
-*/			double am=500*r.nextGaussian();
+*/			double am=200*r.nextGaussian();
 			double d=500*r.nextDouble();
 			a[j][0]=am-d/2;
+			
 			a[j][1]=am+d/2;
+			
+			DM[j]=1;
 		}
 		
 	/*	 B=new Vect(2*L+1);
@@ -116,21 +121,22 @@ public class PlayModel {
 		for(int i=-L;i<=L;i++){
 			
 			int n=i+L;
-			double x=-(.1+.001*n)*Math.cos(20*Math.PI*i*1.0/L);
+			double x=(.1+.00*n)*Math.sin(2*Math.PI*i*1.0/L);
 			//double x=-Math.cos(2*Math.PI*i*1.0/L)-.4*Math.cos(8*Math.PI*i*1.0/L)+.2*Math.cos(12*Math.PI*i*1.0/L);
-			
-			x*=1000;
+		
+			x*=500;
 /*			if(n<=500)
 			x=n*.5;
 			else if(n<=700)
 				x=250-(n-500)*.5;
 			else x=150+(n-700)*.5;*/
 			
+			
 			H.el[n]=x;
 	
 			if(n==0) 
 				{
-				B.el[n]=-Bs;
+				//B.el[n]=-0*Bs;
 				continue;
 				}
 			
@@ -139,14 +145,14 @@ public class PlayModel {
 
 				if(H.el[n]>H.el[n-1] && H.el[n]>a[j][1]){
 					if(!on[j]){
-					B.el[n]+=Bs1;
+					B.el[n]+=Bs1*DM[j];
 					on[j]=true;
 					}
 					}
 				else if(H.el[n]<H.el[n-1] && H.el[n]<a[j][0] ){
 				
 					if(on[j]){
-						B.el[n]-=Bs1;
+						B.el[n]-=Bs1*DM[j];;
 					on[j]=false;
 					}
 		
@@ -157,6 +163,8 @@ public class PlayModel {
 			}
 			if(n>0) 
 			B.el[n]+=B.el[n-1];
+
+			if(i<10) util.pr(x+"  "+B.el[n]);
 			}
 
 		util.plot(H);
@@ -168,6 +176,7 @@ public class PlayModel {
 	public static void reversal()
 	{
 
+		
 		
 		int M=1000;
 		int L=8000;
@@ -197,6 +206,9 @@ public class PlayModel {
 		double Hs=1000;
 	
 		int P=10;
+		int Q=10;
+		
+		double[][] Ev=new double[P][Q];
 		
 	
 		//
