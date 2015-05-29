@@ -49,6 +49,7 @@ public class Preisach {
 	}
 	
 	demagnetize(10);
+	
 	}
 	
 	public void demagnetize(int nCycles){
@@ -62,7 +63,7 @@ public class Preisach {
 		double dt=1./L;
 	
 		
-		//double cc=4.0/nCycles;
+		double cc=4.0/nCycles;
 		
 		double Bs1=2*Bs/M;
 		
@@ -88,7 +89,7 @@ public class Preisach {
 		}
 		*/
 		
-			util.plot(H);
+
 	
 		
 		
@@ -132,32 +133,51 @@ public class Preisach {
 			
 	}
 	
-		util.plot(H,B);
+	//	util.plot(H,B);
 		
 	}
 	
-public void magnetize(int nCycles,double Bin){
+public void magnetize(int nCycles,double Bin,double Hmax){
 		
-		int L=500;
+		int L=400;
 		double t=0;
 		double dt=1./L;
-		int n=0;
+
 		
-			
+		double cc=4.0/nCycles;
 	
-		Vect B=new Vect(nCycles*L+1);
-		Vect H=new Vect(nCycles*L+1);
+		Vect B=new Vect(nCycles*(L+L/4));
+		Vect H=new Vect(nCycles*(L+L/4));
 		
+		
+		int ix=0;
 		
 		for(int i=0;i<nCycles;i++)
-			for(int k=0;k<L;k++){
+			for(int j=0;j<L;j++){
 			
-			double x=(i+1)*1.0/nCycles*Math.sin(2*Math.PI*t);;
-		
+				double x=(1-Math.exp(-cc*t))*Math.sin(2*Math.PI*t);;
 			t+=dt;
+			H.el[ix]=x*Hmax;
+			ix++;
+		}
+	
+			
+		
+		for(int j=0;j<L/4;j++){
+		
+			double x=(1-Math.exp(-cc*t))*Math.sin(2*Math.PI*t);
+			t+=dt;
+			H.el[ix]=x*Hmax;
+			ix++;
+		}
+		
+		int n=-1;
+		
+		for(int i=0;i<H.length;i++){
+
+
 			n++;
-					
-			H.el[n]=x*Hs;
+	
 	
 			if(n==0) 
 				{
@@ -192,7 +212,7 @@ public void magnetize(int nCycles,double Bin){
 			//if(i<10) util.pr(x+"  "+B.el[n]);
 			
 	}
-		
+	
 		util.plot(H,B);
 		
 	}

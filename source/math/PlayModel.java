@@ -36,7 +36,7 @@ public class PlayModel {
 		double width=200;
 		
 		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
-	/*	
+		
 		Mat[] BHs=new Mat[nTot];
 		
 		BHs[0]=initLoop(ps,Bs,100,1.1*Hs);
@@ -83,7 +83,7 @@ public class PlayModel {
 			pwBun.close();
 		}
 		catch(IOException e){}
-	;*/
+	;
 	//reversal();
 	//curves();
 	
@@ -423,7 +423,7 @@ public static Mat symMajorHalf(Preisach ps,int LinitMax){
 		Vect seqInitial1=seqInitial0.times(seqInitial0);*/
 		
 		ps.demagnetize(50);
-	//	ps.magnetize(50,0);
+		ps.magnetize(50,0,ps.Hs);
 	
 		
 	//	Vect seqH=new Vect().linspace(ps.Hs, -ps.Hs, LinitMax);
