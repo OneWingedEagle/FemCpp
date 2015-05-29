@@ -54,7 +54,7 @@ public class MagMatrix {
 		
 
 		boolean fillSs=(model.analysisMode>0 && model.Ss==null);
-		
+	
 
 		double eps=1e-6,cPB=model.cpb; 
 		boolean nonLinear,eddy;
@@ -117,6 +117,8 @@ public class MagMatrix {
 					eddy=true;
 				else
 					eddy=false;
+				
+		
 
 				H1=this.calc.He(model,nBH,nLam,i,nonLinear,eddy,hasJ,hasM);
 				
@@ -211,9 +213,10 @@ public class MagMatrix {
 						m=util.search(model.Hs.row[matrixRow].index,nz[matrixRow]-1,columnIndex);
 						if(m<0)
 						{	
+							
 
 							if(abs(H1[j][k])>eps  ){	
-
+								
 								model.Hs.row[matrixRow].index[nz[matrixRow]]=columnIndex;
 
 								model.Hs.row[matrixRow].el[nz[matrixRow]]=H1[j][k];

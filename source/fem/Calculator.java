@@ -431,10 +431,7 @@ public class Calculator {
 		Vect B=new Vect();
 		Vect M=new Vect();		
 
-/*		if( hasJ)	{J=model.element[ie].getJ().times(model.region[model.element[ie].getRegion()].getFactJ()); 
-		
 
-		}*/
 		
 		if(hasM){ M=model.element[ie].getM();}
 

@@ -51,21 +51,25 @@ public class GUI extends JFrame implements ActionListener{
 				
 				if(tag==0){
 					//meshFile= System.getProperty("user.dir") + "\\quiz.txt";
-					meshFile= System.getProperty("user.dir") + "\\quizFine.txt";
-					//meshFile= System.getProperty("user.dir") + "\\reNumb.txt";
-					
-					dataFile= System.getProperty("user.dir") + "\\dataQuiz.txt";
-					//dataFile= System.getProperty("user.dir") + "\\dataQuizRough.txt";
-				
+				//	meshFile= System.getProperty("user.dir") + "\\quizFine.txt";
+					//meshFile= System.getProperty("user.dir") + "\\condDular.txt";
+				//	meshFile= System.getProperty("user.dir") + "\\NadaTest.txt";
+					meshFile= System.getProperty("user.dir") + "\\model2D.txt";
+				//	dataFile= System.getProperty("user.dir") + "\\dataQuiz.txt";
+					//dataFile= System.getProperty("user.dir") + "\\dataCondDular.txt";
+					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataModel2D.txt";
 				/*	meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";*/
 				}
 				
 				else if(tag==1){
+					
+					meshFile= System.getProperty("user.dir") + "\\SIBC.txt";
 					//meshFile= System.getProperty("user.dir") + "\\plungers\\plunger2Dv.txt";
-					meshFile= System.getProperty("user.dir") + "\\plungers\\EMroger.txt";
-						dataFile= System.getProperty("user.dir") + "\\dataEMroger.txt";
-						
+/*					meshFile= System.getProperty("user.dir") + "\\plungers\\EMroger.txt";
+						dataFile= System.getProperty("user.dir") + "\\dataEMroger.txt";*/
+					dataFile= System.getProperty("user.dir") + "\\dataSIBC.txt";
 						/*meshFile= System.getProperty("user.dir") + "\\bunMagFluid.txt";
 						dataFile= System.getProperty("user.dir") + "\\dataMagFluid.txt";*/
 						//dataFile= System.getProperty("user.dir") + "\\dataPlungerANS.txt";

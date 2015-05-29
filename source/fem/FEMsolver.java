@@ -1,11 +1,14 @@
 package fem;
 
 import java.text.DecimalFormat;
+
+import math.Complex;
 import math.Mat;
 import math.MatSolver;
 import math.SpMat;
 import math.SpMatComp;
 import math.SpVect;
+import math.SpVectComp;
 import math.Vect;
 import math.VectComp;
 import math.util;
@@ -512,7 +515,58 @@ public class FEMsolver {
 
 
 		}
-		else if(model.eddyTimeIntegMode==-4){/*			
+		else if(model.eddyTimeIntegMode==-4){
+			
+			double w=2*Math.PI*model.freq;
+			
+		//	Complex jw=new Complex(0,w);
+			SpMatComp Ks=new SpMatComp(model.Hs,model.Ss.timesNew(w));
+			
+			int Nun=Ks.nRow;
+			VectComp b=new VectComp(Nun);
+			for(int i=0;i<Nun;i++){
+				b.el[i]=new Complex(model.b.el[i],0);
+			}
+			
+			
+			
+			Ks.setSymHerm(1);
+			
+			model.Ci=Ks.scale(b);
+			
+			SpMatComp Ls=Ks.ichol(1.1);
+			Ls.setSymHerm(0);
+
+			VectComp xc=new VectComp();
+		
+		
+
+				xc=model.solver.COICCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nun),1,true);
+				//xc=model.solver.COCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nn),1,true);
+	
+			
+			xc.timesVoid(model.Ci);	
+
+
+			for(int i=0;i<Nun;i++){
+				x.el[i]=xc.el[i].re;
+			
+				}
+			
+			model.setSolution(x);	
+
+			model.setB();	
+
+			System.out.println("Bmax ( linear analysis): "+model.Bmax);
+			
+	
+			return x;
+			
+	
+		
+		}
+			
+			/*			
 						
 //time harmonic old
 			double  w=2*Math.PI*model.freq;
@@ -577,7 +631,8 @@ public class FEMsolver {
 			model.setB();
 
 			return vr;
-*/}
+}
+*/
 
 		return null;
 

@@ -42,13 +42,15 @@ public class MeshFactory {
 		//mf.assemble(b1, b2);
 	//	mf.connect(b1, b2);
 	//	mf.reRegion();
-		int[] nr={1,2};
+		int[] nr={1,3,4};
 		//mf.dropUnusedNodes();
+		//mf.getNeuMeshTri();
 //jjjj
-	//mf.extractReg(nr);
+//	mf.extractReg(nr); mf.dropUnusedNodes();
 		//mf.extendFlip(0);
 		//mf.translate(new Vect(200e-3,0));
 		//mf.meshQ();
+		
 		
 		double[] ar={1,1.5,2,3,3.5,4,5};
 		Vect v=new Vect(ar);
@@ -8998,7 +9000,10 @@ return Rs;
 		
 		
 			//double[][] bb={{471,492.32,0,12.5},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25},{478.43,481.23,.55,6.25}};
-
+		//	double[][] bb={{0,1000,-1000,1000},{-1000,1000,-1000,-300},{-400,-300,0,100},{300,400,0,100}};
+			double[][] bb={{-300,300,-300,300},{-60,60,-60,60},{-40,40,-40,40},{40,60,-5,5}, {-35,0,-35,35},{-100,-65,-35,35}};
+			
+			/*
 			double[] bair={470,700,0,12.5};
 			double[] balum={0,2.8,0,5.7};
 			 double[][] bb1=new double[4][4];
@@ -9027,7 +9032,7 @@ return Rs;
 						bb12[j*4+k+1][m]=bb1[k][m]+j*(14+3.66)+478;
 							else
 								bb12[j*4+k+1][m]=bb1[k][m];
-					}
+					}*/
 			 
 /*			double[][] bb={{-100,100,-100,100},{-80,80,-80,80},
 					{-50,-15,-50,50},{15,50,-50,50}
@@ -9037,34 +9042,59 @@ return Rs;
 			double scale=1;
 		//	scale=1000;
 
-			for(int j=0;j<bb12.length;j++)
-				for(int k=0;k<bb12[0].length;k++){
-					bb12[j][k]*=scale;
+			for(int j=0;j<bb.length;j++)
+				for(int k=0;k<bb[0].length;k++){
+					bb[j][k]*=scale;
 				/*if(k<2)
 					bb12[j][k]+=-400;*/
 					//if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 				}
 
-			ModelGeo mg=new ModelGeo(bb12);
+			ModelGeo mg=new ModelGeo(bb);
 	/*			mg.blockName[0]="air";
 			mg.blockName[2]="air";
 
 					mg.blockName[4]="air";*/
 
 			mg.blockName[0]="air";
-			for(int j=1;j<bb12.length;j++)
-				mg.blockName[j]="coil";
+		//	for(int j=1;j<bb12.length;j++)
+				//mg.blockName[j]="coil";
 	
 
-/*			mg.blockName[3]="air";
-			mg.blockName[4]="air";
-			mg.blockName[5]="coil1";
-			mg.blockName[6]="coil2";*/
+			mg.blockName[1]="core";
+			mg.blockName[2]="air";
+			mg.blockName[3]="air";
+			mg.blockName[4]="coil1";
+			mg.blockName[5]="coil2";
 
 			
+for(int j=0;j<bb.length;j++){
+				
+				for(int k=0;k<bb[0].length;k++){
+				
+			
+				mg.baseLeft[j][k]=1.3;
+				mg.baseRight[j][k]=1.3;
+					
+			
+			
+		
+				if(j<2){
+				mg.minMeshRight[j][k]=1;
+				mg.minMeshLeft[j][k]=1;
+				}
+				else{
+					mg.minMeshRight[j][k]=1;
+					mg.minMeshLeft[j][k]=1;
+					
+				}
+				}
+			
+				}			
+
 		
 
-			for(int j=0;j<bb12.length;j++){
+/*			for(int j=0;j<bb12.length;j++){
 				
 				for(int k=0;k<bb12[0].length;k++){
 				
@@ -9079,10 +9109,10 @@ return Rs;
 				
 	
 					
-	/*			if(k<2){
+				if(k<2){
 					mg.minMeshRight[j][k]=.9;
 					mg.minMeshLeft[j][k]=.9;
-				}*/
+				}
 					}
 			
 			
@@ -9090,7 +9120,7 @@ return Rs;
 				}
 			
 				}			
-
+*/
 
 			
 
@@ -9340,12 +9370,13 @@ return Rs;
 				line=br.readLine();
 
 				sp=line.split(regex);
+
 				if(sp.length==15 && !sp[0].equals("0")) break;
 			
 				
 			}
 			
-	util.pr(line);
+
 
 			int nnMax=0,nn=1;
 			Vect[] coord1=new Vect[1000000];
@@ -9354,7 +9385,7 @@ return Rs;
 			for(int i=1;i<1000000;i++)
 			{
 				sp=line.split(regex);
-				
+		
 				line=br.readLine();
 
 				if(sp.length!=15) break;
@@ -9422,7 +9453,7 @@ return Rs;
 			
 			int nEl=ix;
 
-		
+
 			
 			List<Integer> list1=new ArrayList<Integer>();
 			for(int i=1;i<nReg.length;i++){
@@ -9436,8 +9467,6 @@ return Rs;
 				
 				int nRegions=regNumbs.size();
 				
-				util.pr(nRegions);
-
 				
 				int[] regNumber=new int[nRegions+1];
 				for(int ir=1;ir<=nRegions;ir++)
@@ -9461,7 +9490,7 @@ return Rs;
 
 
 			int nNodes=nnMax;
-			double scaleFactor=1.0;
+			double scaleFactor=1000.0;
 			DecimalFormat formatter;
 			if(scaleFactor==1)
 				formatter= new DecimalFormat("0.000000000");

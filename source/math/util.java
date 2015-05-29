@@ -694,6 +694,75 @@ public static void plot(double[][] XY){
 
 	}
 	
+	public static void plotBunch(double[][]... data){
+	//	DecimalFormat df=new DecimalFormat("00.0");
+
+		Plot2DPanel plot = new Plot2DPanel();
+		double[] x,y;
+		
+		for(int j=0;j<data.length;j++){
+		
+			x=new double[data[j].length];
+			y=new double[data[j].length];
+			for(int i=0;i<x.length;i++){
+				x[i]=data[j][i][0];
+				y[i]=data[j][i][1];
+			}
+		
+		
+			plot.addLinePlot(" curve  "+j, x, y);
+		
+				}
+		
+		plot.setAxisLabel(0,"x");
+		plot.setAxisLabel(1,"y");
+		plot.addLegend("EAST");
+		
+		  JFrame frame = new JFrame("plot panel");
+		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		  frame.setSize(500,400);
+		  frame.setContentPane(plot);
+		  frame.setVisible(true);
+
+	}
+	
+	public static void plotBunch(Mat[] data){
+		plotBunch(data, data.length);
+		
+	}
+	
+	public static void plotBunch(Mat[] data, int n){
+		//	DecimalFormat df=new DecimalFormat("00.0");
+
+			Plot2DPanel plot = new Plot2DPanel();
+			double[] x,y;
+			
+			for(int j=0;j<n;j++){
+			
+				x=new double[data[j].nRow];
+				y=new double[data[j].nRow];
+				for(int i=0;i<x.length;i++){
+					x[i]=data[j].el[i][0];
+					y[i]=data[j].el[i][1];
+				}
+			
+			
+				plot.addLinePlot(" curve  "+j, x, y);
+			
+					}
+			
+			plot.setAxisLabel(0,"x");
+			plot.setAxisLabel(1,"y");
+			plot.addLegend("EAST");
+			
+			  JFrame frame = new JFrame("plot panel");
+			   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			  frame.setSize(500,400);
+			  frame.setContentPane(plot);
+			  frame.setVisible(true);
+
+		}
+	
 	public static void plot(SpMat A){
 		
 		 Plot2DPanel plot = new Plot2DPanel();
