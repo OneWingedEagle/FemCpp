@@ -12,13 +12,13 @@ Number_of_Regions:4
 
 (name, material,[E,] nonlinear, murx mury, Mx, My,[ Jz/sigma,freq,phase ,stranded sigz/R,nloop]
 
-coilU+, copper,f,1 1, 0 0,t,1.272,100,0,0.3,93
+coil1, copper,f,1 1,0 0,f,1e7,0
 
-coilU-, copper,f,1 1, 0 0,t,1.272,100,180,0.3,93
+coil2, copper,f,1 1,0 0,f,-1e7,0
 
-ironR,50H400,f,1000 1000 , 0 0 
+ironR,50H400,t,1000 1000
 
-airOut,air, f,1 1, 0 0
+airOut,air, f,1 1,
 
 boundary condition:
 Boundary 1:D

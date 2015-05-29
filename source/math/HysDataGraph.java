@@ -19,7 +19,7 @@ public class HysDataGraph {
 Mat[] BH;
 int numb1;
 double Bs, Hs;
-int numb2,numb3,numb4,numb5;
+int nInitial,nMajor,nSymLoop,nDescending,nAscending,nTotCurves;
 String regex="[:; ,\\t]+";
 
 
@@ -36,7 +36,9 @@ public boolean loadHysData(){
 	if(file==null || file.equals("") )return false;*/
 //	String file="C:\\Works\\HVID\\folder1\\data\\A_B“ü—Í‘ÎÌƒ‹[ƒvhts_data\\hys_data";
 
-	String file="C:\\Works\\HVID\\hys_data";
+	String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
+	//String file="C:\\Works\\HVID\\hys_data";
+	
 
 		try{
 			FileReader fr=new FileReader(file);
@@ -58,17 +60,20 @@ public boolean loadHysData(){
 			line=br.readLine();
 			line=br.readLine();
 			sp=line.split(regex);	
-			this.numb1=Integer.parseInt(sp[0]);
-			this.numb2=Integer.parseInt(sp[1]);
-			this.numb3=Integer.parseInt(sp[2]);
-			this.numb4=Integer.parseInt(sp[3]);
-			this.numb5=Integer.parseInt(sp[4]);
+			this.nInitial=Integer.parseInt(sp[0]);
+			this.nMajor=Integer.parseInt(sp[1]);
+			this.nSymLoop=Integer.parseInt(sp[2]);
+			this.nDescending=Integer.parseInt(sp[3]);
+			this.nAscending=Integer.parseInt(sp[4]);
+			this.nTotCurves=this.nInitial+this.nMajor+this.nSymLoop+this.nDescending+this.nAscending;
 			
-			BH=new Mat[numb4];
+			
+			BH=new Mat[this.nTotCurves];
 			
 			line=br.readLine();
 			line=br.readLine();
 			int L=Integer.parseInt(line);
+		
 			BH[0]=new Mat(L,2);
 			
 			for( int p=0;p<L;p++){
@@ -81,16 +86,16 @@ public boolean loadHysData(){
 			}
 		
 		
-	;
+	
 			line=br.readLine();
 			int L1=0;
-			for( int ip=1;ip<numb4;ip++){
+			for( int ip=1;ip<this.nTotCurves;ip++){
 				line=br.readLine();
 				if(line.startsWith("*")) {line=br.readLine();};
 				sp=line.split(regex);	
 				//if(sp.length==1)
 					L1=Integer.parseInt(sp[0]);
-						
+					util.pr(L1);	
 		
 				BH[ip]=new Mat(L1,2);
 
@@ -105,8 +110,9 @@ public boolean loadHysData(){
 			
 						
 			}
-		
-			util.plotBunch(BH,6);
+
+			util.plotBunch(BH);
+			//BH[1].show();
 	
 			
 			return true;

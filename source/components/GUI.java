@@ -52,13 +52,13 @@ public class GUI extends JFrame implements ActionListener{
 				if(tag==0){
 					//meshFile= System.getProperty("user.dir") + "\\quiz.txt";
 				//	meshFile= System.getProperty("user.dir") + "\\quizFine.txt";
-					//meshFile= System.getProperty("user.dir") + "\\CondSurf.txt";
-					meshFile= System.getProperty("user.dir") + "\\NadaTest.txt";
-					
+					//meshFile= System.getProperty("user.dir") + "\\condDular.txt";
+				//	meshFile= System.getProperty("user.dir") + "\\NadaTest.txt";
+					meshFile= System.getProperty("user.dir") + "\\model2D.txt";
 				//	dataFile= System.getProperty("user.dir") + "\\dataQuiz.txt";
-					//dataFile= System.getProperty("user.dir") + "\\dataQuizRough.txt";
-					dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
-				
+					//dataFile= System.getProperty("user.dir") + "\\dataCondDular.txt";
+					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataModel2D.txt";
 				/*	meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";*/
 				}

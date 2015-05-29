@@ -72,7 +72,7 @@ public boolean loadShapeFunc(){
 			this.numb5=Integer.parseInt(sp[6]);
 			
 		
-			util.show(sp);
+			//util.show(sp);
 			
 			
 			Mat[] BH1=new Mat[200];
@@ -91,7 +91,6 @@ public boolean loadShapeFunc(){
 				double[] bh=getCSV(line);
 				if(jx>0 && bh[0]<BH1[iloop].el[jx-1][0])
 				{
-					util.pr(bh[0]+" "+BH1[iloop].el[jx-1][0]);
 					iloop++;
 					jx=0;
 				}
@@ -113,9 +112,9 @@ public boolean loadShapeFunc(){
 			}
 			
 			
-			util.plotBunch(BH,5);
+			util.plotBunch(BH);
 			
-			BH1[0].show();
+		//	BH1[0].show();
 			return true;
 		
 			}

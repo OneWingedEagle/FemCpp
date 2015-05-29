@@ -13,7 +13,7 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-
+import math.Vect;
 import math.util;
 
 
@@ -94,10 +94,14 @@ public class BHCurve {
 		Curve cv=new Curve(BH,600,600);
 		cv.show(true);*/
 
-BHCurve BH2=new BHCurve("H350");
+BHCurve BH2=new BHCurve("ttt");
 		
 		Curve cv2=new Curve(BH2,600,600);
 		cv2.show(true);
+		Vect v=new Vect(1030);
+		
+		for(int i=0;i<v.length;i++)
+			util.pr(BH2.getH(i*1.8/1030));
 	
 		/*String bh = System.getProperty("user.dir") + "\\bh.xls";
 		BH2.writexls(bh);
