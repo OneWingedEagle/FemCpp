@@ -33,6 +33,7 @@ public class util {
 
 	}
 	
+	
 	public double f(double M, double K, double x)
 	{
 	return -K*x/M;
