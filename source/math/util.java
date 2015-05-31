@@ -7,6 +7,7 @@ import java.awt.FileDialog;
 import java.awt.Frame;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.Random;
 
 import javax.rmi.CORBA.Util;
 import javax.swing.JFileChooser;
@@ -383,6 +384,18 @@ public class util {
 	}
 	
 	
+	public static void shuffle(int[] ar){
+		 Random rnd = new Random();
+		    for (int i = ar.length - 1; i > 0; i--)
+		    {
+		      int index = rnd.nextInt(i + 1);
+		      // Simple swap
+		      int a = ar[index];
+		      ar[index] = ar[i];
+		      ar[i] = a;
+		    }
+		  }
+		
 	public static int[] sortind(int[] a){
 		int[] ind=new int[a.length];
 		int[][] v=new int[a.length][2];
