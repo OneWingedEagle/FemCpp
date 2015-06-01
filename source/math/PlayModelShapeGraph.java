@@ -14,7 +14,7 @@ import fem.Model;
 
 
 
-public class PlayModelGraph {
+public class PlayModelShapeGraph {
 	
 Mat[] BH;
 int numb;
@@ -25,7 +25,7 @@ String regex="[:; ,\\t]+";
 
 public static void main(String[] args){
 
-	PlayModelGraph pg=new PlayModelGraph();
+	PlayModelShapeGraph pg=new PlayModelShapeGraph();
 	
 	pg.loadShapeFunc();
 }
@@ -43,8 +43,6 @@ public boolean loadShapeFunc(){
 			String line;
 			String s;
 			String[] sp;
-
-
 			
 			line=br.readLine();
 			sp=line.split(regex);	
@@ -69,7 +67,7 @@ public boolean loadShapeFunc(){
 			this.numb2=Integer.parseInt(sp[3]);
 			this.numb3=Integer.parseInt(sp[4]);
 			this.numb4=Integer.parseInt(sp[5]);
-			this.numb5=Integer.parseInt(sp[6]);
+			//this.numb5=Integer.parseInt(sp[6]);
 			
 		
 			//util.show(sp);

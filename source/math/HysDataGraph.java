@@ -36,8 +36,8 @@ public boolean loadHysData(){
 	if(file==null || file.equals("") )return false;*/
 //	String file="C:\\Works\\HVID\\folder1\\data\\A_B“ü—Í‘ÎÌƒ‹[ƒvhts_data\\hys_data";
 
-	String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-	//String file="C:\\Works\\HVID\\hys_data";
+	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
+	String file="C:\\Works\\HVID\\hys_dataH";
 	
 
 		try{

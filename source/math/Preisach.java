@@ -16,7 +16,8 @@ public class Preisach {
 	public double[] phi;
 	public double[][][] a;
 	public double[][] K;
-	public double  eps=1e-3;
+	public double  epsdB=1e-2;
+	public double  epsdBdH=1e-3;
 
 
 	public Preisach(){}
@@ -198,7 +199,7 @@ public Mat magnetizeUpTo(double Bpeak,int L){
 			B.el[i]=B.el[i-1]+2*dB;
 			
 			ix++;
-			if(B.el[i]>Bpeak || Math.abs(B.el[i]-Bpeak)<=eps) {
+			if(B.el[i]>Bpeak || Math.abs(B.el[i]-Bpeak)<=epsdB) {
 				B.el[i]=Bpeak;
 				break;
 			}
@@ -207,11 +208,12 @@ public Mat magnetizeUpTo(double Bpeak,int L){
 		}
 
 
-		Mat BH1=new Mat(ix+1,2);
-		for(int i=0;i<=ix;i++){
+		Mat BH1=new Mat(ix,2);
+		for(int i=0;i<ix;i++){
 			BH1.el[i][0]=H.el[i];
 			BH1.el[i][1]=B.el[i];
 		}
+		
 		 Mat BH=this.distill(BH1);
 
 		return BH;
@@ -257,7 +259,7 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 			B.el[i]=B.el[i-1]+2*dB;
 			
 			ix++;
-			if(B.el[i]<Bpeak || Math.abs(B.el[i]-Bpeak)<=eps) {
+			if(B.el[i]<Bpeak || Math.abs(B.el[i]-Bpeak)<=epsdB) {
 				B.el[i]=Bpeak;
 				break;
 			}
@@ -351,15 +353,11 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 
 	public  Mat initial(int L){
 		
-		this.demagnetize();
-		return 	this.magnetizeUpTo(Bs,L);
+	
+		return 	initLoopUptoBpeak(this.Bs,L);
 	}
 	
-	public  Mat initLoop(double Bpeak, int L){
-		
-		return 	this.magnetizeDownTo(Bpeak,L);
-	}
-	
+
 	public  Mat initLoopUptoBpeak(double Bpeak,int L){
 		this.demagnetize();
 
@@ -368,8 +366,6 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 		Mat BH1=this.getCurve(seqH);
 
 		Mat BH=this.distill(BH1);
-
-		BH.el[BH.nRow-1][1]=this.Bs;
 
 
 		return BH;
@@ -400,6 +396,8 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 		int L1=BH1.nRow;
 		double H1=BH1.el[L1-1][0];
 		
+	
+	
 		Vect seqH=new Vect().linspace(H1, -Hs, L);
 	
 
@@ -421,7 +419,7 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 			BH4.el[i]=BH3.el[i];
 	
 		}
-		
+
 
 		return BH4;
 	}
@@ -524,7 +522,7 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 		B.el[i]=B.el[i-1]+2*dB;
 		
 		ix++;
-		if(B.el[i]>Bpeak || Math.abs(B.el[i]-Bpeak)<=eps) {
+		if(B.el[i]>Bpeak || Math.abs(B.el[i]-Bpeak)<=epsdB) {
 			B.el[i]=Bpeak;
 			break;
 		}
@@ -586,7 +584,7 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 			B.el[i]=B.el[i-1]+2*dB;
 			
 			ix++;
-			if(B.el[i]<Bpeak || Math.abs(B.el[i]-Bpeak)<=eps) {
+			if(B.el[i]<Bpeak || Math.abs(B.el[i]-Bpeak)<=epsdB) {
 				B.el[i]=Bpeak;
 				break;
 			}
@@ -616,19 +614,16 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 		boolean[] skip=new boolean[L];
 		for(int i=1;i<BH1.nRow;i++){
 
-			if(i<BH1.nRow/2 && Math.abs(BH1.el[i][1]-BH1.el[i-1][1])<eps){
-				skip[i-1]=true;
-				continue;
-			}
-			if( Math.abs(BH1.el[i][1]-BH1.el[i-1][1])<eps){
+
+			if( Math.abs(BH1.el[i][1]-BH1.el[i-1][1])/Math.abs(BH1.el[i][0]-BH1.el[i-1][0])<epsdBdH){
 				skip[i]=true;
+			
 				continue;
 			}
 
 
 			Leff++;
 		}
-
 
 		Mat BH=new Mat(Leff,2);
 
@@ -639,6 +634,7 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 				BH.el[ix][0]=BH1.el[i][0];
 				BH.el[ix][1]=BH1.el[i][1];
 				ix++;
+				
 			}
 
 
