@@ -2,16 +2,164 @@
 Loading mesh file completed.
 
 Loading data file completed.
-Computing Symmetric Complex Preconditioner..
-COICCG iteration:    50	 error : 1.83E-05	 res max: 1.60E-07
-COICCG iteration:    78	 error : 9.62E-09	 res max: 8.41E-11
-Bmax ( linear analysis): 0.3337401431953841
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.00E00	 res max: 1.27E00
+ICCG iteration:    50	 error : 2.66E-01	 res max: 3.37E-01
+ICCG iteration:   100	 error : 1.90E-05	 res max: 2.41E-05
+ICCG iteration:   130	 error : 7.23E-09	 res max: 9.16E-09
+Bmax ( linear analysis): 19.2833550702625
+
+
+    nonlinear Iteration: 0     Bmax: 19.2834     error: 1.0E00
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 9.06E01	 res max: 9.06E01
+ICCG iteration:    50	 error : 1.72E00	 res max: 1.72E00
+ICCG iteration:   100	 error : 2.02E-02	 res max: 2.02E-02
+ICCG iteration:   150	 error : 7.61E-05	 res max: 7.61E-05
+ICCG iteration:   200	 error : 2.73E-08	 res max: 2.73E-08
+ICCG iteration:   241	 error : 8.32E-12	 res max: 8.32E-12
+
+
+    nonlinear Iteration: 1     Bmax: 3.3526     error: 1.6E01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 5.04E00	 res max: 5.04E00
+ICCG iteration:    50	 error : 1.18E-01	 res max: 1.18E-01
+ICCG iteration:   100	 error : 1.30E-03	 res max: 1.30E-03
+ICCG iteration:   150	 error : 5.08E-06	 res max: 5.08E-06
+ICCG iteration:   200	 error : 2.74E-09	 res max: 2.74E-09
+ICCG iteration:   230	 error : 9.53E-12	 res max: 9.53E-12
+
+
+    nonlinear Iteration: 2     Bmax: 2.3689     error: 9.9E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.24E00	 res max: 1.24E00
+ICCG iteration:    50	 error : 3.99E-02	 res max: 3.99E-02
+ICCG iteration:   100	 error : 4.70E-04	 res max: 4.70E-04
+ICCG iteration:   150	 error : 7.13E-07	 res max: 7.13E-07
+ICCG iteration:   200	 error : 7.82E-10	 res max: 7.82E-10
+ICCG iteration:   224	 error : 8.10E-12	 res max: 8.10E-12
+
+
+    nonlinear Iteration: 3     Bmax: 2.2401     error: 7.1E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 4.60E-01	 res max: 4.60E-01
+ICCG iteration:    50	 error : 1.97E-02	 res max: 1.97E-02
+ICCG iteration:   100	 error : 2.18E-04	 res max: 2.18E-04
+ICCG iteration:   150	 error : 1.15E-07	 res max: 1.15E-07
+ICCG iteration:   200	 error : 2.63E-10	 res max: 2.63E-10
+ICCG iteration:   218	 error : 8.90E-12	 res max: 8.90E-12
+
+
+    nonlinear Iteration: 4     Bmax: 2.2089     error: 4.6E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 2.21E-01	 res max: 2.21E-01
+ICCG iteration:    50	 error : 6.49E-03	 res max: 6.49E-03
+ICCG iteration:   100	 error : 6.45E-05	 res max: 6.45E-05
+ICCG iteration:   150	 error : 1.15E-07	 res max: 1.15E-07
+ICCG iteration:   200	 error : 5.14E-11	 res max: 5.14E-11
+ICCG iteration:   211	 error : 9.35E-12	 res max: 9.35E-12
+
+
+    nonlinear Iteration: 5     Bmax: 2.2065     error: 5.2E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.03E-01	 res max: 1.03E-01
+ICCG iteration:    50	 error : 1.40E-03	 res max: 1.40E-03
+ICCG iteration:   100	 error : 1.23E-05	 res max: 1.23E-05
+ICCG iteration:   150	 error : 2.67E-08	 res max: 2.67E-08
+ICCG iteration:   200	 error : 1.19E-11	 res max: 1.19E-11
+ICCG iteration:   204	 error : 9.37E-12	 res max: 9.37E-12
+
+
+    nonlinear Iteration: 6     Bmax: 2.2060     error: 6.1E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 6.25E-02	 res max: 6.25E-02
+ICCG iteration:    50	 error : 2.43E-04	 res max: 2.43E-04
+ICCG iteration:   100	 error : 1.94E-06	 res max: 1.94E-06
+ICCG iteration:   150	 error : 4.35E-09	 res max: 4.35E-09
+ICCG iteration:   194	 error : 9.10E-12	 res max: 9.10E-12
+
+
+    nonlinear Iteration: 7     Bmax: 2.2059     error: 5.3E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 4.17E-02	 res max: 4.17E-02
+ICCG iteration:    50	 error : 4.01E-05	 res max: 4.01E-05
+ICCG iteration:   100	 error : 3.74E-07	 res max: 3.74E-07
+ICCG iteration:   150	 error : 7.84E-10	 res max: 7.84E-10
+ICCG iteration:   182	 error : 9.01E-12	 res max: 9.01E-12
+
+
+    nonlinear Iteration: 8     Bmax: 2.2058     error: 4.0E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 2.79E-02	 res max: 2.79E-02
+ICCG iteration:    50	 error : 1.60E-06	 res max: 1.60E-06
+ICCG iteration:   100	 error : 7.66E-08	 res max: 7.66E-08
+ICCG iteration:   150	 error : 5.09E-11	 res max: 5.09E-11
+ICCG iteration:   171	 error : 9.71E-12	 res max: 9.71E-12
+
+
+    nonlinear Iteration: 9     Bmax: 2.2058     error: 5.2E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.77E-02	 res max: 1.77E-02
+ICCG iteration:    50	 error : 1.49E-06	 res max: 1.49E-06
+ICCG iteration:   100	 error : 1.40E-08	 res max: 1.40E-08
+ICCG iteration:   150	 error : 1.91E-11	 res max: 1.91E-11
+ICCG iteration:   161	 error : 8.52E-12	 res max: 8.52E-12
+
+
+    nonlinear Iteration: 10     Bmax: 2.2058     error: 3.2E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.49E-02	 res max: 1.49E-02
+ICCG iteration:    50	 error : 7.72E-07	 res max: 7.72E-07
+ICCG iteration:   100	 error : 7.72E-09	 res max: 7.72E-09
+ICCG iteration:   150	 error : 1.95E-11	 res max: 1.95E-11
+ICCG iteration:   158	 error : 8.84E-12	 res max: 8.84E-12
+
+
+    nonlinear Iteration: 11     Bmax: 2.2058     error: 2.6E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 1.03E-02	 res max: 1.03E-02
+ICCG iteration:    50	 error : 3.09E-07	 res max: 3.09E-07
+ICCG iteration:   100	 error : 2.95E-09	 res max: 2.95E-09
+ICCG iteration:   142	 error : 9.68E-12	 res max: 9.68E-12
+
+
+    nonlinear Iteration: 12     Bmax: 2.2058     error: 1.7E-01
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 3.72E-03	 res max: 3.72E-03
+ICCG iteration:    50	 error : 1.29E-07	 res max: 1.29E-07
+ICCG iteration:   100	 error : 5.84E-10	 res max: 5.84E-10
+ICCG iteration:   131	 error : 8.91E-12	 res max: 8.91E-12
+
+
+    nonlinear Iteration: 13     Bmax: 2.2058     error: 5.7E-02
+
+Computing Preconditioner..
+ICCG iteration:     0	 error : 4.57E-04	 res max: 4.57E-04
+ICCG iteration:    50	 error : 2.51E-08	 res max: 2.51E-08
+ICCG iteration:   100	 error : 1.78E-10	 res max: 1.78E-10
+ICCG iteration:   119	 error : 9.45E-12	 res max: 9.45E-12
+
+    nonlinear Iteration: 14     Bmax: 2.2058     error: 7.2E-03
+
  Magnetic flux density was written to C:\Users\Hassan Ebrahimi\JavaWorks\MagFem\fluxes\flux0.txt
- >>>>>>>>>> Bmax >>>>>>>0.3337401431953841
-Fmax 0.2548656470327648at node 1092 with coordinates
-       -0.00045	        0.00300	
+ >>>>>>>>>> Bmax >>>>>>>2.2058447530339214
+Fmax 1297.661966923171at node 6739 with coordinates
+       -0.04000	       -0.01776	
 Force vector :
-        0.00020	        0.25487	
+     1297.66197	        0.05478	
 FMsmax 0.0at node 0 with coordinates
 torque >>>>>>>0.0
 
