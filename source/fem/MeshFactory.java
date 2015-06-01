@@ -37,6 +37,7 @@ public class MeshFactory {
 
 		MeshFactory mf=new MeshFactory();
 		
+		
 		String b1=System.getProperty("user.dir") + "\\rotRing.txt";
 		String b2=System.getProperty("user.dir") + "\\statRing2.txt";
 		//mf.assemble(b1, b2);

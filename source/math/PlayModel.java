@@ -1,5 +1,7 @@
 package math;
 
+import io.HystDataLoader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,6 +14,15 @@ import math.Vect;
 import math.util;
 
 public class PlayModel {
+	
+	public Mat shapeFunc;
+	public int nSym, nDesc,nAsc, nInit, nMajor,nTotCurves;
+	public boolean anisot;
+	public double Bs,Hs;
+	public Mat[] BHraw,BH;
+	public double[] zk,pk;
+	public int dim=2,nHyst;
+	
 
 	
 	public PlayModel()
@@ -19,38 +30,142 @@ public class PlayModel {
 
 	public static void main(String[] args)
 	{
+		
+		PlayModel pm=new PlayModel();
+		
+		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
+
+	
+		
+		pm.loadData(file);
+	//	pm.distillData();
+		
+		pm.simulateData();
+/*		for(int i=0;i<pm.BH.length;i++)
+			pm.BH[i].transp().show();*/
+	//	pm.createData();
+	/*	
+		Mat[] BH1=new Mat[2*pm.BH.length];
+		
+		for(int i=0;i<pm.BH.length;i++){
+			BH1[i]=pm.BHraw[i];
+			BH1[i+pm.BH.length]=pm.BH[i];
+	
+		}
+		
+		util.plotBunch(BH1);*/
+	}
+	
+	public void loadData(String file){
+		
+		HystDataLoader hysLoader=new HystDataLoader();
+		
+		hysLoader.loadData(this,file);
+		
+		double db=Bs/(this.nSym);
+	
+		this.nHyst=2*this.nSym+1;
+		
+		pk=new double[this.nSym+1];
+		zk=new double[this.nHyst];
+		
+		for(int i=0;i<pk.length;i++){
+			pk[i]=i*db;
+		}
+		
+		for(int i=0;i<zk.length;i++){
+			zk[i]=i*db;
+		}
+
+		
+		this.shapeFunc=new Mat(nHyst,nHyst);
+		
+		for(int i=0;i<shapeFunc.nRow;i++){
+			for(int j=0;j<=i;j++){
+				shapeFunc.el[i][j]=BH[i].el[j][0]-BH[i].el[j-2][0];
+
+			}
+		}
+		
+		/*for(int i=0;i<shapeFunc.nRow;i++){
+			double cc=.1*(i+1);
+			for(int j=0;j<shapeFunc.nCol;j++){
+				shapeFunc.el[i][j]=Math.pow(j*.1, cc);
+
+			}
+		}*/
+
+
+	}
+	
+
+	
+	public void createData(){
 
 		
 		double Bs=1.5;
 		double Hs=1600;
-	
+
 		int nInit=1;
 		int nMajor=1;
-		int nSymLoops=1;
+		int nSymLoops=10;
 		int nDescending=0;
 		int nAscending=0;
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
-		
-		int Mp=2000;
+
+		int Mp=3000;
 		double mean=200;
-		double width=200;
-		
+		double width=500;
+
 		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
 		
 		Mat[] BHs=new Mat[nTot];
 		
-		BHs[0]=initLoop(ps,Bs,100,1.1*Hs);
-		ps.demagnetize(50);
-		if(nMajor==1)
-		BHs[1]=symMajorHalf(ps,200);
-		ps.demagnetize(50);
-		if(nTot>=2)
-		for(int i=2;i<nTot;i++)
-		BHs[i]=symLoopHalf(ps,i*.9*Bs/(nTot+1),100,Hs);
-		util.plotBunch(BHs);
+		int ix=0;
+		
+		for(int i=0;i<nInit;i++){
+
+		BHs[ix++]=ps.initial(500);
+		//BHs[ix++]=ps.symMajorFull(200);
+		
+		}
+		
+		for(int i=0;i<nMajor;i++){
+		//BHs[ix++]=ps.symMajorFull(500);
+		BHs[ix++]=ps.symMajorDesc(500);
+
+		}
+
+		
+	
+		for(int i=0;i<nSymLoops;i++){
+			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
+			
+		//BHs[ix++]=ps.symFull(Bp,500);
+		BHs[ix++]=ps.symDesc(Bp,500);
+		//util.pr(ps.getRes());
+	
+		}
+	
+			
+		for(int i=0;i<nDescending;i++){
+		
+			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
+			util.pr(Bp);
+			BHs[ix++]=ps.revDesc(Bp,200);
+		}
+		
+		for(int i=0;i<nAscending;i++){
+		
+			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
+				util.pr(Bp);
+			BHs[ix++]=ps.revAsc(Bp,1000);
+		}
+		
+	//	util.plotBunch(BHs);
 		//util.plot(BHs[2].el);
 		
-		String hysdatafile="C:\\Works\\HVID\\hys_dataH";
+		String hysdatafile=System.getProperty("user.dir") + "\\hys_dataH.txt";
 
 
 		
@@ -83,22 +198,95 @@ public class PlayModel {
 			pwBun.close();
 		}
 		catch(IOException e){}
-	;
-	//reversal();
-	//curves();
+
+
+
+
 	
-/*		Preisach ps=new Preisach(1000,200,500,1000,2,3564656);
-		ps.magnetize(10,0);
-		ps.demagnetize(20);
-		ps.magnetize(10,0)*/;
-	/*	ps.demagnetize(10);
-		ps.magnetize(10);*/
+	}
+	
+	public double shapeFuncAt(int kz, double p){
+		
+
+			
+		double f;
+
+/*		
+		if(kz>zk.length-1)
+			kz=zk.length-1;
+
+
+		if(p<=this.pk[0] )
+			return shapeFunc.el[kz][0];
+
+		if(p>=this.pk[pk.length-1] )
+			return shapeFunc.el[kz][pk.length-1];
+*/
+		
+		int jp=getj(this.pk,p);
 
 		
+		f=shapeFunc.el[kz][jp]*(p-this.pk[jp])+shapeFunc.el[kz][jp+1]*(this.pk[jp+1]-p);
+	
+		f*=1.0/(this.pk[jp+1]-this.pk[jp]);
+		
+	
+		f=Math.cbrt(p);
+		
+		return f;
+		
+	}
+	
+	public int getj(double[] array, double p){
+		
+		int j=0;
+		if(array.length==1) return j;
+		while(array[j+1]<p){j++;}
+		return j;
+	}
+	
+	public double shapeFuncAt(double z, double p){
+		
+		double f=0;
+		int jz=-1;
+		while(this.zk[jz+1]>z){jz++;}
+		
+		int jp=-1;
+		while(this.pk[jp+1]>z){jp++;}
+		
+		
+		double fQ11=shapeFunc(jz,jp);
+		double fQ12=shapeFunc(jz+1,jp);
+		double fQ21=shapeFunc(jz,jp+1);
+		double fQ22=shapeFunc(jz+1,jp+1);
+		
+		f+=fQ11*(this.pk[jp+1]-p)*(this.zk[jz+1]-z);
+		
+		f+=fQ21*(p-this.pk[jp])*(this.zk[jz+1]-z);
+		
+		f+=fQ12*(this.pk[jp+1]-p)*(z-this.zk[jz]);
+		
+		f+=fQ22*(p-this.pk[jp])*(z-this.zk[jz]);
+		
+		f*=1.0/(this.pk[jp+1]-this.pk[jp])*(this.zk[jz+1]-this.zk[jz]);
+		
+
+		return f;
+		
+	}
+	
+private double shapeFunc(int jz, int jp) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+public void simulateData(){
+
+
 		//ps.magnetize(10);
 		
-/*		int L=100;
-		int M=1;
+		int L=100;
+		int M=this.nHyst;
 		Vect B=new Vect(2*L);
 		Vect H=new Vect(2*L);
 		Vect[] pk=new Vect[M];
@@ -106,623 +294,183 @@ public class PlayModel {
 		double pkp=0;
 		double skp=0;
 		double Bp=0;
-		double Xs=4;
+		double Xs=1.5;
 		double pkps=0;
 
-		double[] zeta=new double[M];
-		double[] ita=new double[M];
+	//	this=new double[M];
+		//double[] ita=new double[M];
 		
 		for(int k=0;k<M;k++){
-			zeta[k]=1*(.5+k*1.0/M);
-			ita[k]=1*(.8+k*1.0/M);
-			pk[k]=new Vect(2*L);
-			sk[k]=new Vect(2*L);
-			}
+			pk[k]=new Vect(2*L+1);
+			//zeta[k]=1*k;
+		}
+	
 		
-		for(int i=-L;i<-L;i++){
+		for(int i=-L;i<L;i++){
 			int n=i+L;
-			//double x=i*4.0/L;
-			double x=10*Math.sin(2*Math.PI*n*1.0/L);
+	
+			double x=Math.exp(-.01*n)*Math.sin(2*Math.PI*n*1.0/L);
 			//double x=n*.2;
-			H.el[n]=x;
-			//double pkp=-1000;
-			for(int k=0;k<M;k++){
-			if(n>0) pkp=pk[k].el[n-1];
-			pkps=pks(pkp,Xs,zeta[k]);
-			pk[k].el[n]=pk(pkps,x,zeta[k]);
-			
-			B.el[n]+=func(pk[k].el[n]);
-		}
-		}
-		//util.plot(H,B);
-		
-		 B=new Vect(2*L);
-		 H=new Vect(2*L);
-		
-		for(int i=-L;i<-L;i++){
-			int n=i+L;
-			//double x=i*4.0/L;
-			double x=Math.sin(2*Math.PI*i*1.0/L)+0*Math.sin(12*Math.PI*i*1.0/L);
+			//x=this.pk[i];
 			
 			B.el[n]=x;
-			
-			if(n>0){
-				Bp=B.el[n-1];
-			
-			}
-			for(int k=0;k<M;k++){
-			if(n>0){
-				skp=sk[k].el[n-1];
-			
-			}
-			sk[k].el[n]=sk(skp,B.el[n],Bp,ita[k]);
-			
-			H.el[n]=func2(sk[k].el[n]);
+			//double pkp=-1000;
+			for(int k=0;k<this.nHyst;k++){
+				
+			if(n>0) pkp=pk[k].el[n-1];
+
+			pk[k].el[n]=hystron1D(x,this.zk[k],pkp);
+		//	pk[k].el[n]=pk(x,this.zk[k],pkp);
+		
+			H.el[n]+=this.shapeFuncAt(k,pk[k].el[n]);
+			//H.el[n]+=this.func(pk[k].el[n]);
+	
 		}
 		}
-	*/
+
+
+		util.plot(B,H);
 	
 
 
 
+	
 	}
 	
-	public static Mat symLoop(Preisach ps,double Bpeak,int LinitMax, double Hmax){
+	public void distillData(){
+		
+		BH=new Mat[this.nTotCurves];
+		
+		Vect divBinit=new Vect().linspace(0, Bs, this.nTotCurves);
+		Vect divB=new Vect().linspace(Bs, -Bs, 2*this.nTotCurves);
+		//Vect[] divB=new Vect[this.nTotCurves];
+		
+		int L0=divB.length;
+		
+	/*	for(int i=0;i<divB.length;i++){
+			divB=new Vect(2*this.nTotCurves+1-2*i);
+		}
+		
+		=new Vect().linspace(Bs, -Bs, 2*this.nTotCurves);*/
+		int L=0;
+		
+		int ix=0;
+		
+		for(int i=0;i<this.nInit;i++){
+			
+			L=divBinit.length;
+			
+			BH[ix]=new Mat(L,2);
+		
+			for(int j=0;j<L;j++){
+
+					BH[ix].el[j]=this.gethbAsc(ix,divBinit.el[j]);
 				
-
-		int M=ps.M;
 		
-		double[] DM=new double[M];
-		
-		
-		for(int j=0;j<M;j++){
-
-			DM[j]=1;
+			}
+			
+			ix++;
 		}
 		
 
-	
-		
-
-/*		Vect seqInitial0=new Vect().linspace(0, Math.sqrt(Hs), LinitMax);
-		Vect seqInitial1=seqInitial0.times(seqInitial0);*/
-		
-		Vect seqInitial1=new Vect().linspace(0, Hmax, LinitMax);
-
-		
-		Vect H=new Vect(LinitMax);
-		Vect B=new Vect(LinitMax);
-		
-		int Linit=0;
-		
-		for(int i=0;i<seqInitial1.length;i++){
+		for(int i=0;i<this.nMajor;i++){
 			
-			H.el[i]=seqInitial1.el[i];
-	
-			if(i==0) 
-				{
-				B.el[i]=0;
-				continue;
-				}
+			L=divB.length;
 			
-			for(int j=0;j<M;j++)
-			{
+			BH[ix]=new Mat(L,2);
+		
+			for(int j=0;j<L;j++){
+			
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>ps.a[j][1]){
-					if(!ps.on[j]){
-						B.el[i]+=ps.DB*DM[j];
-						ps.on[j]=true;
-					}
-					}
-				else if(H.el[i]>H.el[i-1]  && H.el[i]<ps.a[j][0] ){
-				
-					if(ps.on[j]){
-						B.el[i]-=ps.DB*DM[j];;
-						ps.on[j]=false;
-					}
-		
-					}
-
-				
-			}
-			if(	Linit>0) 
-				B.el[Linit]+=B.el[Linit-1];
-			
-		
-		
-			
-			if(B.el[Linit]>=ps.Bs-ps.eps){
-				H.el[Linit]=ps.Hs;
-				B.el[Linit]=ps.Bs;
-				util.pr(i);
-		
-				Linit++;
-				break;
+				BH[ix].el[j]=this.gethbDesc(ix,divB.el[j]);
+				//util.hshow(BH[ix].el[j]);
 			}
 			
-			Linit++;
-
-			}
-
-
-		
-		Vect seqInitial=new Vect(Linit);
-		for(int i=0;i<seqInitial.length;i++){
-			seqInitial.el[i]=seqInitial1.el[i];
-				}
-
-	
-		Vect seqHdown=new Vect(2*Linit-2);
-
-		for(int i=0;i<seqHdown.length;i++){
-			if(i<Linit-1)
-			seqHdown.el[i]=seqInitial.el[Linit-i-2];
-			else
-			seqHdown.el[i]=-seqInitial.el[i-Linit+2];
+			ix++;
 		}
-
-		Vect seqHup=new Vect(seqHdown.length-1);
-		for(int i=0;i<seqHup.length;i++)
-			seqHup.el[i]=seqHdown.el[seqHdown.length-2-i];
-
-		Vect seqH=seqInitial.aug(seqHdown).aug(seqHup);
 		
-	
 
-	
-		ps.demagnetize(50);
+		for(int i=0;i<this.nSym;i++){
+			
+			L=divB.length-2*i;
+			
+			BH[ix]=new Mat(L,2);
+		
+			for(int j=i;j<L0-i;j++){
 
-		Mat BH1=ps.getCurve(seqH, 0);
-		
-		Mat BH=new Mat(BH1.nRow-Linit+2,2);
-		
-		for(int i=0;i<BH.nRow-1;i++){
-			BH.el[i][0]=BH1.el[i+Linit-1][0];
-			BH.el[i][1]=BH1.el[i+Linit-1][1];
+				BH[ix].el[j-i]=this.gethbDesc(ix,divB.el[j]);
+			
+			}
+			
+			ix++;
 		}
-
-		BH.el[BH.nRow-1][0]=BH1.el[Linit-1][0];
-		BH.el[BH.nRow-1][1]=BH1.el[Linit-1][1];
-
-
+	
 		
-		return BH;
+	
+	
 	}
 	
-	public static Mat symLoopHalf(Preisach ps,double Bpeak,int LinitMax,double Hmax){
-		
-		int M=ps.M;
-		
-		double[] DM=new double[M];
-		
-		
-		for(int j=0;j<M;j++){
-
-			DM[j]=1;
-		}
-		
-
-		
-		/*		Vect seqInitial0=new Vect().linspace(0, Math.sqrt(Hs), LinitMax);
-		Vect seqInitial1=seqInitial0.times(seqInitial0);*/
-		
-		Vect seqInitial1=new Vect().linspace(0, Hmax, LinitMax);
-
+	public double[] gethbDesc(int i,double B ){
+		double[] hb=new double[2];
+			int L=this.BHraw[i].nRow;
 	
-		
-		Vect H=new Vect(LinitMax);
-		Vect B=new Vect(LinitMax);
-		
-		int Linit=0;
-		
-		for(int i=0;i<seqInitial1.length;i++){
 			
-			H.el[i]=seqInitial1.el[i];
-	
-			if(i==0) 
-				{
-				B.el[i]=0;
-				continue;
-				}
+			if(B>=this.BHraw[i].el[0][1]){
+				hb=BHraw[i].el[0]; 
 			
-			for(int j=0;j<M;j++)
-			{
-
-				if(H.el[i]>H.el[i-1] && H.el[i]>ps.a[j][1]){
-					if(!ps.on[j]){
-						B.el[i]+=ps.DB*DM[j];
-						ps.on[j]=true;
-					}
-					}
-				else if(H.el[i]>H.el[i-1]  && H.el[i]<ps.a[j][0] ){
-				
-					if(ps.on[j]){
-						B.el[i]-=ps.DB*DM[j];;
-						ps.on[j]=false;
-					}
-		
-					}
-
-				
 			}
 			
-			if(	Linit>0) 
-				B.el[Linit]+=B.el[Linit-1];
-			
-		
-		
-			
-			if(B.el[Linit]>=Bpeak-ps.eps){
-				B.el[Linit]=Bpeak;
-				Linit++;
-				break;
+			else if(B<=this.BHraw[i].el[L-1][1]){
+				hb=BHraw[i].el[L-1]; 
 			}
+			else{	
+			int j=-1;
+			while(this.BHraw[i].el[j+1][1]>B){j++;}
+			double m1=(B-this.BHraw[i].el[j][1])/(this.BHraw[i].el[j+1][1]-this.BHraw[i].el[j][1]);
+			double dH=this.BHraw[i].el[j+1][0]-this.BHraw[i].el[j][0];
 			
-			Linit++;
-
+			double H=m1*dH+this.BHraw[i].el[j][0];
+			hb[0]=H; 
+			hb[1]=B; 
+			
+			
 			}
-
-
 		
-
-		
-		Vect seqInitial=new Vect(Linit);
-		for(int i=0;i<seqInitial.length;i++){
-			seqInitial.el[i]=seqInitial1.el[i];
-				}
-
-	
-	
-		Vect seqHdown=new Vect(2*Linit-2);
-
-		for(int i=0;i<seqHdown.length;i++){
-			if(i<Linit-1)
-			seqHdown.el[i]=seqInitial.el[Linit-i-2];
-			else
-			seqHdown.el[i]=-seqInitial.el[i-Linit+2];
-		}
-
-	
-
-		Vect seqH=seqInitial.aug(seqHdown);
-		
-	
-
-	
-		ps.demagnetize(50);
-
-		Mat BH1=ps.getCurve(seqH, 0);
-
-		
-		Mat BH=new Mat(BH1.nRow-Linit+1,2);
-		
-		for(int i=0;i<BH.nRow;i++){
-			BH.el[i][0]=BH1.el[i+Linit-1][0];
-			BH.el[i][1]=BH1.el[i+Linit-1][1];
-		}
-
-
-		
-		return BH;
-	}
-public static Mat symMajorHalf(Preisach ps,int LinitMax){
-		
-		int M=ps.M;
-		
-		double[] DM=new double[M];
-		
-		
-		for(int j=0;j<M;j++){
-
-			DM[j]=1;
-		}
-		
-
-		
-		/*		Vect seqInitial0=new Vect().linspace(0, Math.sqrt(Hs), LinitMax);
-		Vect seqInitial1=seqInitial0.times(seqInitial0);*/
-		
-		ps.demagnetize(50);
-		ps.magnetize(50,0,ps.Hs);
-	
-		
-	//	Vect seqH=new Vect().linspace(ps.Hs, -ps.Hs, LinitMax);
-
-		Vect seqH=new Vect().linspace(0, ps.Hs/2, 100);
-	
-		Mat BH1=ps.getCurve(seqH, ps.Bs);
-
-	
-/*		Mat BH=new Mat(Linit,2);
-		
-		
-		for(int i=0;i<BH.nRow;i++){
-			BH.el[i][0]=H.el[i];
-			BH.el[i][1]=B.el[i];
-		}
-*/
-BH1.show();
-		
-		return BH1;
+			return hb;
 	}
 	
-	public static Mat initLoop(Preisach ps,double Bpeak,int LinitMax, double Hmax){
-		
-		int M=ps.M;
-		
-		double[] DM=new double[M];
-		
-		
-		for(int j=0;j<M;j++){
-
-			DM[j]=1;
-		}
-		
-
+	public double[] gethbAsc(int i,double B ){
+		double[] hb=new double[2];
+			int L=this.BHraw[i].nRow;
 	
-		
-
-		/*		Vect seqInitial0=new Vect().linspace(0, Math.sqrt(Hs), LinitMax);
-		Vect seqInitial1=seqInitial0.times(seqInitial0);*/
-		
-		Vect seqInitial1=new Vect().linspace(0, Hmax, LinitMax);
-	//	seqInitial1.show();
-	
-		Vect H=new Vect(LinitMax);
-		Vect B=new Vect(LinitMax);
-		
-		int Linit=0;
-		
-		for(int i=0;i<seqInitial1.length;i++){
+			if(B<=this.BHraw[i].el[0][1]){
+				hb=BHraw[i].el[0]; 
 			
-			H.el[i]=seqInitial1.el[i];
-	
-			if(i==0) 
-				{
-				B.el[i]=0;
-				continue;
-				}
-			
-			for(int j=0;j<M;j++)
-			{
-
-				if(H.el[i]>H.el[i-1] && H.el[i]>ps.a[j][1]){
-					if(!ps.on[j]){
-						B.el[i]+=ps.DB*DM[j];
-						ps.on[j]=true;
-					}
-					}
-				else if(H.el[i]>H.el[i-1]  && H.el[i]<ps.a[j][0] ){
-				
-					if(ps.on[j]){
-						B.el[i]-=ps.DB*DM[j];;
-						ps.on[j]=false;
-					}
-		
-					}
-
-				
 			}
 			
-			if(	Linit>0) 
-				B.el[Linit]+=B.el[Linit-1];
-			
-		
-		
-			
-			if(B.el[Linit]>=ps.Bs-ps.eps ){
-		
-				B.el[Linit]=ps.Bs;
-				Linit++;
-				break;
+			else if(B>=this.BHraw[i].el[L-1][1]){
+				hb=BHraw[i].el[L-1]; 
 			}
+			else{	
+			int j=-1;
+			while(this.BHraw[i].el[j+1][1]<B){j++;}
+			double m1=(B-this.BHraw[i].el[j][1])/(this.BHraw[i].el[j+1][1]-this.BHraw[i].el[j][1]);
+			double dH=this.BHraw[i].el[j+1][0]-this.BHraw[i].el[j][0];
 			
-			Linit++;
-	
-
+			double H=m1*dH+this.BHraw[i].el[j][0];
+			hb[0]=H; 
+			hb[1]=B; 
+			
+			
 			}
-
 		
-		Mat BH=new Mat(Linit,2);
-		
-		for(int i=0;i<BH.nRow;i++){
-			BH.el[i][0]=H.el[i];
-			BH.el[i][1]=B.el[i];
-		}
-
-		
-		return BH;
+			return hb;
 	}
 	
-	public static void curves()
-	{
 
-		int M=1000;
-		double mean=200;
-		double width=500;
-		double Hs=1000;
-		
-		Preisach ps=new Preisach(M,mean,width,Hs,2,3564656);
-		ps.demagnetize(10);
-		
-		
-		int L=10000;
-		
-		Vect B=new Vect(2*L+1);
-		Vect H=new Vect(2*L+1);
-		
-		double[] DM=new double[M];
-
-		
-		for(int j=0;j<M;j++){
-
-			
-			DM[j]=1;
-		}
-		
-
-		 double Bs=2;
-		double Bs1=2*Bs/M;
-
-
-			
-		 B=new Vect(2*L+1);
-		 H=new Vect(2*L+1);
-		
-		for(int i=-L;i<=L;i++){
-			
-			int n=i+L;
-			//double x=(.1+.001*n)*Math.sin(20*Math.PI*i*1.0/L);
-			double x=Math.sin(2*Math.PI*i*1.0/L)-.0*Math.cos(8*Math.PI*i*1.0/L)+.0*Math.cos(12*Math.PI*i*1.0/L);
-		
-			x*=500;
-			
-/*			if(n<=500)
-			x=n*.5;
-			else if(n<=700)
-				x=250-(n-500)*.5;
-			else x=150+(n-700)*.5;*/
-			
-			
-			H.el[n]=x;
-	
-			if(n==0) 
-				{
-				B.el[n]=0;
-				continue;
-				}
-			
-			for(int j=0;j<M;j++)
-			{
-
-				if(H.el[n]>H.el[n-1] && H.el[n]>ps.a[j][1]){
-					if(!ps.on[j]){
-					B.el[n]+=Bs1*DM[j];
-					ps.on[j]=true;
-					}
-					}
-				else if(H.el[n]<H.el[n-1] && H.el[n]<ps.a[j][0] ){
-				
-					if(ps.on[j]){
-						B.el[n]-=Bs1*DM[j];;
-						ps.on[j]=false;
-					}
-		
-					}
-		
-					
-				
-			}
-			if(n>0) 
-			B.el[n]+=B.el[n-1];
-
-			//if(i<10) util.pr(x+"  "+B.el[n]);
-			}
-
-	
-	//util.show(a);
-		util.plot(H,B);
-	}
-
-	
-	public static void reversal()
-	{
-
-		
-		
-		int M=1000;
-		int L=8000;
-		
-		Vect B=new Vect(L);
-		Vect H=new Vect(L);
-		Random r=new Random(3564656);
-		
-		double[][] a=new double[M][2];
-		boolean[] on=new boolean[M];
-		
-		for(int j=0;j<M;j++){
-			/*a[j][0]=30*r.nextGaussian()-100;//*(.5-r.nextGaussian());
-			a[j][1]=30*r.nextGaussian()+100;//*(.5+.2*r.nextGaussian());
-*/			double am=500*r.nextGaussian();
-			double d=500*r.nextDouble();
-			a[j][0]=am-d/2;
-			a[j][1]=am+d/2;
-		}
-		
-	/*	 B=new Vect(2*L+1);
-		 H=new Vect(2*L+1);
-		*/
-		 double Bs=2;
-		double Bs1=2*Bs/M;
-		
-		double Hs=1000;
-	
-		int P=10;
-		int Q=10;
-		
-		double[][] Ev=new double[P][Q];
-		
-	
-		//
-		double dH= 16*Hs/L;
-		
-		int cp=1;
-		H.el[0]=-Hs;
-		B.el[0]=-Bs;
-		
-
-		
-		double[] Ha=new double[P];
-		for(int p=0;p<P;p++)
-			Ha[p]=-Hs+Hs*2.0*p/P;
-		
-		int p=0;
-		for(int i=1;i<L;i++){
-	
-		if(i>1){
-		if(cp==1 && H.el[i-1]>Ha[p] )	{cp=-1; p++;}
-			
-		else if(cp==-1 && H.el[i-1]<=-Hs )	cp=1;
-		//double x=-1000*Math.cos(4*Math.PI*i*1.0/L);
-		}
-		
-		H.el[i]=H.el[i-1]+dH*cp;
-
-				
-			for(int j=0;j<M;j++)
-			{
-
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
-					if(!on[j]){
-					B.el[i]+=Bs1;
-					on[j]=true;
-					}
-					}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
-				
-					if(on[j]){
-						B.el[i]-=Bs1;
-					on[j]=false;
-					}
-		
-					}
-		
-					
-				
-			}
-	
-			B.el[i]+=B.el[i-1];
-			}
-
-		util.plot(H);
-	//util.show(a);
-		util.plot(H,B);
-
-	}
-	
 	public static double func(double x)
 	{
-		
+		util.pr(x);
 	double y=Math.cbrt(x);
 
 		return y;
@@ -740,7 +488,7 @@ BH1.show();
 
 	}
 	
-	public static double pk(double pkp,double H,double zeta)
+	public static double pk(double H,double zeta,double pkp)
 	{
 		
 	double y=0;
@@ -751,12 +499,14 @@ BH1.show();
 
 	}
 	
-	public static double pks(double pkp,double H,double zeta)
+	public static double hystron1D(double B,double zeta,double pp)
 	{
 		
 	double y=0;
 	
-	y=Math.max(Math.min(pkp,H-zeta),-H+zeta);
+	if(zeta==0) y=B;
+	else
+	y=B-(B-pp)/Math.max(Math.abs(B-pp)/zeta,1);
 	
 	return y;
 
