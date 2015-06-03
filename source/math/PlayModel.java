@@ -36,7 +36,7 @@ public class PlayModel {
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataH";
 
-		pm.createData();
+		pm.createData(file);
 
 		try {
 			Thread.sleep(200);
@@ -45,7 +45,7 @@ public class PlayModel {
 			e.printStackTrace();
 		}
 
-		pm.loadData(file);
+		//pm.loadData(file);
 
 		//pm.simulateData();
 		/*		for(int i=0;i<pm.BH.length;i++)
@@ -94,6 +94,165 @@ public class PlayModel {
 
 
 	}
+
+
+
+	public void createData(String file){
+
+
+		double Bs=1.8;
+		double Hs=1600;
+
+		int nInit=1;
+		int nMajor=1;
+		int nSymLoops=29;
+		int nDescending=0;
+		int nAscending=0;
+		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
+
+		int nAni=18;
+		int Lani=18;
+		int Mp=3000;
+		double mean=200;
+		double width=500;
+
+		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
+
+		Mat[] BHs=new Mat[nTot];
+
+		int ix=0;
+
+		for(int i=0;i<nInit;i++){
+
+			BHs[ix++]=ps.initial(1000);
+
+
+			//BHs[ix++]=ps.symMajorFull(200);
+
+		}
+
+		for(int i=0;i<nMajor;i++){
+			//BHs[ix++]=ps.symMajorFull(500);
+			BHs[ix++]=ps.symMajorDesc(1000);
+
+		}
+
+
+
+		for(int i=0;i<nSymLoops;i++){
+			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
+
+			//BHs[ix++]=ps.symFull(Bp,500);
+			BHs[ix++]=ps.symDesc(Bp,1000);
+			//util.pr(ps.getRes());
+
+		}
+
+
+		for(int i=0;i<nDescending;i++){
+
+			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
+			BHs[ix++]=ps.revDesc(Bp,1000);
+		}
+
+		for(int i=0;i<nAscending;i++){
+
+			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
+			BHs[ix++]=ps.revAsc(Bp,1000);
+		}
+
+		
+
+		Hs=800;
+		
+
+		
+		Vect B=new Vect(Lani);
+		
+		for(int i=0;i<Lani;i++)
+			B.el[i]=i*.1;
+		
+		Mat[] BHani=new Mat[nAni];
+		for(int i=0;i<nAni;i++){
+			ps.kk=i;
+			Mat BH2=ps.initial(2000);
+			
+
+			BHani[i]=new Mat(Lani,2);
+		
+			for(int j=0;j<Lani;j++){
+				BHani[i].el[j][1]=B.el[j];
+				BHani[i].el[j][0]=this.getH(BHs[0], B.el[j]);
+			}
+
+			
+		}
+
+
+	util.plotBunch(BHani);
+
+
+
+
+
+
+
+
+		try{
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+
+			pwBun.println(1+"\t"+1);
+			pwBun.println("*Bs*Hs*");
+			pwBun.println(Bs+"\t"+Hs);
+
+			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+
+			for(int i=0;i<nTot;i++){
+				pwBun.println("*xxx");
+				pwBun.println(BHs[i].nRow);
+				for(int j=0;j<BHs[i].nRow;j++)
+					pwBun.println(BHs[i].el[j][0]+"\t"+BHs[i].el[j][1]);
+			}
+
+			pwBun.println("* ----- 回転ヒステリシス損");
+			pwBun.println("* B数 *");
+			pwBun.println("0");
+			pwBun.println("* B * 損失");
+			pwBun.println("* ----- 異方性");
+			pwBun.println("* B数 * 角度数 *");
+			pwBun.println(Lani+"\t"+nAni);
+			pwBun.println("* B * H ･････ *　磁化容易軸");
+			
+			for(int i=0;i<Lani;i++){
+				pwBun.print(B.el[i]+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(BHani[j].el[i][0]+"\t");
+				}
+				pwBun.println();
+			}
+			pwBun.println("* B * H ･････ *　磁化困難軸");
+			for(int i=0;i<Lani;i++){
+				pwBun.print(B.el[i]+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(BHani[j].el[i][0]+"\t");
+				}
+				pwBun.println();
+			}
+				
+
+			util.pr("Simulated hysteresis data was written to "+file+".");
+
+			pwBun.close();
+		}
+		catch(IOException e){}
+
+
+
+
+
+	}
+	
 
 	public void doIdentification(){
 		this.shapeFunc=new Mat(nHyst+1,nHyst+1);
@@ -173,121 +332,6 @@ public class PlayModel {
 
 	}
 
-
-	public void createData(){
-
-
-		double Bs=1.5;
-		double Hs=1600;
-
-		int nInit=1;
-		int nMajor=1;
-		int nSymLoops=2;
-		int nDescending=0;
-		int nAscending=0;
-		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
-
-		int Mp=3000;
-		double mean=200;
-		double width=500;
-
-		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
-
-		Mat[] BHs=new Mat[nTot];
-
-		int ix=0;
-
-		for(int i=0;i<nInit;i++){
-
-			BHs[ix++]=ps.initial(1000);
-
-
-			//BHs[ix++]=ps.symMajorFull(200);
-
-		}
-
-		for(int i=0;i<nMajor;i++){
-			//BHs[ix++]=ps.symMajorFull(500);
-			BHs[ix++]=ps.symMajorDesc(1000);
-
-		}
-
-
-
-		for(int i=0;i<nSymLoops;i++){
-			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
-
-			//BHs[ix++]=ps.symFull(Bp,500);
-			BHs[ix++]=ps.symDesc(Bp,1000);
-			//util.pr(ps.getRes());
-
-		}
-
-
-		for(int i=0;i<nDescending;i++){
-
-			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
-			BHs[ix++]=ps.revDesc(Bp,1000);
-		}
-
-		for(int i=0;i<nAscending;i++){
-
-			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
-			BHs[ix++]=ps.revAsc(Bp,1000);
-		}
-
-
-
-
-
-		Hs=800;
-
-
-
-		util.plotBunch(BHs);
-
-		//String hysdatafile=System.getProperty("user.dir") + "\\hys_dataH.txt";
-		String hysdatafile="C:\\Works\\HVID\\hys_dataH";
-
-
-
-		try{
-			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(hysdatafile)));		
-
-			pwBun.println(1+"\t"+1);
-			pwBun.println("*Bs*Hs*");
-			pwBun.println(Bs+"\t"+Hs);
-
-			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
-			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
-
-			for(int i=0;i<nTot;i++){
-				pwBun.println("*xxx");
-				pwBun.println(BHs[i].nRow);
-				for(int j=0;j<BHs[i].nRow;j++)
-					pwBun.println(BHs[i].el[j][0]+"\t"+BHs[i].el[j][1]);
-			}
-
-			pwBun.println("* ----- 回転ヒステリシス損");
-			pwBun.println("* B数 *");
-			pwBun.println("0");
-			pwBun.println("* B * 損失");
-			pwBun.println("* ----- 異方性");
-			pwBun.println("* B数 * 角度数 *");
-			pwBun.println(0+"\t"+0);
-
-			util.pr("Simulated hysteresis data was written to "+hysdatafile+".");
-
-			pwBun.close();
-		}
-		catch(IOException e){}
-
-
-
-
-
-	}
-
 	public double shapeFuncAt(int kz, double p){
 
 
@@ -319,6 +363,32 @@ public class PlayModel {
 		return f;
 
 	}
+	
+	public  double getH(Mat BH,double B){
+
+		if(B<=0)
+			return 0;
+		
+		int i=BH.nRow-1;
+		if(B>=BH.el[i][1])
+			return BH.el[i][0]+(B-BH.el[i][1])*(BH.el[i][0]-BH.el[i-1][0])/(BH.el[i][1]-BH.el[i-1][1]);;
+			//
+			//return BH.el[BH.nRow-1][0];
+		
+		int j=0;
+
+		while(BH.el[j+1][1]<B){j++;}
+		
+		double cc=(BH.el[j+1][0]-BH.el[j][0])/(BH.el[j+1][1]-BH.el[j][1]);
+
+		//double H= BH.el[j][0];
+		double H=BH.el[j][0]+(B-BH.el[j][1])*cc;
+
+		
+		return H;
+				
+	}
+	
 
 	public int getj(double[] array, double p){
 

@@ -45,7 +45,7 @@ public class MeshFactory {
 	//	mf.reRegion();
 		int[] nr={1,3,4};
 		//mf.dropUnusedNodes();
-		//mf.getNeuMeshTri();
+		//mf.getNeuMeshQ();
 //jjjj
 //	mf.extractReg(nr); mf.dropUnusedNodes();
 		//mf.extendFlip(0);
@@ -59,9 +59,64 @@ public class MeshFactory {
 		
 	//	mf.RCM();
 	//	mf.revolveLine(v, regs, 2, PI/18);
+
+		int sib=0;
+		
+		
+		if(sib==1){
+			
+			int f1=1;
+			Model model2=new Model();
+			
+		//	if(f1==0){
+	 b1=System.getProperty("user.dir") + "\\EMSsibc.txt";
+ b2=System.getProperty("user.dir") + "\\EMSsibcFlux.txt";
+ Model model=new Model(b1);
+		model.loadFlux(b2);
+			//}
+			//else if(f1==1){
+	 b1=System.getProperty("user.dir") + "\\EMS.txt";
+	 model2=new Model(b1);
+	 b2=System.getProperty("user.dir") + "\\EMSFlux.txt";
+		//	model.loadFlux(b2);
+	 model2.loadFlux(b2);
+
+		//	}
+		
+		
+	
+		
+		
+		for(int i=1;i<=model.numberOfElements;i++)
+			model.element[i].setB(model2.element[i].getB());
+		
+		model.writeB(System.getProperty("user.dir") + "\\EMSFluxxxxx.txt");
+
+		
+		Vect xx1=new Vect().linspace(.1, .6, 1000);
+		Vect[] B1=new Vect[xx1.length];
+
+		int n=0;
+		for(double x:xx1.el){
+			 B1[n]=model.getBAt(new Vect(x,0));
+			if(abs(B1[n].el[0])>1000)
+			{
+				 B1[n]=new Vect(model.dim);
+			}
+			n++;
+		}
+		util.pr(n);
+		Vect By=new Vect(n);
+		for(int i=0;i<n;i++)
+			By.el[i]=B1[i].el[1];
+		
+		util.plot(By);
+		}
 		
 		//mf.getNeuMeshQ();
-	//	mf.rotate(PI/2);
+	//	mf.getEMSolFlux(2);
+		
+			//	mf.rotate(PI/2);
 	//	mf.pileUpHexa(6, .005);
 		
 	//	mf.pileHelic(6*8, PI/4, .0125*18);
@@ -9153,7 +9208,7 @@ for(int j=0;j<bb.length;j++){
 	
 			}
 
-	for(int i=1;i<10000;i++)
+	for(int i=1;i<100000;i++)
 			{
 
 				line=br.readLine();
@@ -9279,7 +9334,8 @@ for(int j=0;j<bb.length;j++){
 
 
 			int nNodes=nnMax;
-			double scaleFactor=1.0;
+			double scaleFactor=1;
+			double scx=1000;
 			DecimalFormat formatter;
 			if(scaleFactor==1)
 				formatter= new DecimalFormat("0.000000000");
@@ -9303,7 +9359,7 @@ for(int j=0;j<bb.length;j++){
 				pwBun.println("//Number_of_Region");
 				pwBun.println(nRegions);
 				pwBun.println("//Factor");
-				pwBun.println(scaleFactor);
+				pwBun.println(scx);
 
 				for(int ir=1;ir<=nRegions;ir++)
 					for(int i=regEnd[ir][0];i<=regEnd[ir][1];i++){
@@ -9350,6 +9406,103 @@ for(int j=0;j<bb.length;j++){
 		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
 	}
 	
+	
+	
+	public void getEMSolFlux(int dim){
+
+		String regex="[ ,\\t]+";
+		String s=util.getFile();
+		try{
+			
+			String fout=System.getProperty("user.dir")+"\\EMSolFlux.txt";
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+			
+			
+			Mat BB=new Mat(100*1000,dim);
+			
+			int[] nx=new int[dim];;
+			
+	while(!br.readLine().startsWith("BMAG")){
+	
+			}
+	for(int k=0;k<6;k++)
+		line=br.readLine();
+	
+	int k=0;
+
+	
+			for(int i=1;i<18000;i++){
+				
+	
+		if(line.startsWith("-1")){
+			k++;
+			for(int j=0;j<8;j++)
+				line=br.readLine();
+
+		}
+		else
+		
+		sp=line.split(regex);
+			
+
+		double Bu=Double.parseDouble(sp[1]);
+		BB.el[nx[k]][k]=Bu;
+
+				line=br.readLine();
+			//	util.pr(nx[0]+" - "+Bu);
+
+			//	if(nx[k]<1783) BB.el[nx[k]][k]=nx[k];
+				
+				nx[k]++;
+				
+			
+
+				if(k==dim-1 && nx[k]==nx[k-1]){
+					break;
+				}
+				
+				
+
+	}
+
+
+
+	int Ne=nx[0];
+	pwBun.println("flux");
+	pwBun.println(dim);
+	pwBun.println(Ne);
+	
+	for(int j=0;j<Ne;j++){
+		for(int p=0;p<dim;p++)
+		pwBun.print(BB.el[j][p]+"\t");
+		
+		pwBun.println();
+	}
+	
+		
+	br.close();
+	fr.close();
+	pwBun.close();
+	
+	System.out.println("Flux was written to "+fout);
+	
+		}
+
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		
+
+	
+	
+	
+	}
 	
 	public void getNeuMeshTri(){
 		String regex="[ ,\\t]+";
@@ -9563,186 +9716,7 @@ for(int j=0;j<bb.length;j++){
 	}
 	
 	
-public void getNeuMeshTribb(){
-		String regex="[ ,\\t]+";
-		String s=util.getFile();
-		try{
-			File f=new File(s);
-			FileReader fr=new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			String line;
-			String[] sp=new String[15];
-			for(int i=1;i<32;i++)
-			{
-				line=br.readLine();
 
-
-			}
-			int nnMax=0,nn=1;
-			Vect[] coord1=new Vect[100000];
-			for(int i=1;i<100000;i++)
-			{
-
-				line=br.readLine();
-
-				sp=line.split(regex);
-				if(sp.length!=15) break;
-
-				//
-				nn=Integer.parseInt(sp[0]);
-				if(nn>nnMax) nnMax=nn;
-				coord1[nn]=new Vect(Double.parseDouble(sp[11]),Double.parseDouble(sp[12]),Double.parseDouble(sp[13]));
-
-			}
-
-
-
-			int[][] vernumb=new int[10*nnMax+1][3];
-			int[] nReg=new int[90000+1];
-			int ix=0;
-		
-				line=br.readLine();
-				line=br.readLine();
-			
-
-			sp=new String[13];
-			for(int i=1;i<=vernumb.length;i++)
-			{
-				line=br.readLine();
-				sp=line.split(regex);
-				if(sp.length!=13) break;
-				ix++;
-				nReg[ix]=Integer.parseInt(sp[2]);
-			
-				line=br.readLine();
-				sp=line.split(regex);
-				
-				line=br.readLine();
-				line=br.readLine();
-				line=br.readLine();
-				line=br.readLine();
-				line=br.readLine();
-
-				vernumb[ix][0]=Integer.parseInt(sp[0]);
-				vernumb[ix][1]=Integer.parseInt(sp[1]);
-				vernumb[ix][2]=Integer.parseInt(sp[2]);
-				for(int j=0;j<3;j++){
-					if(vernumb[ix][j]==0) {
-						ix--;
-						break;
-					}
-				}
-
-			}
-			
-			int nEl=ix;
-		
-		
-			
-			List<Integer> list1=new ArrayList<Integer>();
-			for(int i=1;i<nReg.length;i++){
-				if(nReg[i]!=0)
-					list1.add(nReg[i]);
-			}
-		
-				Set<Integer> set = new HashSet<Integer>(list1);
-				
-				ArrayList<Integer> regNumbs = new ArrayList<Integer>(set);
-				
-				int nRegions=regNumbs.size();
-				
-				int[] regNumber=new int[nRegions+1];
-				for(int ir=1;ir<=nRegions;ir++)
-					regNumber[ir]=regNumbs.get(ir-1);
-				
-
-					
-			int[] elOrd=new int[nEl+1];
-			int[][]regEnd=new int[nRegions+1][2];
-			
-			int nx=0;
-			for(int ir=1;ir<=nRegions;ir++)
-			{
-				regEnd[ir][0]=nx+1;
-				for(int i=1;i<=nEl;i++)
-					if(nReg[i]==regNumber[ir])
-						elOrd[++nx]=i;
-				regEnd[ir][1]=nx;
-				
-			}
-
-
-			int nNodes=nnMax;
-			double scaleFactor=1.0;
-			DecimalFormat formatter;
-			if(scaleFactor==1)
-				formatter= new DecimalFormat("0.000000000");
-			else 
-				formatter= new DecimalFormat("0.000000");
-			
-
-			try{
-
-
-				String fout=System.getProperty("user.dir")+"\\triangExtracted.txt";
-				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
-
-				pwBun.println("triangle");
-				pwBun.println("//Number_of_Node");
-				pwBun.println(nNodes);
-
-				pwBun.println("//Number_of_Element");
-				pwBun.println(nEl);
-
-				pwBun.println("//Number_of_Region");
-				pwBun.println(nRegions);
-				pwBun.println("//Factor");
-				pwBun.println(scaleFactor);
-
-				for(int ir=1;ir<=nRegions;ir++)
-					for(int i=regEnd[ir][0];i<=regEnd[ir][1];i++){
-						for(int j=0;j<3;j++){
-							int mpn=vernumb[elOrd[i]][j];
-							pwBun.print(mpn+",");
-						}
-					
-						pwBun.println();
-					}
-
-			Vect v;
-			for(int i=1;i<=nnMax;i++){ 
-				if(coord1[i]==null)
-					v=new Vect(0,0);
-				else
-					v=coord1[i].deepCopy();
-						for(int j=0;j<2;j++){
-							pwBun.print(formatter.format(v.el[j]*scaleFactor)+" ,");
-						}
-					pwBun.println();	
-
-				}
-
-				for(int ir=1;ir<=nRegions;ir++)
-					pwBun.println(regEnd[ir][0]+","+regEnd[ir][1]+","+"region"+ir);
-				
-				pwBun.close();
-				br.close();
-				fr.close();
-				
-				System.out.println();
-				System.out.println(" Bun data was written to:");
-				System.out.println("    "+fout);
-			}
-			catch(IOException e){ System.err.println("error");}
-
-		
-		
-		}
-		
-		
-
-		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
-	}
 
 public void pileHelic(int K,double dtt, double pitch){
 
