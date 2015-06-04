@@ -1,4 +1,4 @@
-package math;
+package PlayModel;
 
 import static java.lang.Math.sqrt;
 
@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import math.Mat;
+import math.util;
 import fem.Model;
 
 

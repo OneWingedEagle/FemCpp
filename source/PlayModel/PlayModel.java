@@ -1,6 +1,4 @@
-package math;
-
-import io.HystDataLoader;
+package PlayModel;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -105,7 +103,7 @@ public class PlayModel {
 
 		int nInit=1;
 		int nMajor=1;
-		int nSymLoops=29;
+		int nSymLoops=0;
 		int nDescending=0;
 		int nAscending=0;
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
@@ -189,7 +187,8 @@ public class PlayModel {
 		}
 
 
-	util.plotBunch(BHani);
+	//util.plotBunch(BHani);
+	util.plotBunch(BHs);
 
 
 

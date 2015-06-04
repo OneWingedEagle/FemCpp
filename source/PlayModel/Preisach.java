@@ -1,4 +1,4 @@
-package math;
+package PlayModel;
 
 import java.util.Random;
 import static java.lang.Math.*;
@@ -11,7 +11,7 @@ public class Preisach {
 	public Random r;
 	public int M,nphi,kk,dim;
 	public long seed;
-	public double cfm,cfw,mean,width,Hs,Bs,DB,DBv;
+	public double cfm,cfw,mean,width,Hs,Bs,DB,DB2D,projCoef;
 	public boolean[][] on;
 	public double[] phi;
 	public double[][][] a;
@@ -33,6 +33,7 @@ public class Preisach {
 		this.Bs=Bs;
 		this.DB=Bs/M;
 		
+		
 		dim=2;
 
 		// int n1=9;
@@ -43,10 +44,18 @@ public class Preisach {
 		 cfw=0;
 		 
 		 nphi=18;
+		 
+		 double dphiRad=PI/nphi;
+		 
+		 double sum=0;
+		 for(int i=0;i<nphi;i++)
+			 sum+=cos(i*dphiRad);
+		 
+		 projCoef=sum;
+	
+		 DB2D=this.DB/sum;
 	
 			 
-		 this.DBv=DB/nphi;
-
 		r=new Random(3564656);
 
 		K=new double[M][nphi];
@@ -82,6 +91,7 @@ public class Preisach {
 		Random r=new Random();
 		long ss=this.seed;
 		Preisach pr=new Preisach(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
+		pr.projCoef=this.projCoef;
 		
 		return pr;
 	}
@@ -110,39 +120,50 @@ public class Preisach {
 		int dim=2;
 		
 		int steps=360;
-		int nc=2;
+		int nc=1;
 		double t=0;
 		double dt=1.0/steps;
 		int L=nc*steps;
 		Mat H=new Mat(L,dim);
 		int jx=0;
 		for (int n = 0; n <nc; ++n)
-		for (int i = 0; i <steps; ++i){
+		for (int i = 0; i <steps/4; ++i){
 	
 			double Hm=(1-exp(-4*t/nc))*Hs/4;
 			
-		Hm=Hs/4;
-			H.el[jx][0] = Hm*cos(2 * PI*t);
+		Hm=Hs;
+			H.el[jx][0] = Hm*sin(2 * PI*t);
 			H.el[jx][1] = Hm*sin(2 * PI*t);
 			t+=dt;
 			jx++;
 			
 		}
 
+
+	//	H1=H.getColVect(1);
+		
 	//	util.plot(H.el);
 		
 		
 		
-/*		Mat BHv=ps.getLocus2D(H);
+		Mat BHv=ps.getLocus2D(H);
 		
 		//BHv.show();
 		
-		Vect H1=BHv.getColVect(2);
-		Vect B1=BHv.getColVect(3);
+		Vect H1=BHv.getColVect(0);
+		Vect B1=BHv.getColVect(2);
 		
-		util.plot(H1,B1);*/
-	/*	Mat BHp=ps.getCurve(H1);
-		BHp.show();*/
+		Vect Hn=new Vect(L);
+		Vect Bn=new Vect(L);
+		for (int i = 0; i <L;i++){
+			Hn.el[i]=new Vect(BHv.el[i][0],BHv.el[i][1]).norm();
+			Bn.el[i]=new Vect(BHv.el[i][2],BHv.el[i][3]).norm();
+		}
+		
+		util.plot(Hn,Bn);
+/*		Mat BHp=ps.getCurve(H1);
+		BHp.show();
+		util.plot(BHp.el);*/
 		
 		if(dim==1){
 		util.pr(ps.getRes());
@@ -415,92 +436,10 @@ public Mat getCurveX(Vect H){
 
 	}
 	
-/*	
-	public Mat getLocus(Mat H){
 
-		int dim=H.nCol;
-
-		int n1=9;
-		
-		
-		double dphi=0;
-		
-		if(n1>0) dphi=PI/(2*n1);
-		
-		int L=H.nRow;
-		
-		Mat B=new Mat(L,2);
-
-		Vect Hn=new Vect(L);
-
-		for(int i=0;i<L;i++){
-			if(i==0){
-				B.el[i]=new double[dim];
-
-				continue;
-			}
-
-	
-			Vect dB=new Vect(dim);
-			Vect eph=new Vect(dim);
-			
-			for(int k=-n1;k<=n1;k++){
-	
-				//int kp=k+n1;
-				
-				double phirad=k*dphi;
-				
-	
-				
-				eph.el[0]=Math.cos(phirad);
-				eph.el[1]=Math.sin(phirad);
-			//	eph.hshow();
-
-				Hn.el[i]=new Vect(H.el[i]).dot(eph);
-				
-				//util.pr(Hn.el[i]);
-				
-			//if(k==0)			
-			for(int j=0;j<M;j++)
-			{
-
-				
-				if(Hn.el[i]>Hn.el[i-1] && Hn.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB=dB.add(eph.times(this.DB*K[j][kk]));
-						on[j][kk]=true;
-					}
-				}
-				else if(Hn.el[i]<Hn.el[i-1] && Hn.el[i]<a[j][0][kk] ){
-
-					if(on[j][kk]){
-						dB=dB.sub(eph.times(this.DB*K[j][kk]));
-						on[j][kk]=false;
-					}
-				}
-
-			}
-			
-
-			
-			B.el[i][0]=B.el[i-1][0]+2*dB.el[0]/(0*n1+1);
-			B.el[i][1]=B.el[i-1][1]+2*dB.el[1]/(0*n1+1);
-		}
-		}
-
-		Mat BH=new Mat(L,4);
-		for(int i=0;i<L;i++){
-			BH.el[i][0]=H.el[i][0];
-			BH.el[i][1]=H.el[i][1];
-			BH.el[i][2]=B.el[i][0];
-			BH.el[i][3]=B.el[i][1];
-		}
-
-		return BH;
-
-	}*/
 	
 	public Mat getLocus2D(Mat H){
+
 
 		int dim=H.nCol;
 
@@ -522,12 +461,15 @@ public Mat getCurveX(Vect H){
 			for(int k=0;k<n1;k++){
 				
 				int kp=k;
+				kp=0;
+			//	kp=0;
 				
-				pr[kp]=this.deepCopy();
+		/*		pr[kp]=this.deepCopy();
 				
 				pr[kp].kk=kp;
+				pr[kp].kk=kp;
 
-				pr[kp].demagnetize();
+				pr[kp].demagnetize();*/
 			
 				double phirad= phi[kp]*Math.PI/180;
 			
@@ -539,7 +481,8 @@ public Mat getCurveX(Vect H){
 				
 			
 				
-				Mat BH1=pr[kp].getCurve(Hn);
+				//Mat BH1=pr[kp].getCurve(Hn);
+				Mat BH1=this.getCurve(Hn);
 				
 				Bn[kp]=BH1.getColVect(1);
 				
@@ -552,10 +495,12 @@ public Mat getCurveX(Vect H){
 					BH.el[i][3]=BH.el[i][3]+Bn[kp].el[i]*er.el[1];
 				}
 			}
+			
+			util.pr(projCoef);
 
 			for(int i=0;i<L;i++){
-				BH.el[i][2]*=1.0/n1;
-				BH.el[i][3]*=1.0/n1;
+				BH.el[i][2]*=1.0/n1*projCoef;
+				BH.el[i][3]*=1.0/n1*projCoef;
 				BH.el[i][0]=H.el[i][0];
 				BH.el[i][1]=H.el[i][1];
 			}

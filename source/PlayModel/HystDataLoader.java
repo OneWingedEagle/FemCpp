@@ -1,4 +1,4 @@
-package io;
+package PlayModel;
 
 import java.io.BufferedReader;
 
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import math.Mat;
-import math.PlayModel;
 import math.Vect;
 import math.util;
 import fem.*;

@@ -113,8 +113,11 @@ public class MeshFactory {
 		util.plot(By);
 		}
 		
-		//mf.getNeuMeshQ();
-	//	mf.getEMSolFlux(2);
+	//	mf.getNeuMeshQ();
+		//mf.getPostMeshQ();
+		mf.getEMSolFlux(2);
+		
+		//mf.modifyEMSolFlux(2);
 		
 			//	mf.rotate(PI/2);
 	//	mf.pileUpHexa(6, .005);
@@ -9406,6 +9409,224 @@ for(int j=0;j<bb.length;j++){
 		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
 	}
 	
+	public void getPostMeshQ(){
+		String regex="[ ,\\t]+";
+		String s=util.getFile();
+		try{
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+			
+/*	while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){
+	
+			}*/
+
+	for(int i=1;i<1000;i++)
+			{
+
+				line=br.readLine();
+				sp=line.split(regex);
+				//if(sp.length==15 && !sp[0].equals("0")) break;
+				if(sp.length>5) break;
+			
+				
+			}
+			
+	
+
+			int nnMax=0,nn=1;
+			Vect[] coord1=new Vect[1000000];
+			//int[] map=new int[1000000];
+			int nx=0;
+			for(int i=1;i<1000000;i++)
+			{
+				sp=line.split(regex);
+				
+				line=br.readLine();
+
+				if(sp.length!=14) break;
+
+			
+				nn=Integer.parseInt(sp[0]);
+				nx++;
+			
+			//	map[nn]=nx;
+		
+
+				coord1[nn]=new Vect(Double.parseDouble(sp[11]),Double.parseDouble(sp[12]),Double.parseDouble(sp[13]));
+				
+
+			}
+			
+			nnMax=nx;
+
+
+			int[][] vernumb=new int[10*nnMax+1][4];
+			int[] nReg=new int[1000000+1];
+			
+			for(int i=0;i<nReg.length;i++)
+				nReg[i]=-1;
+				
+			int ix=0;
+		
+				line=br.readLine();
+			//	line=br.readLine();
+			
+
+			sp=new String[13];
+			for(int i=1;i<=vernumb.length;i++)
+			{
+				line=br.readLine();
+
+				sp=line.split(regex);
+				if(sp.length<5) break;
+				ix++;
+				nReg[ix]=Integer.parseInt(sp[2]);
+				line=br.readLine();
+		
+				sp=line.split(regex);
+				
+				line=br.readLine();
+				line=br.readLine();
+				line=br.readLine();
+				line=br.readLine();
+				line=br.readLine();
+
+			/*	vernumb[ix][0]=map[Integer.parseInt(sp[0])];
+				vernumb[ix][1]=map[Integer.parseInt(sp[1])];
+				vernumb[ix][2]=map[Integer.parseInt(sp[2])];
+				vernumb[ix][3]=map[Integer.parseInt(sp[3])];*/
+				
+				vernumb[ix][0]=Integer.parseInt(sp[0]);
+				vernumb[ix][1]=Integer.parseInt(sp[1]);
+				vernumb[ix][2]=Integer.parseInt(sp[2]);
+				vernumb[ix][3]=Integer.parseInt(sp[3]);
+
+				for(int j=0;j<4;j++){
+					if(vernumb[ix][j]==0) {
+						if(j>0) vernumb[ix][j]=vernumb[ix][j-1];
+						//ix--;
+						break;
+					}
+				}
+
+			}
+			
+			int nEl=ix;
+
+		
+			
+			List<Integer> list1=new ArrayList<Integer>();
+			for(int i=1;i<nReg.length;i++){
+				if(nReg[i]!=-1)
+					list1.add(nReg[i]);
+			}
+		
+				Set<Integer> set = new HashSet<Integer>(list1);
+				
+				ArrayList<Integer> regNumbs = new ArrayList<Integer>(set);
+				
+				int nRegions=regNumbs.size();
+				
+				util.pr(nRegions);
+
+				
+				int[] regNumber=new int[nRegions+1];
+				for(int ir=1;ir<=nRegions;ir++)
+					regNumber[ir]=regNumbs.get(ir-1);
+				
+
+					
+			int[] elOrd=new int[nEl+1];
+			int[][]regEnd=new int[nRegions+1][2];
+			
+			 nx=0;
+			for(int ir=1;ir<=nRegions;ir++)
+			{
+				regEnd[ir][0]=nx+1;
+				for(int i=1;i<=nEl;i++)
+					if(nReg[i]==regNumber[ir])
+						elOrd[++nx]=i;
+				regEnd[ir][1]=nx;
+				
+			}
+
+
+			int nNodes=nnMax;
+			double scaleFactor=1;
+			double scx=1;
+			DecimalFormat formatter;
+			if(scaleFactor==1)
+				formatter= new DecimalFormat("0.000000000");
+			else 
+				formatter= new DecimalFormat("0.000000");
+			
+
+			try{
+
+
+				String fout=System.getProperty("user.dir")+"\\quadExtracted.txt";
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+				pwBun.println("quadrangle");
+				pwBun.println("//Number_of_Node");
+				pwBun.println(nNodes);
+
+				pwBun.println("//Number_of_Element");
+				pwBun.println(nEl);
+
+				pwBun.println("//Number_of_Region");
+				pwBun.println(nRegions);
+				pwBun.println("//Factor");
+				pwBun.println(scx);
+
+				for(int ir=1;ir<=nRegions;ir++)
+					for(int i=regEnd[ir][0];i<=regEnd[ir][1];i++){
+						for(int j=0;j<4;j++){
+							int mpn=vernumb[elOrd[i]][j];
+							pwBun.print(mpn+",");
+						}
+					
+						pwBun.println();
+					}
+
+			Vect v;
+			for(int i=1;i<=nnMax;i++){ 
+				if(coord1[i]==null)
+					v=new Vect(0,0);
+				else
+					v=coord1[i].deepCopy();
+						for(int j=0;j<2;j++){
+							pwBun.print(formatter.format(v.el[j]*scaleFactor)+" ,");
+						}
+					pwBun.println();	
+
+				}
+
+				for(int ir=1;ir<=nRegions;ir++)
+					pwBun.println(regEnd[ir][0]+","+regEnd[ir][1]+","+"region"+ir);
+				
+				pwBun.close();
+				br.close();
+				fr.close();
+				
+				System.out.println();
+				System.out.println(" Bun data was written to:");
+				System.out.println("    "+fout);
+			}
+			catch(IOException e){ System.err.println("error");e.printStackTrace(); }
+
+		
+		
+		}
+		
+		
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	}
+	
 	
 	
 	public void getEMSolFlux(int dim){
@@ -9457,7 +9678,7 @@ for(int j=0;j<bb.length;j++){
 				line=br.readLine();
 			//	util.pr(nx[0]+" - "+Bu);
 
-			//	if(nx[k]<1783) BB.el[nx[k]][k]=nx[k];
+			//	if(nx[k]<5) BB.el[nx[k]][k]=nx[k];
 				
 				nx[k]++;
 				
@@ -9485,6 +9706,100 @@ for(int j=0;j<bb.length;j++){
 		pwBun.println();
 	}
 	
+		
+	br.close();
+	fr.close();
+	pwBun.close();
+	
+	System.out.println("Flux was written to "+fout);
+	
+		}
+
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		
+
+	
+	
+	
+	}
+	
+	public void modifyEMSolFlux(int dim){
+
+		String regex="[ ,\\t]+";
+		String s=util.getFile();
+		try{
+			
+			String fout=System.getProperty("user.dir")+"\\EMSolFlux.txt";
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+			
+			
+			Mat BB=new Mat(100*1000,dim);
+			
+			int[] nx=new int[dim];;
+			
+			
+	while(!line.startsWith("BMAG")){
+		line=br.readLine();
+		pwBun.println(line);
+			}
+	for(int k=0;k<6;k++){
+		line=br.readLine();
+		pwBun.println(line);
+	}
+	
+	int k=0;
+
+	
+			for(int i=1;i<100000;i++){
+				
+	
+/*		if(line.startsWith("-1")){
+			k++;
+			for(int j=0;j<8;j++){
+				line=br.readLine();
+				pwBun.println(line);
+			}
+
+		}
+		else*/
+		
+		sp=line.split(regex);
+			
+
+		double Bu=Double.parseDouble(sp[1]);
+		String line2=sp[0]+",\t"+sp[1]+",";
+	//	BB.el[nx[k]][k]=Bu;*/
+		pwBun.println(line);
+				line=br.readLine();
+			
+			//	util.pr(nx[0]+" - "+Bu);
+
+			//	if(nx[k]<5) BB.el[nx[k]][k]=nx[k];
+				
+			//	nx[k]++;
+				
+			
+/*				if(line.startsWith("-1")){
+					pwBun.println(line);
+					
+					pwBun.println("  -1");
+					break;
+				}
+				*/
+				if(line==null || line.length()==0) break;
+				
+
+	}
+
+
 		
 	br.close();
 	fr.close();

@@ -1,4 +1,4 @@
-package math;
+package PlayModel;
 
 import static java.lang.Math.sqrt;
 
@@ -10,31 +10,35 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import math.Mat;
+import math.util;
 import fem.Model;
 
 
 
-public class HysOutputPlot {
+public class HySimulGraph {
 	
-
+Mat[] BH;
+int numb1;
+double Bs, Hs;
+int numb2,numb3,numb4,numb5;
 String regex="[:; ,\\t]+";
 
 
 public static void main(String[] args){
 
-	HysOutputPlot pg=new HysOutputPlot();
+	HySimulGraph pg=new HySimulGraph();
 	
+	pg.loadHysData();
 }
 	
-public  HysOutputPlot(){
+public boolean loadHysData(){
 
 	/*String file=util.getFile();
 	if(file==null || file.equals("") )return false;*/
 //	String file="C:\\Works\\HVID\\folder1\\data\\A_Bì¸óÕëŒèÃÉãÅ[Évhts_data\\hys_data";
 
-	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-	String file="C:\\Works\\HVID\\output";
-	
+	String file="C:\\Works\\HVID\\hys_data_p";
 
 		try{
 			FileReader fr=new FileReader(file);
@@ -43,50 +47,40 @@ public  HysOutputPlot(){
 			String s;
 			String[] sp;
 
+			this.numb4=10;
+			
+			BH=new Mat[numb4];
+			
 
-			line=br.readLine();
-			line=br.readLine();
-			line=br.readLine();
-
-int L=Integer.parseInt(line);
-
-	Mat bbhh=new Mat(L,4);
-	
-	for( int p=0;p<L;p++)
-	{
-		line=br.readLine();
-		double[] ar=this.getCSV(line);
-		bbhh.el[p]=ar;
-	}
+			for( int ip=0;ip<numb4;ip++){
+				line=br.readLine();
+				
+					int L1=Integer.parseInt(line);
+						
 		
-			
-			
-			
-			Mat[] XX=new Mat[2];
-			XX[0]=new Mat(L,2);
-			XX[1]=new Mat(L,2);
-			
-		
-			XX[0].setCol(bbhh.getColVect(0).times(100), 0);
-			XX[0].setCol(bbhh.getColVect(1).times(100), 1);
-			
-			XX[1].setCol(bbhh.getColVect(2), 0);
-			XX[1].setCol(bbhh.getColVect(3), 1);
-			
-			
+				BH[ip]=new Mat(L1,2);
 
-			util.plotBunch(XX);
+				for( int i=0;i<L1;i++){
+					line=br.readLine();
+		
+					double[] bh=getCSV(line);
+
+					BH[ip].el[i][0]=bh[1];
+					BH[ip].el[i][1]=bh[0];
+				}
+			
+						
+			}
+		
+			util.plotBunch(BH,2);
 			//BH[1].show();
 			
-			br.close();
-			fr.close();
-	
-		
+			return true;
 		
 			}
 		
 			catch(IOException e){System.err.println("Error in loading BH data file.");
-
+			return false;
 			}
 
 		}	
