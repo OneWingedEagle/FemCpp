@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import math.Mat;
+import math.Vect;
 import math.util;
 import fem.Model;
 
@@ -69,15 +70,29 @@ int L=Integer.parseInt(line);
 			XX[1]=new Mat(L,2);
 			
 		
-			XX[0].setCol(bbhh.getColVect(0).times(100), 0);
-			XX[0].setCol(bbhh.getColVect(1).times(100), 1);
+			XX[0].setCol(bbhh.getColVect(0).times(1), 0);
+			XX[0].setCol(bbhh.getColVect(1).times(1), 1);
 			
 			XX[1].setCol(bbhh.getColVect(2), 0);
 			XX[1].setCol(bbhh.getColVect(3), 1);
 			
 			
+			//util.plot(XX[1].el);
+			
+			
+				Vect Hr=new Vect(XX[0].nRow);
+			Vect Br=new Vect(XX[0].nRow);
+			
+				for(int i=0;i<Hr.length;i++){
+					Hr.el[i]=new Vect(XX[1].el[i][0],XX[1].el[i][1]).norm();
+					Br.el[i]=new Vect(XX[0].el[i][0],XX[0].el[i][1]).norm();
+				}
+				Hr.hshow();
+				Br.hshow();
 
-			util.plotBunch(XX);
+				util.plot(Hr,Br);
+
+		//	util.plotBunch(XX,1);
 			//BH[1].show();
 			
 			br.close();

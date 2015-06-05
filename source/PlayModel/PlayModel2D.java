@@ -12,7 +12,7 @@ import math.Mat;
 import math.Vect;
 import math.util;
 
-public class PlayModel {
+public class PlayModel2D {
 
 	public Mat shapeFunc;
 	public int nSym, nDesc,nAsc, nInit, nMajor,nTotCurves;
@@ -24,13 +24,13 @@ public class PlayModel {
 
 
 
-	public PlayModel()
+	public PlayModel2D()
 	{	}
 
 	public static void main(String[] args)
 	{
 
-		PlayModel pm=new PlayModel();
+		PlayModel2D pm=new PlayModel2D();
 
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataH";
@@ -46,23 +46,10 @@ public class PlayModel {
 
 		//pm.loadData(file);
 
-		//pm.simulateData();
-		/*		for(int i=0;i<pm.BH.length;i++)
-			pm.BH[i].transp().show();*/
-		//	pm.createData();
-		/*	
-		Mat[] BH1=new Mat[2*pm.BH.length];
 
-		for(int i=0;i<pm.BH.length;i++){
-			BH1[i]=pm.BHraw[i];
-			BH1[i+pm.BH.length]=pm.BH[i];
-
-		}
-
-		util.plotBunch(BH1);*/
 	}
 
-	public void loadData(String file){
+	public void loadData(String file){/*
 
 		HystDataLoader hysLoader=new HystDataLoader();
 
@@ -92,48 +79,88 @@ public class PlayModel {
 
 
 
-	}
+	*/}
 
 
 
 	public void createData(String file){
 
 
-		double Bs=1.8;
-		double Hs=1600;
+		double Bs=1.6;
+		double Hs=4500;
 
 		int nInit=1;
 		int nMajor=1;
-		int nSymLoops=29;
+		int nSymLoops=3;
 		int nDescending=0;
 		int nAscending=0;
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 
-		int nAni=18;
-		int Lani=18;
-		int Mp=5000;
-		double mean=200;
-		double width=500;
+		int Mp=2000;
+		
 
-		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
+		double Hs0=1200;
+		double mean=.2*Hs0;
+		double width=.3*Hs0;
+
+		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
+
+		ps.getRes().hshow();
+
+		//ps.demagnetize(10);
+		
+int LL=2000;
+		int nAni=0;
+		int Lani=0;
 
 		Mat[] BHs=new Mat[nTot];
+		Mat[] BHsr=new Mat[nTot];
 
 		int ix=0;
 
 		for(int i=0;i<nInit;i++){
 
-			BHs[ix++]=ps.initial(1000);
+			BHs[ix]=ps.initial(LL);
 
+		
 			
-
+			double b0=1e10;
+			for(int j=0;j<BHs[ix].nRow;j++)
+				if(BHs[ix].el[j][1]<b0)
+					b0=BHs[ix].el[j][1];
+	
+			
+		for(int j=0;j<BHs[ix].nRow;j++)
+				BHs[ix].el[j][1]+=-b0;
+		
+		BHsr[ix]=this.getHrBr(BHs[ix]);
+		
+		/*	for(int j=0;j<BHs[ix].nRow;j++)
+				BHs[ix].el[j][1]=Math.abs(BHs[ix].el[j][1]);*/
+			
 			//BHs[ix++]=ps.symMajorFull(200);
+			
+			ix++;
 
 		}
+		
+	
+		
+
 
 		for(int i=0;i<nMajor;i++){
 			//BHs[ix++]=ps.symMajorFull(500);
-			BHs[ix++]=ps.symMajorDesc(1000);
+			
+		//	ps.getRes().hshow();
+		BHs[ix]=ps.symMajorDesc(LL);
+	/*		BHsr[ix]=new Mat(BHs[ix].nRow,2);
+			BHsr[ix].setCol(BHs[ix].getColVect(0), 0);
+			BHsr[ix].setCol(BHs[ix].getColVect(1), 1);*/
+	
+			BHsr[ix]=this.getHBij(BHs[ix],0);
+			//BHsr[ix].transp().show();
+			
+			ix++;
 
 		}
 
@@ -141,10 +168,14 @@ public class PlayModel {
 
 		for(int i=0;i<nSymLoops;i++){
 			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
-
 			//BHs[ix++]=ps.symFull(Bp,500);
-			BHs[ix++]=ps.symDesc(Bp,1000);
+			BHs[ix]=ps.symDesc(Bp,LL);
 			//util.pr(ps.getRes());
+			BHsr[ix]=this.getHBij(BHs[ix],0);
+			//BHs
+		//	BHsr[ix]=this.getHBij(BHs[ix],0);BHsr[ix].transp().show();
+			
+			ix++;
 
 		}
 
@@ -152,16 +183,18 @@ public class PlayModel {
 		for(int i=0;i<nDescending;i++){
 
 			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
-			BHs[ix++]=ps.revDesc(Bp,1000);
+
 		}
 
 		for(int i=0;i<nAscending;i++){
 
 			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
-			BHs[ix++]=ps.revAsc(Bp,1000);
+	
 		}
 
-		
+			
+			util.plotBunch(BHsr);
+			
 
 		Hs=800;
 		
@@ -179,7 +212,7 @@ public class PlayModel {
 
 
 			ps.demagnetize();
-			util.pr(ps.getRes());
+			//util.pr(ps.getRes());
 			Mat BH2=ps.initial(1000);
 			
 			BHaniT[i]=new Mat(BH2.nRow,2);
@@ -191,8 +224,8 @@ public class PlayModel {
 		
 			for(int j=0;j<Lani;j++){
 				double Ht=this.getH(BH2, B.el[j]);
-			/*	BHaniT[i].el[j][0]=Ht;
-				BHaniT[i].el[j][1]=B.el[j];*/
+				BHaniT[i].el[j][0]=Ht;
+				BHaniT[i].el[j][1]=B.el[j];
 				BHani[i].el[j][0]=Ht*Math.cos(i*Math.PI/18);
 				BHani[i].el[j][1]=Ht*Math.sin(i*Math.PI/18);
 			//	BHani[i].el[j][1]=B.el[j];
@@ -202,7 +235,7 @@ public class PlayModel {
 		}
 
 
-	//util.plotBunch(BHaniT,5);
+//	util.plotBunch(BHaniT,5);
 	//util.plotBunch(BHs);
 
 
@@ -608,6 +641,89 @@ public class PlayModel {
 		}
 
 		return hb;
+	}
+	
+	public Mat getHBij(Mat BH,int k){
+		
+		Mat BHr=new Mat(BH.nRow,2);
+		
+		if(BH.nCol==4){
+			
+			if(k==0)
+			for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][0];
+			
+			BHr.el[i][1]=BH.el[i][2];
+			}
+		else if(k==1)
+			for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][0];
+			
+			BHr.el[i][1]=BH.el[i][3];
+			}
+		else if(k==2)
+			for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][1];
+		
+			BHr.el[i][1]=BH.el[i][2];
+		}
+		else if(k==3)
+			for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][1];
+		
+			BHr.el[i][1]=BH.el[i][3];
+		}
+		else {
+			throw new IllegalArgumentException("Matrix has 4 columns. No more than 4 combination possible.");
+		}
+}
+	
+		else if(BH.nCol==3){
+			
+			if(k==0)
+				for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][0];
+	
+			BHr.el[i][1]=BH.el[i][1];
+			}
+		else if(k==1)
+			for(int i=0;i<BHr.nRow;i++){
+			BHr.el[i][0]=BH.el[i][0];
+			
+			BHr.el[i][1]=BH.el[i][2];
+			}
+		else {
+			throw new IllegalArgumentException("Matrix has 3 columns. No more than 2 combination possible.");
+		}
+}
+		
+		return BHr;
+
+	}
+	
+	public Mat getHrBr(Mat BH){
+		
+		Mat BHr=new Mat(BH.nRow,2);
+		
+		for(int i=0;i<BHr.nRow;i++)
+		{
+			if(BH.nCol==4)
+			{
+			BHr.el[i][0]=new Vect(BH.el[i][0],BH.el[i][1]).norm();
+			
+			BHr.el[i][1]=new Vect(BH.el[i][2],BH.el[i][3]).norm();
+			}
+			else if(BH.nCol==3){
+				
+				BHr.el[i][0]=BH.el[i][0];
+				
+				BHr.el[i][1]=new Vect(BH.el[i][1],BH.el[i][2]).norm();
+			}
+		}
+
+		
+		return BHr;
+
 	}
 
 	public double[] gethbAsc(int i,double B ){

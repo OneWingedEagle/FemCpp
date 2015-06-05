@@ -11,7 +11,7 @@ public class Preisach {
 	public Random r;
 	public int M,nphi,kk,dim;
 	public long seed;
-	public double cfm,cfw,mean,width,Hs,Bs,DB,DB2D,projCoef;
+	public double cfm,cfw,mean,width,Hs,Bs,DB;
 	public boolean[][] on;
 	public double[] phi;
 	public double[][][] a;
@@ -40,20 +40,13 @@ public class Preisach {
 		 
 		// this.nphih=n1;
 		 
-		 cfm=0;
-		 cfw=0;
+		 cfm=.0;
+		 cfw=.0;
 		 
-		 nphi=18;
+		 nphi=38;
 		 
 		 double dphiRad=PI/nphi;
 		 
-		 double sum=0;
-		 for(int i=0;i<nphi;i++)
-			 sum+=cos(i*dphiRad);
-		 
-		 projCoef=sum;
-	
-		 DB2D=this.DB/sum;
 	
 			 
 		r=new Random(3564656);
@@ -71,7 +64,7 @@ public class Preisach {
 
 		for(int j=0;j<M;j++){
 
-			K[j][kp]=1;
+			K[j][kp]=1-.0*sin(phirad);
 
 			double am=mean*r.nextGaussian()*(1+cfm*abs(sin(phirad)));
 			double d=width*r.nextDouble()*(1+cfw*abs(sin(phirad)));
@@ -91,7 +84,6 @@ public class Preisach {
 		Random r=new Random();
 		long ss=this.seed;
 		Preisach pr=new Preisach(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
-		pr.projCoef=this.projCoef;
 		
 		return pr;
 	}
@@ -496,11 +488,10 @@ public Mat getCurveX(Vect H){
 				}
 			}
 			
-			util.pr(projCoef);
 
 			for(int i=0;i<L;i++){
-				BH.el[i][2]*=1.0/n1*projCoef;
-				BH.el[i][3]*=1.0/n1*projCoef;
+				BH.el[i][2]*=1.0/n1;
+				BH.el[i][3]*=1.0/n1;
 				BH.el[i][0]=H.el[i][0];
 				BH.el[i][1]=H.el[i][1];
 			}
