@@ -32,11 +32,14 @@ public class PlayModel2D {
 
 		PlayModel2D pm=new PlayModel2D();
 
-		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
-		String file="C:\\Works\\HVID\\hys_dataH";
+		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
+		//String file="C:\\Works\\HVID\\hys_dataH";
 
-		pm.createData(file);
+		//pm.createData(file);
 
+		pm.rotation();
+		
+		
 		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -48,6 +51,42 @@ public class PlayModel2D {
 
 
 	}
+	
+	public void rotation(){
+
+
+		double Bs=1.8;
+		double Hs=1800;
+
+		int nInit=0;
+		int nMajor=0;
+		int nSymLoops=0;
+		int nDescending=0;
+		int nAscending=0;
+		int nAni=1;
+		int Lani=18;
+		
+		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
+
+		int Mp=2000;
+		
+
+		double Hs0=1200;
+		double mean=.2*Hs0;
+		double width=.3*Hs0;
+
+		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
+		
+		Mat R=ps.getLocusHRotation(1.3);
+		
+		//R.show();
+		
+		//Mat BxBy=this.getHBij(R, 0);
+		
+		//util.plot(R.getColVect(2),R.getColVect(3));
+		util.plot(R.getColVect(0),R.getColVect(1));
+	}
+
 
 	public void loadData(String file){/*
 
@@ -86,14 +125,17 @@ public class PlayModel2D {
 	public void createData(String file){
 
 
-		double Bs=1.6;
-		double Hs=4500;
+		double Bs=1.8;
+		double Hs=1800;
 
-		int nInit=1;
-		int nMajor=1;
-		int nSymLoops=3;
+		int nInit=0;
+		int nMajor=0;
+		int nSymLoops=0;
 		int nDescending=0;
 		int nAscending=0;
+		int nAni=1;
+		int Lani=18;
+		
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 
 		int Mp=2000;
@@ -105,13 +147,9 @@ public class PlayModel2D {
 
 		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
 
-		ps.getRes().hshow();
-
-		//ps.demagnetize(10);
-		
-int LL=2000;
-		int nAni=0;
-		int Lani=0;
+		int LL=1000;
+	
+		double Bseff=.98*Bs;
 
 		Mat[] BHs=new Mat[nTot];
 		Mat[] BHsr=new Mat[nTot];
@@ -120,26 +158,25 @@ int LL=2000;
 
 		for(int i=0;i<nInit;i++){
 
-			BHs[ix]=ps.initial(LL);
+			Mat BHtemp=ps.initial(LL);
+				
+			int L=200;
+			Vect B0=new Vect().linspace(0,.1,4);
+			Vect B1=new Vect().linspace(.125,Bseff,L-4);
+			Vect B=B0.aug(B1);
+			
+			BHs[ix]=new Mat(L,3);
+			for(int j=0;j<L;j++){
+				BHs[ix].el[j][0]=getH(BHtemp,B.el[j]);
+				BHs[ix].el[j][1]=B.el[j];
 
+			}
 		
-			
-			double b0=1e10;
-			for(int j=0;j<BHs[ix].nRow;j++)
-				if(BHs[ix].el[j][1]<b0)
-					b0=BHs[ix].el[j][1];
-	
-			
-		for(int j=0;j<BHs[ix].nRow;j++)
-				BHs[ix].el[j][1]+=-b0;
-		
+
 		BHsr[ix]=this.getHrBr(BHs[ix]);
 		
-		/*	for(int j=0;j<BHs[ix].nRow;j++)
-				BHs[ix].el[j][1]=Math.abs(BHs[ix].el[j][1]);*/
-			
-			//BHs[ix++]=ps.symMajorFull(200);
-			
+
+
 			ix++;
 
 		}
@@ -149,16 +186,21 @@ int LL=2000;
 
 
 		for(int i=0;i<nMajor;i++){
-			//BHs[ix++]=ps.symMajorFull(500);
+
+		Mat BHtemp=ps.symMajorDesc(LL);
+		
+		int L=400;
+		Vect B=new Vect().linspace(Bseff,-Bseff,L);
+		BHs[ix]=new Mat(L,3);
+		for(int j=0;j<L;j++){
+			BHs[ix].el[j][0]=getH(BHtemp,B.el[j]);
+			BHs[ix].el[j][1]=B.el[j];
+
+		}
+		
+
+		BHsr[ix]=this.getHBij(BHs[ix],0);
 			
-		//	ps.getRes().hshow();
-		BHs[ix]=ps.symMajorDesc(LL);
-	/*		BHsr[ix]=new Mat(BHs[ix].nRow,2);
-			BHsr[ix].setCol(BHs[ix].getColVect(0), 0);
-			BHsr[ix].setCol(BHs[ix].getColVect(1), 1);*/
-	
-			BHsr[ix]=this.getHBij(BHs[ix],0);
-			//BHsr[ix].transp().show();
 			
 			ix++;
 
@@ -167,79 +209,118 @@ int LL=2000;
 
 
 		for(int i=0;i<nSymLoops;i++){
-			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
-			//BHs[ix++]=ps.symFull(Bp,500);
-			BHs[ix]=ps.symDesc(Bp,LL);
-			//util.pr(ps.getRes());
-			BHsr[ix]=this.getHBij(BHs[ix],0);
-			//BHs
-		//	BHsr[ix]=this.getHBij(BHs[ix],0);BHsr[ix].transp().show();
 			
-			ix++;
+			double Bp=Bseff-(i+1)*Bseff/(nSymLoops+1);	
+
+			Mat BHtemp=ps.symDesc(Bp,LL);
+			
+			int L=400;
+			Vect B=new Vect().linspace(Bp,-Bp,L);
+			BHs[ix]=new Mat(L,3);
+			for(int j=0;j<L;j++){
+				BHs[ix].el[j][0]=getH(BHtemp,B.el[j]);
+				BHs[ix].el[j][1]=B.el[j];
+
+			}
+			
+
+			BHsr[ix]=this.getHBij(BHs[ix],0);
+				
+				
+				ix++;
+
+			
 
 		}
 
 
 		for(int i=0;i<nDescending;i++){
-
-			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
-
+			
 		}
 
 		for(int i=0;i<nAscending;i++){
-
-			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
-	
+			
 		}
 
-			
-			util.plotBunch(BHsr);
+		if(nTot>0)
+		util.plotBunch(BHsr);
 			
 
-		Hs=800;
 		
-
-		
-		Vect B=new Vect(Lani);
-		
-		for(int i=0;i<Lani;i++)
-			B.el[i]=i*.1;
-		
+		Vect B=new Vect().linspace(0, Bseff, Lani);
+	
 		Mat[] BHani=new Mat[nAni];
-		Mat[] BHaniT=new Mat[1000];
+		Mat[] BHaniT=new Mat[nAni];
+		
+		
 		for(int i=0;i<nAni;i++){
-			ps.kk=i;
 
+			double phiRad=i*10*Math.PI/180;
+			phiRad=0*Math.PI/2;
 
-			ps.demagnetize();
-			//util.pr(ps.getRes());
-			Mat BH2=ps.initial(1000);
+			Vect Hr=new Vect().linspace(0,1.2*Hs,LL);
 			
-			BHaniT[i]=new Mat(BH2.nRow,2);
-			BHaniT[i].setCol(BH2.getColVect(0), 0);
-			BHaniT[i].setCol(BH2.getColVect(1), 1);
+			int Lp=2000;
+			Mat Hp=new Mat(Lp,2);
+			for(int j=0;j<Lp;j++){
+				Hp.el[j][0]=.8*Hs*Math.cos(4*j*Math.PI/Lp)*Math.cos(phiRad);
+				Hp.el[j][1]=.8*Hs*Math.sin(4*j*Math.PI/Lp)*Math.cos(phiRad);
+			}
+			
+						
+			Mat H=new Mat(LL,2);
+			for(int j=0;j<LL;j++){
+				H.el[j][0]=Hr.el[j]*Math.cos(phiRad);
+				H.el[j][1]=Hr.el[j]*Math.sin(phiRad);
+			}
+			
+			
+			for(int k=0;k<ps.M;k++)
+				for(int j=0;j<ps.nphi;j++){
+					ps.on[k][j]=false;
+				}
+			
+			ps.demagnetize(5*Hs,100,20);
+		/*	util.pr(M.nCol);
+
+			util.plot(getHBij(M,0).el);
+*/
+
+		//	ps.getRes().hshow();
+			
+			Mat BH2=ps.getLocus(Hp);
+	
+			Mat BH3=this.getHrBr(BH2);
+			
+			//util.plot(getHBij(BH2,3).el);
+			util.plot(BH2.getColVect(2),BH2.getColVect(3));
+			
+			BHaniT[i]=BH3.deepCopy();
+				
+			BHaniT[i]=new Mat(Lani,2);
 
 			BHani[i]=new Mat(Lani,2);
 		
 		
 			for(int j=0;j<Lani;j++){
-				double Ht=this.getH(BH2, B.el[j]);
+				double Ht=this.getH(BH3, B.el[j]);
 				BHaniT[i].el[j][0]=Ht;
 				BHaniT[i].el[j][1]=B.el[j];
-				BHani[i].el[j][0]=Ht*Math.cos(i*Math.PI/18);
-				BHani[i].el[j][1]=Ht*Math.sin(i*Math.PI/18);
-			//	BHani[i].el[j][1]=B.el[j];
+				BHani[i].el[j][0]=Ht*Math.cos(phiRad);
+				BHani[i].el[j][1]=Ht*Math.sin(phiRad);
+		
 			}
 
-			
 		}
+		
+		//util.plot(BHaniT[0].el);
 
-
-//	util.plotBunch(BHaniT,5);
+	//util.plotBunch(BHaniT);
 	//util.plotBunch(BHs);
 
+	boolean write =false;
 
-
+if(write){
 
 
 	DecimalFormat dfB=new DecimalFormat("#.00");
@@ -295,7 +376,7 @@ int LL=2000;
 		}
 		catch(IOException e){}
 
-
+}
 
 
 
@@ -413,31 +494,61 @@ int LL=2000;
 	}
 	
 	public  double getH(Mat BH,double B){
+		return getH(BH,B,0);
+	}
+	
+	public  double getH(Mat BH,double B, int mode){
 
-		if(B<=0)
-			return 0;
+		int ih, ib;
+		if(mode==0){
+			ih=0;ib=1;
+		}
+		else{
+			ih=0;ib=2;
+		}
 		
-		int i=BH.nRow-1;
-		if(B>=BH.el[i][1])
-			return BH.el[i][0]+(B-BH.el[i][1])*(BH.el[i][0]-BH.el[i-1][0])/(BH.el[i][1]-BH.el[i-1][1]);;
-			//
-			//return BH.el[BH.nRow-1][0];
+		boolean ascending=true;
+		if (BH.el[1][ih]<BH.el[0][ih]) ascending=false;
 		
+		int i1=0;
+		int i2=BH.nRow-1;
+		
+		if(ascending){
+
+		if(B<=BH.el[i1][ib])
+			return BH.el[i1][ih];
+		if(B>=BH.el[i2][ib])
+			return BH.el[i2][ih];
+			/*return BH.el[i][ih]+(B-BH.el[i][ib])*(BH.el[i+1][ih]-BH.el[i][ih])/(BH.el[i+1][ib]-BH.el[i][ib]);
+		i=BH.nRow-1;
+		if(B>=BH.el[i][ib])
+			return BH.el[i][ih]+(B-BH.el[i][ib])*(BH.el[i][ih]-BH.el[i-1][ih])/(BH.el[i][ib]-BH.el[i-1][ib]);
+		*/
+		}
+		else{
+
+			if(B<=BH.el[i2][ib])
+				return BH.el[i2][ih];
+			if(B>=BH.el[i1][ib])
+				return BH.el[i1][ih];
+			}
+
 		int j=0;
 
-		while(BH.el[j+1][1]<B){j++;}
+		if(ascending)
+			while(BH.el[j+1][ib]<B){j++;}
+		else
+			while(BH.el[j+1][ib]>B){j++;}
 		
-		double cc=(BH.el[j+1][0]-BH.el[j][0])/(BH.el[j+1][1]-BH.el[j][1]);
+		double cc=(BH.el[j+1][ih]-BH.el[j][ih])/(BH.el[j+1][ib]-BH.el[j][ib]);
 
-		//double H= BH.el[j][0];
-		double H=BH.el[j][0]+(B-BH.el[j][1])*cc;
+		double H=BH.el[j][ih]+(B-BH.el[j][ib])*cc;
 
 		
 		return H;
 				
 	}
 	
-
 	public int getj(double[] array, double p){
 
 		int j=0;
