@@ -90,9 +90,9 @@ int L=Integer.parseInt(line);
 				Hr.hshow();
 				Br.hshow();
 
-				util.plot(Hr,Br);
+			//	util.plot(Hr,Br);
 
-		//	util.plotBunch(XX,1);
+			util.plotBunch(XX);
 			//BH[1].show();
 			
 			br.close();
