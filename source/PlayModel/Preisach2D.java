@@ -10,7 +10,7 @@ import math.util;
 public class Preisach2D {
 
 	public Random r;
-	public int M,nphi,nh,dim;
+	public int M,nphi,nh,dim,kRotated;
 	public long seed;
 	public double cfm,cfw,mean,width,Hs,Bs,DB2D,projCoef,dphiRad;
 	public boolean[][] on;
@@ -140,31 +140,95 @@ public class Preisach2D {
 
 	}
 	
-	public  Mat initial(int L){
-
-
-		return 	initCurveUptoBpeak(this.Bs,L);
+	public  Mat initial(double Hm,int L){
+		return initial(Hm,L,true);
 	}
 
-
-	public  Mat initCurveUptoBpeak(double Bpeak,int L){
+	public  Mat initial(double Hm,int L, boolean distill){
 		
+	
 		this.demagnetize();
 
-		Vect seqH=new Vect().linspace(0, this.Hs, L);
+		Vect seqH=new Vect().linspace(0, Hm, L);
 
 		Mat BH1=this.getCurveAlt(seqH);
+		
+		if(!distill) return BH1;
 
 		Mat BH=this.distill(BH1);
 
 
 		return BH;
 	}
+	
+	public  Mat initialAve(double Hm,int L){
+		
+		Mat H=new Mat(L,2);
+		Vect B=new Vect(L);
+		Vect Hr=new Vect().linspace(0,Hm, L);
+		
+		for(int kh=-nh;kh<=nh;kh++){
+		
+			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+			
+		this.demagnetize();
+
+		for(int i=0;i<L;i++){
+			
+			H.el[i][0]=Hr.el[i]*Math.cos(kh*dphiRad);
+			H.el[i][1]=Hr.el[i]*Math.sin(kh*dphiRad);
+		}
+
+
+		Mat BH2=this.getLocus(H);
+
+		Vect Bk=new  Vect(L);
+		
+		for(int i=0;i<L;i++){
+		Bk.el[i]=new Vect(BH2.el[i][2],BH2.el[i][3]).dot(er);
+		}
+		
+		B=B.add(Bk);
+		}
+		
+
+		Mat BH1=new Mat(L,2);
+		BH1.setCol(Hr, 0);
+		BH1.setCol(B.times(1.0/nphi), 1);
+		
+		Mat BH2=distill(BH1);
+	
+		return BH2;
+	}
+	
+	public  Mat initialAve2(double Hm,int L,boolean distill){
+
+		
+		Mat BH1=new Mat(L,3);
+		for(int kh=-nh;kh<=nh;kh++){
+			
+			for(int j=0;j<nphi;j++)
+			for(int i=0;i<M;i++)
+				on[i][j]=false;
+			
+			this.kRotated=kh+nh;
+			BH1=BH1.add(this.initial(Hm,L,distill));
+			
+		}
+		
+		this.kRotated=0;
+
+		BH1=BH1.times(1.0/nphi);
+		
+		Mat BH=distill(BH1);
+		
+		
+	
+		return BH;
+	}
 
 
 	public Mat getCurveAlt(Vect H){
-
-
 
 		int L=H.length;
 		Vect[][] B=new Vect[L][nphi];
@@ -177,6 +241,8 @@ public class Preisach2D {
 
 
 			int k=kh+nh;
+			
+			int kr=(k+kRotated)%nphi;
 
 			Vect Halt=H.times(cos(kh*dphiRad));
 
@@ -187,8 +253,7 @@ public class Preisach2D {
 
 				if(i==0){
 
-					B[i][k]=B[i][k].add(this.getRes(k));
-					//B[i][k]=B[i][k].add(er.times(0));
+					B[i][k]=B[i][k].add(this.getRes(kr));
 					continue;
 				}
 
@@ -196,17 +261,17 @@ public class Preisach2D {
 				for(int j=0;j<M;j++)
 				{
 
-					if(Halt.el[i]>Halt.el[i-1] && Halt.el[i]>a[j][1][k]){
-						if(!on[j][k]){
-							dB=dB.add(er.times(this.DB2D*K[j][k]));
-							on[j][k]=true;
+					if(Halt.el[i]>Halt.el[i-1] && Halt.el[i]>a[j][1][kr]){
+						if(!on[j][kr]){
+							dB=dB.add(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=true;
 						}
 					}
-					else if(Halt.el[i]<=Halt.el[i-1] && Halt.el[i]<a[j][0][k] ){
+					else if(Halt.el[i]<=Halt.el[i-1] && Halt.el[i]<a[j][0][kr] ){
 
-						if(on[j][k]){
-							dB=dB.sub(er.times(this.DB2D*K[j][k]));
-							on[j][k]=false;
+						if(on[j][kr]){
+							dB=dB.sub(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=false;
 						}
 					}
 
@@ -241,6 +306,7 @@ public class Preisach2D {
 
 	}
 	
+
 	
 	public Mat getLocusBRotation(double Hm,int Lc,int Nc){
 		
@@ -456,7 +522,8 @@ public class Preisach2D {
 		return BH;
 
 	}
-
+	
+	
 
 
 	public Mat demagnetize(){
@@ -588,159 +655,110 @@ public class Preisach2D {
 		return BH;
 
 	}
-	/*	
-public Mat magnetizeDownTo(double Bpeak,int L){
 
 
-		Vect H=new Vect().linspace(0, -Hs, L);
-		Vect B=new Vect(L);
+	public Mat magnetizeUpToAve(double Bpeak,int L){
 
-		int ix=0;
-		for(int i=0;i<L;i++){
-			if(i==0){
-				B.el[i]=this.getRes();
-				H.el[i]=H.el[0];
+		Vect H=new Vect().linspace(0, Hs, L);
 
-				continue;
-			}
+			
+		Vect[][] B=new Vect[L][nphi];
+		for(int i=0;i<L;i++)
+			for(int k=0;k<nphi;k++)
+				B[i][k]=new Vect(2);
 
-			double dB=0;
-			for(int j=0;j<M;j++)
-			{
+		Vect Hr=new Vect(L);
+		
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB+=this.DB*K[j][kk];
-						on[j][kk]=true;
-					}
-				}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
-
-					if(on[j][kk]){
-						dB-=this.DB*K[j][kk];
-						on[j][kk]=false;
-					}
-				}
-
-			}
-
-			B.el[i]=B.el[i-1]+2*dB;
-
-			ix++;
-			if(B.el[i]<Bpeak || Math.abs(B.el[i]-Bpeak)<=epsdB) {
-				B.el[i]=Bpeak;
-				break;
-			}
+		for(int kh=-nh;kh<=nh;kh++){
 
 
-		}
+			int k=kh+nh;
 
+			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
 
-		Mat BH1=new Mat(ix+1,2);
-		for(int i=0;i<=ix;i++){
-			BH1.el[i][0]=H.el[i];
-			BH1.el[i][1]=B.el[i];
-		}
-		 Mat BH=this.distill(BH1);
-
-		return BH;
-
-
-	}*/
-
-
-
-
-	/*
-public Mat getCurveX(Vect H){
-
-	Mat H1=new Mat(H.length,2);
-	H1.setCol(H, 0);
-
-	Mat BH=getLocus(H1);
-
-	Mat BH1=new Mat(H.length,2);
-
-	BH1.setCol(H, 0);
-	BH1.setCol(BH.getColVect(2), 1);
-
-	return BH1;
-
-}*/
-
-
-
-	/*public Mat getLocus2D(Mat H){
-
-
-		int dim=H.nCol;
-
-		int n1=this.nphi;
-
-
-		Preisach[] pr=new Preisach[n1];
-
-		int L=H.nRow;
-
-		Vect Hn=new Vect(L);
-		Vect[] Bn=new Vect[n1];
-
-		Mat BH=new Mat(L,4);
-
-
-			Vect er=new Vect(dim);
-
-			for(int k=0;k<n1;k++){
-
-				int kp=k;
-				kp=0;
-			//	kp=0;
-
-				pr[kp]=this.deepCopy();
-
-				pr[kp].kk=kp;
-				pr[kp].kk=kp;
-
-				pr[kp].demagnetize();
-
-				double phirad= phi[kp]*Math.PI/180;
-
-				er.el[0]=Math.cos(phirad);
-				er.el[1]=Math.sin(phirad);
-
-				for(int i=0;i<L;i++)	
-					Hn.el[i]=new Vect(H.el[i]).dot(er);
-
-
-
-				//Mat BH1=pr[kp].getCurveAlt(Hn);
-				Mat BH1=this.getCurveAlt(Hn);
-
-				Bn[kp]=BH1.getColVect(1);
-
-
-
-
-				for(int i=0;i<L;i++){
-
-					BH.el[i][2]=BH.el[i][2]+Bn[kp].el[i]*er.el[0];
-					BH.el[i][3]=BH.el[i][3]+Bn[kp].el[i]*er.el[1];
-				}
-			}
-
-			util.pr(projCoef);
+		
+				Hr=H.times(cos(kh*dphiRad));
 
 			for(int i=0;i<L;i++){
-				BH.el[i][2]*=1.0/n1*projCoef;
-				BH.el[i][3]*=1.0/n1*projCoef;
-				BH.el[i][0]=H.el[i][0];
-				BH.el[i][1]=H.el[i][1];
+
+
+				if(i==0){
+					//B[i][k]=er.times(this.getRes());
+					B[i][k]=B[i][k].add(this.getRes(k));
+
+					continue;
+				}
+
+				Vect dB=new Vect(2);
+				for(int j=0;j<M;j++)
+				{
+
+					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][k]){
+						if(!on[j][k]){
+							dB=dB.add(er.times(this.DB2D*K[j][k]));
+							on[j][k]=true;
+						}
+					}
+					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][k] ){
+
+						if(on[j][k]){
+							dB=dB.sub(er.times(this.DB2D*K[j][k]));
+							on[j][k]=false;
+						}
+					}
+
+				}
+
+				B[i][k]=B[i-1][k].add(dB.times(2));
+				
+
 			}
+		}
+		
+		Vect[] Bsum=new Vect[L];
 
+		for(int i=0;i<L;i++){
+			Bsum[i]=new Vect(2);
+			for(int j=0;j<nphi;j++)
+				Bsum[i]=Bsum[i].add(B[i][j]);
+		}
 
+		Vect Bsum2=new Vect(L);
+
+		for(int i=0;i<L;i++){
+			
+			for(int kh=-nh;kh<=nh;kh++){
+
+				int k=kh+nh;
+
+				Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+				Bsum2.el[i]+=Bsum[i].dot(er);
+			}
+			
+			Bsum2.el[i]/=nphi;
+		}
+		
+		//Bsum.show();
+		
+		int ix=0;
+		for(int i=0;i<L;i++){
+			if(Bsum2.el[i]>Bpeak) break;
+			ix++;
+		}
+
+		Mat BH1=new Mat(ix,2);
+		for(int i=0;i<ix;i++){
+			BH1.el[i][0]=H.el[i];
+			BH1.el[i][1]=Bsum2.el[i];
+		}
+
+		 Mat BH=this.distill(BH1);
+
+		 
 		return BH;
 
-	}*/
+	}
 
 	public Vect getRes(){
 
@@ -839,50 +857,55 @@ public Mat getCurveX(Vect H){
 
 		return BH4;
 	}
+		
 
 
-	public Mat distill(Mat BH1){
+		public Mat distill(Mat BH1){
 
-		int Leff=1;
+			int Leff=1;
+			boolean col3=(BH1.nCol==3);
 
-		int L=BH1.nRow;
-		boolean[] skip=new boolean[L];
-		for(int i=1;i<BH1.nRow;i++){
+			int L=BH1.nRow;
+			boolean[] skip=new boolean[L];
+			for(int i=1;i<BH1.nRow;i++){
+
+				if( Math.abs(BH1.el[i][1]-BH1.el[i-1][1])/Math.abs(BH1.el[i][0]-BH1.el[i-1][0])<epsdB)
+					if( Math.abs(BH1.el[i][1]-BH1.el[i-1][1])/Math.abs(BH1.el[i][0]-BH1.el[i-1][0])<epsdBdH)
+					{
+					skip[i]=true;
+
+					continue;
+				}
 
 
-			
-			if( Math.abs(BH1.el[i][1]-BH1.el[i-1][1])/Math.abs(BH1.el[i][0]-BH1.el[i-1][0])<epsdB)
-				if( Math.abs(BH1.el[i][2]-BH1.el[i-1][2])/Math.abs(BH1.el[i][0]-BH1.el[i-1][0])<epsdBdH)
-				{
-				skip[i]=true;
+				Leff++;
+			}
 
-				continue;
+			int ncol=2;
+			if(col3) ncol=3;
+			Mat BH=new Mat(Leff,ncol);
+
+			int ix=0;
+			for(int i=0;i<BH1.nRow;i++){
+
+				if(!skip[i]){
+					BH.el[ix][0]=BH1.el[i][0];
+					BH.el[ix][1]=BH1.el[i][1];
+					if(col3)
+					BH.el[ix][2]=BH1.el[i][2];
+					ix++;
+
+				}
+
+
 			}
 
 
-			Leff++;
-		}
-
-		Mat BH=new Mat(Leff,3);
-
-		int ix=0;
-		for(int i=0;i<BH1.nRow;i++){
-
-			if(!skip[i]){
-				BH.el[ix][0]=BH1.el[i][0];
-				BH.el[ix][1]=BH1.el[i][1];
-				BH.el[ix][2]=BH1.el[i][2];
-				ix++;
-
-			}
 
 
+			return BH;
 		}
 
 
-
-
-		return BH;
-	}
 	
 }

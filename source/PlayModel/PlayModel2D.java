@@ -35,9 +35,9 @@ public class PlayModel2D {
 		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		//String file="C:\\Works\\HVID\\hys_dataH";
 
-		//pm.createData(file);
+		pm.createData(file);
 
-		pm.rotation();
+		//pm.rotation();
 		
 		
 		try {
@@ -130,22 +130,22 @@ public class PlayModel2D {
 		double Bs=1.8;
 		double Hs=1800;
 
-		int nInit=0;
+		int nInit=1;
 		int nMajor=0;
 		int nSymLoops=0;
 		int nDescending=0;
 		int nAscending=0;
-		int nAni=1;
+		int nAni=0;
 		int Lani=18;
 		
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 
-		int Mp=2000;
+		int Mp=1000;
 		
 
-		double Hs0=1200;
+		double Hs0=1800;
 		double mean=.2*Hs0;
-		double width=.3*Hs0;
+		double width=.2*Hs0;
 
 		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
 
@@ -160,8 +160,9 @@ public class PlayModel2D {
 
 		for(int i=0;i<nInit;i++){
 
-			Mat BHtemp=ps.initial(LL);
-				
+		//	Mat BHtemp=ps.initialAve2(2*Hs,LL,false);
+			Mat BHtemp=ps.initialAve(2*Hs,LL);
+			//BHtemp.show();
 			int L=200;
 			Vect B0=new Vect().linspace(0,.1,4);
 			Vect B1=new Vect().linspace(.125,Bseff,L-4);
@@ -258,16 +259,16 @@ public class PlayModel2D {
 		for(int i=0;i<nAni;i++){
 
 			double phiRad=i*10*Math.PI/180;
-			phiRad=0*Math.PI/2;
+			//phiRad=0*Math.PI/2;
 
 			Vect Hr=new Vect().linspace(0,1.2*Hs,LL);
 			
-			int Lp=2000;
+	/*		int Lp=2000;
 			Mat Hp=new Mat(Lp,2);
 			for(int j=0;j<Lp;j++){
 				Hp.el[j][0]=.8*Hs*Math.cos(4*j*Math.PI/Lp)*Math.cos(phiRad);
 				Hp.el[j][1]=.8*Hs*Math.sin(4*j*Math.PI/Lp)*Math.cos(phiRad);
-			}
+			}*/
 			
 						
 			Mat H=new Mat(LL,2);
@@ -290,12 +291,13 @@ public class PlayModel2D {
 
 		//	ps.getRes().hshow();
 			
-			Mat BH2=ps.getLocus(Hp);
+			//Mat BH2=ps.getLocus(Hp);
+			Mat BH2=ps.getLocus(H);
 	
 			Mat BH3=this.getHrBr(BH2);
 			
 			//util.plot(getHBij(BH2,3).el);
-			util.plot(BH2.getColVect(2),BH2.getColVect(3));
+		//	util.plot(BH2.getColVect(0),BH2.getColVect(2));
 			
 			BHaniT[i]=BH3.deepCopy();
 				
@@ -317,7 +319,7 @@ public class PlayModel2D {
 		
 		//util.plot(BHaniT[0].el);
 
-	//util.plotBunch(BHaniT);
+	util.plotBunch(BHaniT);
 	//util.plotBunch(BHs);
 
 	boolean write =false;
