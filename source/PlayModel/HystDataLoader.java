@@ -27,7 +27,7 @@ public class HystDataLoader {
 public static void main2(String[] args){}
 	
 
-	public void loadData(PlayModel pm, String file){
+	public void loadData(PlayModel1D pm, String file){
 
 		
 

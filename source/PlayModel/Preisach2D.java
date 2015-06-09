@@ -35,8 +35,8 @@ public class Preisach2D {
 
 		dim=2;
 
-		cfm=0;
-		cfw=0;
+		cfm=2;
+		cfw=2;
 
 		nh=9;
 
@@ -201,7 +201,7 @@ public class Preisach2D {
 		return BH2;
 	}
 	
-	public  Mat initialAve2(double Hm,int L,boolean distill){
+/*	public  Mat initialAve2(double Hm,int L,boolean distill){
 
 		
 		Mat BH1=new Mat(L,3);
@@ -226,7 +226,7 @@ public class Preisach2D {
 	
 		return BH;
 	}
-
+*/
 
 	public Mat getCurveAlt(Vect H){
 
@@ -569,7 +569,7 @@ public class Preisach2D {
 
 	public Mat magnetizeUpTo(double Bpeak,int L){
 
-		Vect H=new Vect().linspace(0, Hs, L);
+		Vect H=new Vect().linspace(0, (1+0.5*(this.cfm+this.cfw))*Hs, L);
 
 			
 		Vect[][] B=new Vect[L][nphi];
@@ -830,13 +830,12 @@ public class Preisach2D {
 		Vect seqH=new Vect().linspace(0, H1, L);
 		Mat BH2=this.getCurveAlt(seqH);
 		
-		seqH=new Vect().linspace(H1, -Hs, L);
+		seqH=new Vect().linspace(H1, -(1+0.5*(this.cfm+this.cfw))*Hs, L);
 		
 		 BH2=this.getCurveAlt(seqH);
 		
 		Mat BH3=this.distill(BH2);
-		
-
+	
 
 		int ix=0;
 

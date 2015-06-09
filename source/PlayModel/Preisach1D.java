@@ -6,24 +6,23 @@ import math.Mat;
 import math.Vect;
 import math.util;
 
-public class Preisach {
+public class Preisach1D {
 
 	public Random r;
 	public int M,nphi,kk,dim;
 	public long seed;
 	public double cfm,cfw,mean,width,Hs,Bs,DB;
-	public boolean[][] on;
-	public double[] phi;
-	public double[][][] a;
-	public double[][] K;
+	public boolean[] on;
+	public double[][] a;
+	public double[] K;
 	public double  epsdB=1e-2;
-	public double  epsdBdH=1e-3;
+	public double  epsdBdH=1e-5;
 
 
-	public Preisach(){}
+	public Preisach1D(){}
 
 
-	public Preisach(int M, double mean,double width,double Hmax,double Bs, long seed){
+	public Preisach1D(int M, double mean,double width,double Hmax,double Bs, long seed){
 
 		this.M=M;
 		this.mean=mean;
@@ -34,16 +33,8 @@ public class Preisach {
 		this.DB=Bs/M;
 		
 		
-		dim=2;
+		dim=1;
 
-		// int n1=9;
-		 
-		// this.nphih=n1;
-		 
-		 cfm=.0;
-		 cfw=.0;
-		 
-		 nphi=38;
 		 
 		 double dphiRad=PI/nphi;
 		 
@@ -51,146 +42,42 @@ public class Preisach {
 			 
 		r=new Random(3564656);
 
-		K=new double[M][nphi];
-		a=new double[M][2][nphi];
-		on=new boolean[M][nphi];
-		phi=new double[nphi];
-		
-		for(int k=0;k<nphi;k++){
-			int kp=k;
-			
-			phi[kp]=kp*180.0/nphi;
-			double phirad=phi[kp]*Math.PI/180;
+		K=new double[M];
+		a=new double[M][2];
+		on=new boolean[M];
+
+
 
 		for(int j=0;j<M;j++){
 
-			K[j][kp]=1-.0*sin(phirad);
+			K[j]=1;
 
-			double am=mean*r.nextGaussian()*(1+cfm*abs(sin(phirad)));
-			double d=width*r.nextDouble()*(1+cfw*abs(sin(phirad)));
-			a[j][0][kp]=am-d/2;
+			double am=mean*r.nextGaussian();
+			double d=abs(width*r.nextGaussian());
+			a[j][0]=am-d/2;
 
-			a[j][1][kp]=am+d/2;
+			a[j][1]=am+d/2;
 
 
-		}
 		}
 
 
 	}
 	
-	public Preisach deepCopy(){
+	public Preisach1D deepCopy(){
 		
 		Random r=new Random();
 		long ss=this.seed;
-		Preisach pr=new Preisach(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
+		Preisach1D pr=new Preisach1D(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
 		
 		return pr;
 	}
 
-	public static void main(String[] args)
+	public static void main2(String[] args)
 	{
 
-		double Bs=1.5;
-		double Hs=1600;
+		
 
-		int nInit=1;
-		int nMajor=1;
-		int nSymLoops=1;
-		int nDescending=0;
-		int nAscending=0;
-		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
-
-		int Mp=1000;
-		double mean=200;
-		double width=500;
-
-		Preisach ps=new Preisach(Mp,mean,width,Hs,Bs,3564656);
-
-		ps.demagnetize();
-		
-		int dim=2;
-		
-		int steps=360;
-		int nc=1;
-		double t=0;
-		double dt=1.0/steps;
-		int L=nc*steps;
-		Mat H=new Mat(L,dim);
-		int jx=0;
-		for (int n = 0; n <nc; ++n)
-		for (int i = 0; i <steps/4; ++i){
-	
-			double Hm=(1-exp(-4*t/nc))*Hs/4;
-			
-		Hm=Hs;
-			H.el[jx][0] = Hm*sin(2 * PI*t);
-			H.el[jx][1] = Hm*sin(2 * PI*t);
-			t+=dt;
-			jx++;
-			
-		}
-
-
-	//	H1=H.getColVect(1);
-		
-	//	util.plot(H.el);
-		
-		
-		
-		Mat BHv=ps.getLocus2D(H);
-		
-		//BHv.show();
-		
-		Vect H1=BHv.getColVect(0);
-		Vect B1=BHv.getColVect(2);
-		
-		Vect Hn=new Vect(L);
-		Vect Bn=new Vect(L);
-		for (int i = 0; i <L;i++){
-			Hn.el[i]=new Vect(BHv.el[i][0],BHv.el[i][1]).norm();
-			Bn.el[i]=new Vect(BHv.el[i][2],BHv.el[i][3]).norm();
-		}
-		
-		util.plot(Hn,Bn);
-/*		Mat BHp=ps.getCurve(H1);
-		BHp.show();
-		util.plot(BHp.el);*/
-		
-		if(dim==1){
-		util.pr(ps.getRes());
-	
-		int ix=0;
-		
-		Mat[] BH=new Mat[10];
-		
-		ps.demagnetize(Hs,20);
-		util.pr(ps.getRes());
-		//Mat BH=ps.magnetizeUpTo(Bs,500);
-		//util.pr(ps.getRes());
-		/*Mat BH=ps.magnetizeDownTo(-.75,200);
-		util.pr(ps.getRes());
-		ps.demagnetize(-Hs,20);
-		util.pr(ps.getRes());
-		//Mat BH=ps.getCurve(new Vect().linspace(0, ps.Hs,100));
-	//	BH.*/
-	//	util.plotBunch(BH.el);
-		//BH=ps.demagnetize(Hs);
-		//util.plotBunch(BH.el);	
-		//BH=ps.magnetize();
-	//	util.pr(ps.getRes());
-		//BH[ix++]=ps.symMajorFull(100);
-	/*	BH[ix++]=ps.symDesc(.7,500);
-		 BH[ix++]=ps.symAsc(.7,500);
-		 BH[ix++]=ps.symFull(.7,500);*/
-		 BH[ix++]=ps.revAsc(.7,500);
-	//	BH=ps.symMajorAsc(100);
-		/*util.pr(ps.getRes());
-		util.plotBunch(BH.el);*/
-		/*util.pr(ps.getRes());
-*/
-		util.plotBunch(BH,ix);
-		}
 
 
 	}
@@ -257,17 +144,17 @@ public Mat magnetizeUpTo(double Bpeak,int L){
 			for(int j=0;j<M;j++)
 			{
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB+=this.DB*K[j][kk];
-						on[j][kk]=true;
+				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
+					if(!on[j]){
+						dB+=this.DB*K[j];
+						on[j]=true;
 					}
 				}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
+				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
 
-					if(on[j][kk]){
-						dB-=this.DB*K[j][kk];
-						on[j][kk]=false;
+					if(on[j]){
+						dB-=this.DB*K[j];
+						on[j]=false;
 					}
 				}
 
@@ -317,17 +204,17 @@ public Mat magnetizeDownTo(double Bpeak,int L){
 			for(int j=0;j<M;j++)
 			{
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB+=this.DB*K[j][kk];
-						on[j][kk]=true;
+				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
+					if(!on[j]){
+						dB+=this.DB*K[j];
+						on[j]=true;
 					}
 				}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
+				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
 
-					if(on[j][kk]){
-						dB-=this.DB*K[j][kk];
-						on[j][kk]=false;
+					if(on[j]){
+						dB-=this.DB*K[j];
+						on[j]=false;
 					}
 				}
 
@@ -398,17 +285,17 @@ public Mat getCurveX(Vect H){
 			for(int j=0;j<M;j++)
 			{
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB+=this.DB*K[j][kk];
-						on[j][kk]=true;
+				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
+					if(!on[j]){
+						dB+=this.DB*K[j];
+						on[j]=true;
 					}
 				}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
+				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
 
-					if(on[j][kk]){
-						dB-=this.DB*K[j][kk];
-						on[j][kk]=false;
+					if(on[j]){
+						dB-=this.DB*K[j];
+						on[j]=false;
 					}
 				}
 
@@ -430,83 +317,13 @@ public Mat getCurveX(Vect H){
 	
 
 	
-	public Mat getLocus2D(Mat H){
-
-
-		int dim=H.nCol;
-
-		int n1=this.nphi;
-		
-
-		Preisach[] pr=new Preisach[n1];
-		
-		int L=H.nRow;
-		
-		Vect Hn=new Vect(L);
-		Vect[] Bn=new Vect[n1];
-		
-		Mat BH=new Mat(L,4);
-
-
-			Vect er=new Vect(dim);
-			
-			for(int k=0;k<n1;k++){
-				
-				int kp=k;
-				kp=0;
-			//	kp=0;
-				
-		/*		pr[kp]=this.deepCopy();
-				
-				pr[kp].kk=kp;
-				pr[kp].kk=kp;
-
-				pr[kp].demagnetize();*/
-			
-				double phirad= phi[kp]*Math.PI/180;
-			
-				er.el[0]=Math.cos(phirad);
-				er.el[1]=Math.sin(phirad);
-				
-				for(int i=0;i<L;i++)	
-					Hn.el[i]=new Vect(H.el[i]).dot(er);
-				
-			
-				
-				//Mat BH1=pr[kp].getCurve(Hn);
-				Mat BH1=this.getCurve(Hn);
-				
-				Bn[kp]=BH1.getColVect(1);
-				
-	
-
-				
-				for(int i=0;i<L;i++){
-	
-					BH.el[i][2]=BH.el[i][2]+Bn[kp].el[i]*er.el[0];
-					BH.el[i][3]=BH.el[i][3]+Bn[kp].el[i]*er.el[1];
-				}
-			}
-			
-
-			for(int i=0;i<L;i++){
-				BH.el[i][2]*=1.0/n1;
-				BH.el[i][3]*=1.0/n1;
-				BH.el[i][0]=H.el[i][0];
-				BH.el[i][1]=H.el[i][1];
-			}
-		
-
-		return BH;
-
-	}
 
 	public double getRes(){
 		double Br=0;
 
 		for(int j=0;j<M;j++){
 
-			if(on[j][kk]) 
+			if(on[j]) 
 				Br+=this.DB;
 			else	
 				Br+=-this.DB;
@@ -517,40 +334,6 @@ public Mat getCurveX(Vect H){
 		return Br;
 	}
 	
-/*	public Vect getResV(){
-		int ix=0;
-		
-		Vect Bres= new Vect(dim);
-		Vect eph=new Vect(dim);
-		
-		for(int k=0;k<this.nphi;k++){
-		
-			double phirad=PI*phi[k]/180;
-			
-			eph.el[0]=Math.cos(phirad);
-			eph.el[1]=Math.sin(phirad);
-
-		for(int j=0;j<M;j++){
-
-			if(on[j][k]) {
-				Bres=Bres.add(eph.times(this.DBv));
-
-			}
-			else{
-				ix++;
-				Bres=Bres.sub(eph.times(this.DBv));
-			}
-
-
-		}
-
-	}
-		
-		util.pr(ix*this.DBv);
-
-		return Bres;
-	}*/
-
 
 	public  Mat initial(int L){
 		
@@ -665,6 +448,8 @@ public Mat getCurveX(Vect H){
 	public  Mat symFull(double Bpeak,int L){
 		
 		Mat BH1=this.symAsc(Bpeak,L);
+
+
 		Mat BH2=this.symDesc(Bpeak,L);
 		int L1=BH1.nRow;
 		int L2=BH2.nRow;
@@ -704,17 +489,17 @@ public Mat getCurveX(Vect H){
 		for(int j=0;j<M;j++)
 		{
 
-			if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-				if(!on[kk][j]){
-					dB+=this.DB*K[j][kk];
-					on[j][kk]=true;
+			if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
+				if(!on[j]){
+					dB+=this.DB*K[j];
+					on[j]=true;
 				}
 			}
-			else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
+			else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
 
-				if(on[j][kk]){
-					dB-=this.DB*K[j][kk];
-					on[j][kk]=false;
+				if(on[j]){
+					dB-=this.DB*K[j];
+					on[j]=false;
 				}
 			}
 
@@ -766,17 +551,17 @@ public Mat getCurveX(Vect H){
 			for(int j=0;j<M;j++)
 			{
 
-				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1][kk]){
-					if(!on[j][kk]){
-						dB+=this.DB*K[j][kk];
-						on[j][kk]=true;
+				if(H.el[i]>H.el[i-1] && H.el[i]>a[j][1]){
+					if(!on[j]){
+						dB+=this.DB*K[j];
+						on[j]=true;
 					}
 				}
-				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0][kk] ){
+				else if(H.el[i]<H.el[i-1] && H.el[i]<a[j][0] ){
 
-					if(on[j][kk]){
-						dB-=this.DB*K[j][kk];
-						on[j][kk]=false;
+					if(on[j]){
+						dB-=this.DB*K[j];
+						on[j]=false;
 					}
 				}
 
