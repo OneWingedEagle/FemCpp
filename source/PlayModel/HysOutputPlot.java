@@ -87,8 +87,8 @@ int L=Integer.parseInt(line);
 					Hr.el[i]=new Vect(XX[1].el[i][0],XX[1].el[i][1]).norm();
 					Br.el[i]=new Vect(XX[0].el[i][0],XX[0].el[i][1]).norm();
 				}
-				Hr.hshow();
-				Br.hshow();
+				//Hr.show();
+			//	Br.show();
 
 			//	util.plot(Hr,Br);
 

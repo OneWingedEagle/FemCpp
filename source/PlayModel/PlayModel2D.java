@@ -77,14 +77,16 @@ public class PlayModel2D {
 
 		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
 		
-		Mat R=ps.getLocusHRotation(1.3);
+	//	Mat R=ps.getLocusHRotation(1.3);
+		
+		Mat R=ps.getLocusBRotation(1000,100,4);
 		
 		//R.show();
 		
 		//Mat BxBy=this.getHBij(R, 0);
 		
-		//util.plot(R.getColVect(2),R.getColVect(3));
-		util.plot(R.getColVect(0),R.getColVect(1));
+		util.plot(R.getColVect(2),R.getColVect(3));
+		//util.plot(R.getColVect(0),R.getColVect(1));
 	}
 
 

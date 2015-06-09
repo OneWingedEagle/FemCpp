@@ -1,6 +1,7 @@
 package PlayModel;
 
 import java.util.Random;
+
 import static java.lang.Math.*;
 import math.Mat;
 import math.Vect;
@@ -34,8 +35,8 @@ public class Preisach2D {
 
 		dim=2;
 
-		cfm=2;
-		cfw=2;
+		cfm=0;
+		cfw=0;
 
 		nh=9;
 
@@ -241,7 +242,22 @@ public class Preisach2D {
 	}
 	
 	
-	
+	public Mat getLocusBRotation(double Hm,int Lc,int Nc){
+		
+		int L=Nc*Lc;
+		Mat Hp=new Mat(L,2);
+		for(int j=0;j<L;j++){
+			Hp.el[j][0]=Hm*Math.cos(4*j*Math.PI/L);
+			Hp.el[j][1]=Hm*Math.sin(4*j*Math.PI/L);
+		}
+		
+		return getLocus(Hp);
+		
+		
+		
+	}
+
+		
 
 	public Mat getLocus(Mat H){
 
