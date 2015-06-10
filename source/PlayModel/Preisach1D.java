@@ -110,7 +110,7 @@ public class Preisach1D {
 		for(int i=0;i<nCycles;i++)
 			for(int j=0;j<L;j++){
 
-					double x=(1-(t+dt)/nCycles)*Math.sin(2*Math.PI*t);
+					double x=(1-(t+dt)/nCycles)*Math.sin(2*Math.PI*t-PI/2);
 					//double x=Math.exp(-cc*t)*Math.sin(2*Math.PI*t);
 				t+=dt;
 				H.el[ix]=x*Hm;

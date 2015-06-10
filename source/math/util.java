@@ -36,12 +36,6 @@ public class util {
 	}
 	
 	
-	public double f(double M, double K, double x)
-	{
-	return -K*x/M;
-	}
-	
-	
 	public static double max(double[] x){
 		double max=x[0];
 		for(int i=1;i<x.length;i++)

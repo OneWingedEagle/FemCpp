@@ -105,7 +105,7 @@ public class PlayModel1D {
 		int nInit=0;
 		int nMajor=1;
 		int nSymLoops=0;
-		int nDescending=8;
+		int nDescending=0;
 		int nAscending=0;
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 

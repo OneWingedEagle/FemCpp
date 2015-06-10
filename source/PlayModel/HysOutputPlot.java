@@ -19,6 +19,7 @@ import fem.Model;
 
 public class HysOutputPlot {
 	
+Mat BB,HH;
 
 String regex="[:; ,\\t]+";
 
@@ -26,6 +27,8 @@ String regex="[:; ,\\t]+";
 public static void main(String[] args){
 
 	HysOutputPlot pg=new HysOutputPlot();
+	
+	pg.loadData();
 	
 }
 	
@@ -36,7 +39,7 @@ public  HysOutputPlot(){
 //	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
 
 	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-	String file="C:\\Works\\HVID\\output";
+	/*String file="C:\\Works\\HVID\\output";
 	
 
 		try{
@@ -104,9 +107,98 @@ int L=Integer.parseInt(line);
 		
 			catch(IOException e){System.err.println("Error in loading BH data file.");
 
+			}*/
+
+		}
+
+public void loadData(){
+
+	/*String file=util.getFile();
+	if(file==null || file.equals("") )return false;*/
+//	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
+
+	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
+	String file="C:\\Works\\HVID\\output";
+	
+
+		try{
+			FileReader fr=new FileReader(file);
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			String s;
+			String[] sp;
+
+
+			line=br.readLine();
+			line=br.readLine();
+			line=br.readLine();
+
+int L=Integer.parseInt(line);
+
+	Mat bbhh=new Mat(L,4);
+	
+	for( int p=0;p<L;p++)
+	{
+		line=br.readLine();
+		double[] ar=this.getCSV(line);
+		bbhh.el[p]=ar;
+	}
+		
+			
+			
+			
+			BB=new Mat(L,2);
+			HH=new Mat(L,2);
+			
+		
+		BB.setCol(bbhh.getColVect(0).times(1), 0);
+		BB.setCol(bbhh.getColVect(1).times(1), 1);
+			
+			HH.setCol(bbhh.getColVect(2), 0);
+			HH.setCol(bbhh.getColVect(3), 1);
+			
+			int Lx=90;
+			BB.el[Lx][0]*=2;
+			BB.el[Lx][1]*=2;
+			HH.el[Lx][0]*=2;
+			HH.el[Lx][1]*=2;
+			
+					
+			Mat[] XX=new Mat[2];
+			XX[0]=BB.times(60);
+			XX[1]=HH;
+			util.plotBunch(XX);
+			
+			
+				Vect Hr=new Vect(BB.nRow);
+			Vect Br=new Vect(BB.nRow);
+			
+				for(int i=0;i<Hr.length;i++){
+					Hr.el[i]=new Vect(HH.el[i][0],HH.el[i][1]).norm();
+					Br.el[i]=new Vect(BB.el[i][0],BB.el[i][1]).norm();
+				}
+				//Hr.show();
+			//	Br.show();
+
+			//util.plot(Hr,Br);
+				
+				
+
+	
+			//BH[1].show();
+			
+			br.close();
+			fr.close();
+	
+		
+		
+			}
+		
+			catch(IOException e){System.err.println("Error in loading BH data file.");
+
 			}
 
-		}	
+		}
 
 
 		private double[] getCSV(String line){

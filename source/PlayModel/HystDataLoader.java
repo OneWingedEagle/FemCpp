@@ -24,7 +24,10 @@ public class HystDataLoader {
 	private String regex2="[\\[\\]\\s: ,=\\t]+";
 
 	
-public static void main2(String[] args){}
+public static void main2(String[] args){
+	
+	
+}
 	
 
 	public void loadData(PlayModel1D pm, String file){
