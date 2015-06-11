@@ -29,7 +29,7 @@ public class ScalarPlayModelDataGen {
 		HysDataGraph pg=new HysDataGraph();
 		
 		pg.loadHysData();
-		
+
 		double Bm=1;
 		Mat Hanixy=new Mat(pg.nAni,2);
 		for(int i=0;i<pg.nAni;i++){
@@ -46,13 +46,18 @@ public class ScalarPlayModelDataGen {
 	//	util.plot(Hanixy);
 		
 		ScalarPlayModelDataGen pm=new ScalarPlayModelDataGen();
+		
 
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataH";
 		
 		String file2="C:\\Works\\HVID\\hysRotation.txt";
 		Loader ld=new Loader();
+
 		Mat BHij=new Mat(ld.loadArrays(1024,69,file2));
+		
+
+
 		
 		Mat[] BB=new Mat[17];
 		Mat[] HH=new Mat[17];
@@ -87,7 +92,7 @@ public class ScalarPlayModelDataGen {
 			double ang2=util.getAng(new Vect(M2[2].el[i]));
 			v.el[i]=acos(cos(ang1-ang2))*180/PI;
 		}
-		
+
 		util.plot(v);
 	
 		//M2[2]=Hanixy;
@@ -139,7 +144,7 @@ public class ScalarPlayModelDataGen {
 	
 	//Ba2.show();
 	
-	//util.plotBunch(M2,2);
+	util.plotBunch(M2,2);
 	
 /*Mat BHani2x=new Mat(18,18);
 Mat BHani2y=new Mat(18,18);

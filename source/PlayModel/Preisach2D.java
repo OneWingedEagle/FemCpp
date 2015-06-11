@@ -35,7 +35,7 @@ public class Preisach2D {
 
 		dim=2;
 
-		cfm=2;
+		cfm=0;
 		cfw=2;
 
 		nh=9;
@@ -128,102 +128,44 @@ public class Preisach2D {
 		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
 
 		//ps.getRes().hshow();
+		
 
 
-		Mat R=ps.getLocusHRotation(.4);
+
+/*		Mat R=ps.getLocusHRotation(.4);
 	
 		R.show();
-		
+		*/
 		
 
 
 
 	}
 	
-	public  Mat initial(double Hm,int L){
-		return initial(Hm,L,true);
+	public  Mat initial(double Bpeak,int L){
+	
+		this.demagnetize();
+		Mat BH1=this.magnetizeUpTo(Bpeak,L);
+
+		
+		return BH1;
 	}
 
-	public  Mat initial(double Hm,int L, boolean distill){
-		
+/*	public  Mat initial(double Hm,int L, boolean distill){
+
 	
 		this.demagnetize();
 
 		Vect seqH=new Vect().linspace(0, Hm, L);
 
 		Mat BH1=this.getCurveAlt(seqH);
+		util.plot(BH1.getColVect(0),BH1.getColVect(1));
 		
 		if(!distill) return BH1;
 
 		Mat BH=this.distill(BH1);
 
 
-		return BH;
-	}
-	
-	public  Mat initialAve(double Hm,int L){
-		
-		Mat H=new Mat(L,2);
-		Vect B=new Vect(L);
-		Vect Hr=new Vect().linspace(0,Hm, L);
-		
-		for(int kh=-nh;kh<=nh;kh++){
-		
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
-			
-		this.demagnetize();
-
-		for(int i=0;i<L;i++){
-			
-			H.el[i][0]=Hr.el[i]*Math.cos(kh*dphiRad);
-			H.el[i][1]=Hr.el[i]*Math.sin(kh*dphiRad);
-		}
-
-
-		Mat BH2=this.getLocus(H);
-
-		Vect Bk=new  Vect(L);
-		
-		for(int i=0;i<L;i++){
-		Bk.el[i]=new Vect(BH2.el[i][2],BH2.el[i][3]).dot(er);
-		}
-		
-		B=B.add(Bk);
-		}
-		
-
-		Mat BH1=new Mat(L,2);
-		BH1.setCol(Hr, 0);
-		BH1.setCol(B.times(1.0/nphi), 1);
-		
-		Mat BH2=distill(BH1);
-	
-		return BH2;
-	}
-	
-/*	public  Mat initialAve2(double Hm,int L,boolean distill){
-
-		
-		Mat BH1=new Mat(L,3);
-		for(int kh=-nh;kh<=nh;kh++){
-			
-			for(int j=0;j<nphi;j++)
-			for(int i=0;i<M;i++)
-				on[i][j]=false;
-			
-			this.kRotated=kh+nh;
-			BH1=BH1.add(this.initial(Hm,L,distill));
-			
-		}
-		
-		this.kRotated=0;
-
-		BH1=BH1.times(1.0/nphi);
-		
-		Mat BH=distill(BH1);
-		
-		
-	
 		return BH;
 	}
 */
@@ -299,7 +241,7 @@ public class Preisach2D {
 			BH.el[i][2]=Bsum[i].el[1];
 		}
 
-	//	BH.transp().show();
+
 		return BH;
 		
 	
@@ -541,7 +483,12 @@ public class Preisach2D {
 
 	public Mat demagnetize(double Hm,int L,int nCycles){
 
+		
 
+		for(int k=0;k<this.nphi;k++)
+			for(int j=0;j<this.M;j++)
+				on[j][k]=false;
+			
 		double t=0;
 		double dt=1./L;
 
@@ -553,14 +500,31 @@ public class Preisach2D {
 		for(int i=0;i<nCycles;i++)
 			for(int j=0;j<L;j++){
 
-				double x=(1-(t+dt)/nCycles)*Math.sin(2*Math.PI*t);
+				double x=(1-(t+dt)/nCycles)*Math.sin(2*Math.PI*t-PI/2);
 				//double x=Math.exp(-cc*t)*Math.sin(2*Math.PI*t);
 				t+=dt;
 				H.el[ix]=x*Hm;
 				ix++;
 			}
+		
+		Mat Hp=new Mat(nCycles*L,2);
 
-		Mat BH=this.getCurveAlt(H);
+		  ix=0;
+		  t=0;
+		for(int i=0;i<nCycles;i++)
+			for(int j=0;j<L;j++){
+
+				double x=(1-(t+dt)/nCycles)*Math.sin(2*Math.PI*t-PI/2);
+				double y=(1-(t+dt)/nCycles)*Math.cos(2*Math.PI*t-PI/2);
+				//double x=Math.exp(-cc*t)*Math.sin(2*Math.PI*t);
+				t+=dt;
+				Hp.el[ix][0]=x*Hm;
+				Hp.el[ix][1]=y*Hm;
+				ix++;
+			}
+
+
+		Mat BH=this.getLocus(Hp);
 
 		return BH;
 
@@ -569,7 +533,7 @@ public class Preisach2D {
 
 	public Mat magnetizeUpTo(double Bpeak,int L){
 
-		Vect H=new Vect().linspace(0, (1+0.5*(this.cfm+this.cfw))*Hs, L);
+		Vect H=new Vect().linspace(0, Hs, L);
 
 			
 		Vect[][] B=new Vect[L][nphi];
@@ -656,110 +620,6 @@ public class Preisach2D {
 
 	}
 
-
-	public Mat magnetizeUpToAve(double Bpeak,int L){
-
-		Vect H=new Vect().linspace(0, Hs, L);
-
-			
-		Vect[][] B=new Vect[L][nphi];
-		for(int i=0;i<L;i++)
-			for(int k=0;k<nphi;k++)
-				B[i][k]=new Vect(2);
-
-		Vect Hr=new Vect(L);
-		
-
-		for(int kh=-nh;kh<=nh;kh++){
-
-
-			int k=kh+nh;
-
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
-
-		
-				Hr=H.times(cos(kh*dphiRad));
-
-			for(int i=0;i<L;i++){
-
-
-				if(i==0){
-					//B[i][k]=er.times(this.getRes());
-					B[i][k]=B[i][k].add(this.getRes(k));
-
-					continue;
-				}
-
-				Vect dB=new Vect(2);
-				for(int j=0;j<M;j++)
-				{
-
-					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][k]){
-						if(!on[j][k]){
-							dB=dB.add(er.times(this.DB2D*K[j][k]));
-							on[j][k]=true;
-						}
-					}
-					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][k] ){
-
-						if(on[j][k]){
-							dB=dB.sub(er.times(this.DB2D*K[j][k]));
-							on[j][k]=false;
-						}
-					}
-
-				}
-
-				B[i][k]=B[i-1][k].add(dB.times(2));
-				
-
-			}
-		}
-		
-		Vect[] Bsum=new Vect[L];
-
-		for(int i=0;i<L;i++){
-			Bsum[i]=new Vect(2);
-			for(int j=0;j<nphi;j++)
-				Bsum[i]=Bsum[i].add(B[i][j]);
-		}
-
-		Vect Bsum2=new Vect(L);
-
-		for(int i=0;i<L;i++){
-			
-			for(int kh=-nh;kh<=nh;kh++){
-
-				int k=kh+nh;
-
-				Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
-				Bsum2.el[i]+=Bsum[i].dot(er);
-			}
-			
-			Bsum2.el[i]/=nphi;
-		}
-		
-		//Bsum.show();
-		
-		int ix=0;
-		for(int i=0;i<L;i++){
-			if(Bsum2.el[i]>Bpeak) break;
-			ix++;
-		}
-
-		Mat BH1=new Mat(ix,2);
-		for(int i=0;i<ix;i++){
-			BH1.el[i][0]=H.el[i];
-			BH1.el[i][1]=Bsum2.el[i];
-		}
-
-		 Mat BH=this.distill(BH1);
-
-		 
-		return BH;
-
-	}
-
 	public Vect getRes(){
 
 		Vect Br=new Vect(2);
@@ -822,28 +682,39 @@ public class Preisach2D {
 		this.demagnetize();
 
 		Mat BH1=this.magnetizeUpTo(Bpeak,L);
+		
 
 		int L1=BH1.nRow;
 		double H1=BH1.el[L1-1][0];
 	
 		this.demagnetize();
-		Vect seqH=new Vect().linspace(0, H1, L);
-		Mat BH2=this.getCurveAlt(seqH);
 		
-		seqH=new Vect().linspace(H1, -(1+0.5*(this.cfm+this.cfw))*Hs, L);
+		Vect seqH=new Vect().linspace(0, H1, L).aug(new Vect().linspace(H1, -Hs, L));
+		BH1=this.getCurveAlt(seqH);
+
+	
 		
-		 BH2=this.getCurveAlt(seqH);
+	int jx=0;
 		
-		Mat BH3=this.distill(BH2);
+		while(jx<BH1.nRow && BH1.el[jx+1][0]>=BH1.el[jx][0]){jx++;}
+
+
+		
+		Mat BH2=new Mat(BH1.nRow-jx,3);
 	
 
+		for(int i=0;i<BH2.nRow;i++)
+			BH2.el[i]=BH1.el[i+jx];
+
+		
+	//util.plot(BH2.getColVect(0),BH2.getColVect(1));
+
+		
+		Mat BH3=this.distill(BH2);
+
 		int ix=0;
-
-		for(int i=0;i<BH3.nRow;i++){
-			if(BH3.el[i][1]>=-Bpeak)
-				ix++;
-		}
-
+		
+		while(ix<BH3.nRow && BH3.el[ix][1]>=-Bpeak){ix++;}
 
 		Mat BH4=new Mat(ix,3);
 
@@ -853,7 +724,8 @@ public class Preisach2D {
 			BH4.el[i][2]=BH3.el[i][2];
 		}
 
-
+		//util.plot(BH4.getColVect(0),BH4.getColVect(1));	 
+	
 		return BH4;
 	}
 		

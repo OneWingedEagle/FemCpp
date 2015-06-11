@@ -157,12 +157,12 @@ int L=Integer.parseInt(line);
 			HH.setCol(bbhh.getColVect(2), 0);
 			HH.setCol(bbhh.getColVect(3), 1);
 			
-			int Lx=90;
+/*			int Lx=90;
 			BB.el[Lx][0]*=2;
 			BB.el[Lx][1]*=2;
 			HH.el[Lx][0]*=2;
 			HH.el[Lx][1]*=2;
-			
+			*/
 					
 			Mat[] XX=new Mat[2];
 			XX[0]=BB.times(60);

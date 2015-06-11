@@ -15,6 +15,7 @@ import math.util;
 public class PlayModel2D {
 
 	public Mat shapeFunc;
+	public Preisach2D ps;
 	public int nSym, nDesc,nAsc, nInit, nMajor,nTotCurves;
 	public boolean anisot;
 	public double Bs,Hs;
@@ -25,114 +26,83 @@ public class PlayModel2D {
 
 
 	public PlayModel2D()
-	{	}
+	{	
+		int kr=0;
+		double Bs=1.8;
+		double Hs=1800*(1+0*Math.sin(kr*10*Math.PI/180));
+	
+		int Mp=2000;
+		double Hs0=1000;
+		double mean=.2*Hs0;
+		double width=.15*Hs0;
+
+		ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
+		ps.kRotated=kr;
+		
+		this.Hs=Hs;
+		this.Bs=Bs;
+	}
 
 	public static void main(String[] args)
 	{
 
 		PlayModel2D pm=new PlayModel2D();
 
-		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
-		//String file="C:\\Works\\HVID\\hys_dataH";
+		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
+		String file="C:\\Works\\HVID\\hys_dataH";
 
 		pm.createData(file);
 
 		//pm.rotation();
 		
-		
-		try {
+	//pm.getBHloop();
+/*		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 
 		//pm.loadData(file);
 
 
 	}
+
+	public void getBHloop(){
+		
+		double Hm=Hs/2;
+		int Lp=1000;
+		Mat Hp=new Mat(Lp,2);
+		for(int j=0;j<Lp;j++){
+			Hp.el[j][0]=Hm*Math.cos(4*j*Math.PI/Lp);//*Math.cos(phiRad);
+			Hp.el[j][1]=Hm*Math.sin(4*j*Math.PI/Lp);//*Math.cos(phiRad);
+		}
+
+
+
+		
+	Mat[] MM=new Mat[ps.nphi/2];
 	
-	public void rotation(){
-
-
-		double Bs=1.8;
-		double Hs=1800;
-
-		int nInit=0;
-		int nMajor=0;
-		int nSymLoops=0;
-		int nDescending=0;
-		int nAscending=0;
-		int nAni=1;
-		int Lani=18;
+	for(int i=0;i<ps.nphi/2;i++){
+		ps.demagnetize();
+		ps.kRotated=i;
+		Mat BH=ps.getCurveAlt(Hp.getColVect(1).times(1));
 		
-		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
-
-		int Mp=2000;
-		
-
-		double Hs0=1200;
-		double mean=.2*Hs0;
-		double width=.3*Hs0;
-
-		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
-		
-	//	Mat R=ps.getLocusHRotation(1.3);
-		
-		Mat R=ps.getLocusBRotation(1000,100,4);
-		
-		//R.show();
-		
-		//Mat BxBy=this.getHBij(R, 0);
-		
-		util.plot(R.getColVect(2),R.getColVect(3));
-		//util.plot(R.getColVect(0),R.getColVect(1));
+		MM[i]=this.getHBij(BH,0);
 	}
 
 
-	public void loadData(String file){/*
-
-		HystDataLoader hysLoader=new HystDataLoader();
-
-		hysLoader.loadData(this,file);
-
-		this.distillBHData();
-
-
-
-		this.nHyst=2*(this.nMajor+this.nSym);
-		double db=Bs/this.nHyst;
-
-		pk=new double[this.nHyst];
-		zk=new double[this.nHyst];
-
-		for(int i=0;i<pk.length;i++){
-			pk[i]=i*db;
-		}
-
-		for(int i=0;i<zk.length;i++){
-			zk[i]=i*db;
-		}
-
-		doIdentification();
-
-
-
-
-
-	*/}
+	util.plotBunch(MM);
+	}
 
 
 
 	public void createData(String file){
 
 
-		double Bs=1.8;
-		double Hs=1800;
-
 		int nInit=1;
-		int nMajor=0;
-		int nSymLoops=0;
+		int nMajor=1;
+		int nSymLoops=30;
 		int nDescending=0;
 		int nAscending=0;
 		int nAni=0;
@@ -140,14 +110,12 @@ public class PlayModel2D {
 		
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 
-		int Mp=1000;
+
+
 		
-
-		double Hs0=1800;
-		double mean=.2*Hs0;
-		double width=.2*Hs0;
-
-		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
+		double Bs=ps.Bs;
+		double Hs=ps.Hs;
+		
 
 		int LL=1000;
 	
@@ -159,8 +127,9 @@ public class PlayModel2D {
 		int ix=0;
 
 		for(int i=0;i<nInit;i++){
-
-			Mat BHtemp=ps.initial(Hs,LL);
+			
+			
+			Mat BHtemp=ps.initial(Bs,LL);
 
 			int L=200;
 			Vect B0=new Vect().linspace(0,.1,4);
@@ -174,7 +143,7 @@ public class PlayModel2D {
 
 			}
 			
-		
+		//	util.plot(BHs[ix].getColVect(0),BHs[ix].getColVect(1));
 
 		BHsr[ix]=this.getHrBr(BHs[ix]);
 		
@@ -185,25 +154,30 @@ public class PlayModel2D {
 		}
 		
 	
-		
 
 
 		for(int i=0;i<nMajor;i++){
 
 		Mat BHtemp=ps.symMajorDesc(LL);
-		
+
 		int L=400;
 		Vect B=new Vect().linspace(Bseff,-Bseff,L);
+	
 		BHs[ix]=new Mat(L,3);
 		for(int j=0;j<L;j++){
 			BHs[ix].el[j][0]=getH(BHtemp,B.el[j]);
 			BHs[ix].el[j][1]=B.el[j];
 
 		}
-		
 
+		BHs[ix]=BHtemp.deepCopy();
+		if(nInit>0){
+		//	BHs[ix].el[0][1]=BHs[0].el[BHs[0].nRow-1][1];
+		//BHs[ix].el[0][0]=this.getH(BHs[0],BHs[ix].el[0][1]);
+		}
+		
 		BHsr[ix]=this.getHBij(BHs[ix],0);
-			
+		
 			
 			ix++;
 
@@ -226,9 +200,13 @@ public class PlayModel2D {
 
 			}
 			
+			/*if(nInit>0)
+				BHs[ix].el[0][0]=this.getH(BHs[0],BHs[ix].el[0][1]);*/
+			
 
 			BHsr[ix]=this.getHBij(BHs[ix],0);
-				
+			
+
 				
 				ix++;
 
@@ -324,9 +302,12 @@ if(nAni>0)
 	//util.plotBunch(BHs);
 
 	boolean write =false;
+	
+	
 
 if(write){
 
+	double Hseff=BHs[0].el[BHs[0].nRow-1][0];
 
 	DecimalFormat dfB=new DecimalFormat("#.00");
 	DecimalFormat dfH=new DecimalFormat("#.0");
@@ -337,7 +318,7 @@ if(write){
 
 			pwBun.println(1+"\t"+1);
 			pwBun.println("*Bs*Hs*");
-			pwBun.println(Bs+"\t"+Hs);
+			pwBun.println(Bseff+"\t"+Hseff);
 
 			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
@@ -387,6 +368,46 @@ if(write){
 
 	}
 	
+	
+	public void rotation(){
+
+
+		double Bs=1.8;
+		double Hs=1800;
+
+		int nInit=1;
+		int nMajor=0;
+		int nSymLoops=0;
+		int nDescending=0;
+		int nAscending=0;
+		int nAni=1;
+		int Lani=18;
+		
+		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
+
+		int Mp=2000;
+		
+
+		double Hs0=1000;
+		double mean=.2*Hs0;
+		double width=.3*Hs0;
+
+		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
+		
+	//	Mat R=ps.getLocusHRotation(1.3);
+		
+		Mat R=ps.getLocusBRotation(1000,100,4);
+		
+		//R.show();
+		
+		//Mat BxBy=this.getHBij(R, 0);
+		
+		util.plot(R.getColVect(2),R.getColVect(3));
+		//util.plot(R.getColVect(0),R.getColVect(1));
+	}
+
+
+	public void loadData(String file){}
 
 	public void doIdentification(){
 		this.shapeFunc=new Mat(nHyst+1,nHyst+1);
@@ -520,22 +541,39 @@ if(write){
 		
 		if(ascending){
 
-		if(B<=BH.el[i1][ib])
-			return BH.el[i1][ih];
-		if(B>=BH.el[i2][ib])
-			return BH.el[i2][ih];
-			/*return BH.el[i][ih]+(B-BH.el[i][ib])*(BH.el[i+1][ih]-BH.el[i][ih])/(BH.el[i+1][ib]-BH.el[i][ib]);
-		i=BH.nRow-1;
+		if(B<=BH.el[i1][ib]){
+			double cc=(BH.el[i1+1][ih]-BH.el[i1][ih])/(BH.el[i1+1][ib]-BH.el[i1][ib]);
+			return BH.el[i1][ih];//+cc*(B-BH.el[i1][ib]);
+			//return BH.el[i1][ih];
+		}
+		if(B>=BH.el[i2][ib]){
+			//return BH.el[i2][ih];
+			double cc=(BH.el[i2][ih]-BH.el[i2-1][ih])/(BH.el[i2][ib]-BH.el[i2-1][ib]);
+			return BH.el[i2][ih];//+cc*(B-BH.el[i2][ib]);
+			//return BH.el[i][ih]+(B-BH.el[i][ib])*(BH.el[i+1][ih]-BH.el[i][ih])/(BH.el[i+1][ib]-BH.el[i][ib]);
+		}
+		/*i=BH.nRow-1;
 		if(B>=BH.el[i][ib])
 			return BH.el[i][ih]+(B-BH.el[i][ib])*(BH.el[i][ih]-BH.el[i-1][ih])/(BH.el[i][ib]-BH.el[i-1][ib]);
 		*/
 		}
 		else{
+			
+			if(B<=BH.el[i2][ib]){
+				double cc=(BH.el[i2][ih]-BH.el[i2-1][ih])/(BH.el[i2][ib]-BH.el[i2-1][ib]);
+				return BH.el[i2][ih];//+cc*(B-BH.el[i2][ib]);
+				//return BH.el[i1][ih];
+			}
+			if(B>=BH.el[i1][ib]){
+		
+		
+				//return BH.el[i2][ih];
+				double cc=(BH.el[i1+1][ih]-BH.el[i1][ih])/(BH.el[i1+1][ib]-BH.el[i1][ib]);
+			
+				
+				return BH.el[i1][ih];//+cc*(B-BH.el[i1][ib]);
+			}
 
-			if(B<=BH.el[i2][ib])
-				return BH.el[i2][ih];
-			if(B>=BH.el[i1][ib])
-				return BH.el[i1][ih];
 			}
 
 		int j=0;
@@ -545,8 +583,10 @@ if(write){
 		else
 			while(BH.el[j+1][ib]>B){j++;}
 		
+	
+		
 		double cc=(BH.el[j+1][ih]-BH.el[j][ih])/(BH.el[j+1][ib]-BH.el[j][ib]);
-
+	
 		double H=BH.el[j][ih]+(B-BH.el[j][ib])*cc;
 
 		
