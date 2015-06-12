@@ -4,6 +4,7 @@ import static java.lang.Math.*;
 
 import java.awt.Color;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.Frame;
 import java.io.File;
 import java.text.DecimalFormat;
@@ -32,12 +33,6 @@ public class util {
 		
 		util.show(y);
 
-	}
-	
-	
-	public double f(double M, double K, double x)
-	{
-	return -K*x/M;
 	}
 	
 	
@@ -625,6 +620,12 @@ public class util {
 		plot("y=f(x)",Color.black,x,y);
 	}
 	
+public static void plot(Mat M){
+		
+		plot("y=f(x)",Color.black,M.el);
+	}
+
+	
 public static void plot(double[][] XY){
 		
 		plot("y=f(x)",Color.black,XY);
@@ -666,15 +667,17 @@ public static void plot(double[][] XY){
 	public static void plot(String name, Color c,double[][] XY){
 		
 		 Plot2DPanel plot = new Plot2DPanel();
-
+		
+		  plot.setFont( new Font("Times New Roman", 1, 13));
 		 plot.addLinePlot(name, c, XY);
-
+		//plot.setFont( new Font("Times New Roman", 1, 120));
+	//	 util.pr(plot.getFont().toString());
 		  JFrame frame = new JFrame("a plot panel");
 		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
-		
+	
 		
 	}
 	

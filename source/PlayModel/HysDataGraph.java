@@ -19,9 +19,11 @@ import fem.Model;
 public class HysDataGraph {
 	
 Mat[] BH;
+Mat rotLoss;
+Mat[] BHAni;
 int numb1;
 double Bs, Hs;
-int nInitial,nMajor,nSymLoop,nDescending,nAscending,nTotCurves;
+int nInitial,nMajor,nSymLoop,nDescending,nAscending,nTotCurves,nAni;
 String regex="[:; ,\\t]+";
 
 
@@ -39,7 +41,7 @@ public boolean loadHysData(){
 //	String file="C:\\Works\\HVID\\folder1\\data\\A_Bì¸óÕëŒèÃÉãÅ[Évhts_data\\hys_data";
 
 	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-	String file="C:\\Works\\HVID\\hys_dataH";
+	String file="C:\\Works\\HVID\\hys_dataWithLoss";
 	
 
 		try{
@@ -97,7 +99,6 @@ public boolean loadHysData(){
 				sp=line.split(regex);	
 				//if(sp.length==1)
 					L1=Integer.parseInt(sp[0]);
-					util.pr(L1);	
 		
 				BH[ip]=new Mat(L1,2);
 
@@ -112,9 +113,54 @@ public boolean loadHysData(){
 			
 						
 			}
+			
+			line=br.readLine();
+			line=br.readLine();
+			line=br.readLine();
+			
+			int nLoss=Integer.parseInt(line);
+			rotLoss=new Mat(nLoss,2);
+			line=br.readLine();
+			
+			for( int i=0;i<nLoss;i++){
+				line=br.readLine();
+				double[] BL=getCSV(line);
+				rotLoss.el[i][0]=BL[0];
+				rotLoss.el[i][1]=BL[1];
+			}
+			
+			line=br.readLine();
+			line=br.readLine();
+			line=br.readLine();
+			double[] dd=this.getCSV(line);
+			
+			nAni=(int)dd[0];
+			int Lani=(int)dd[1];
+			line=br.readLine();
+		
+			BHAni=new Mat[nAni];
+			
+			for( int i=0;i<nLoss;i++)
+				BHAni[i]=new Mat(Lani,3);
+				
+			for( int i=0;i<Lani;i++){
+				line=br.readLine();
+				double[] BL=getCSV(line);
+				double B=BL[0];
+				for(int j=0;j<nAni;j++){
+					BHAni[j].el[i][0]=B;
+					BHAni[j].el[i][1]=BL[j+1];
+				}
+			}
 
-			util.plotBunch(BH);
-			//BH[1].show();
+			line=br.readLine();
+			for( int i=0;i<Lani;i++){
+				line=br.readLine();
+				double[] BL=getCSV(line);
+				for(int j=0;j<nAni;j++){
+					BHAni[j].el[i][2]=BL[j+1];
+				}
+			}
 	
 			
 			return true;
