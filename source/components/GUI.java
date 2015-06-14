@@ -59,6 +59,12 @@ public class GUI extends JFrame implements ActionListener{
 					//dataFile= System.getProperty("user.dir") + "\\dataCondDular.txt";
 					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataModel2D.txt";
+					
+					meshFile= System.getProperty("user.dir") + "\\bunLabyringth.txt";
+					//dataFile= System.getProperty("user.dir") + "\\dataCondDular.txt";
+					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataLabyringth.txt";
+					
 				/*	meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";*/
 				}

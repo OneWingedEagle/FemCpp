@@ -52,7 +52,8 @@ public class MeshFactory {
 		//mf.translate(new Vect(200e-3,0));
 		//mf.meshQ();
 		
-		
+	//	mf.rescale(.1);
+		//mf.reRegionf();
 		double[] ar={1,1.5,2,3,3.5,4,5};
 		Vect v=new Vect(ar);
 		int[] regs={1,1,2,2,2,3};
@@ -115,7 +116,7 @@ public class MeshFactory {
 		
 	//	mf.getNeuMeshQ();
 		//mf.getPostMeshQ();
-		mf.getEMSolFlux(2);
+		//mf.getEMSolFlux(2);
 		
 		//mf.modifyEMSolFlux(2);
 		
@@ -1693,30 +1694,16 @@ public void hexaToTetra()
 		
 		for(int ir=1;ir<=1*model.numberOfRegions;ir++){
 
-		//	if(ir==4 || ir==16 || (ir>8&& ir<15)) continue;
-			if(ir!=3) continue;
+			if(ir==2) continue;
 			
 			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
 
 				
-				int[] vn=model.element[i].getVertNumb();
-
-				double h=model.node[vn[0]].getCoord(2)-model.node[vn[3]].getCoord(2);
-
 				Vect c=model.getElementCenter(i);		
-				Vect v2=c.v2();
-				double r=v2.norm();
-				if(/*r<.0875 && */c.el[2]<.01 || c.el[2]>.04) 	model.element[i].setRegion(4);
-				//if(/*r<.0875 && */c.el[2]<.001 || c.el[2]>.004) 	model.element[i].setRegion(4);
-				if(/*r<.0875 && */abs(c.el[2]-.0175)<.0001) 	model.element[i].setRegion(4);
-				if(/*r<.0875 && */abs(c.el[2]-.0275)<.0001) 	model.element[i].setRegion(4);
-				if(/*r<.0875 && */abs(c.el[2]-.0375)<.0001) 	model.element[i].setRegion(4);
-				//if(h<.000015) 	model.element[i].setRegion(3);
-				
-		
-			
-				
-				//if(model.getElementArea(i)<1e-7) model.element[i].setRegion(2);
+
+				for(int k=0;k<8;k++)
+				if(abs(c.el[0]-k*.1+.1)<.025) 	model.element[i].setRegion(2);
+
 
 			}
 		}

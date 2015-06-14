@@ -31,14 +31,14 @@ public class ScalarPlayModelDataGen {
 		pg.loadHysData();
 
 		double Bm=1;
-		Mat Hanixy=new Mat(pg.nAni,2);
-		for(int i=0;i<pg.nAni;i++){
+		Mat Hanixy=new Mat(pg.nAni[0],2);
+		for(int i=0;i<pg.nAni[0];i++){
 			double ang=i*PI/18;
 			int j=0;
-			while(pg.BHAni[i].el[j+1][0]<Bm+.01){j++;}
+			while(pg.BHAni[0][i].el[j+1][0]<Bm+.01){j++;}
 			
-			Hanixy.el[i][0]=pg.BHAni[i].el[j][1];
-			Hanixy.el[i][1]=pg.BHAni[i].el[j][2];
+			Hanixy.el[i][0]=pg.BHAni[i][0].el[j][1];
+			Hanixy.el[i][1]=pg.BHAni[i][0].el[j][2];
 			//Vect er=new Vect(cos(ang),sin(ang));
 		}
 		//Hanixy.show();
@@ -48,8 +48,8 @@ public class ScalarPlayModelDataGen {
 		ScalarPlayModelDataGen pm=new ScalarPlayModelDataGen();
 		
 
-		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
-		String file="C:\\Works\\HVID\\hys_dataH";
+		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
+	//	String file="C:\\Works\\HVID\\hys_dataH";
 		
 		String file2="C:\\Works\\HVID\\hysRotation.txt";
 		Loader ld=new Loader();

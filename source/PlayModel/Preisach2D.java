@@ -36,7 +36,7 @@ public class Preisach2D {
 		dim=2;
 
 		cfm=0;
-		cfw=2;
+		cfw=4;
 
 		nh=9;
 
@@ -110,36 +110,7 @@ public class Preisach2D {
 
 	public static void main2(String[] args)
 	{
-
-		double Bs=1.8;
-		double Hs=1000;
-
-		int nInit=1;
-		int nMajor=1;
-		int nSymLoops=1;
-		int nDescending=0;
-		int nAscending=0;
-		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
-
-		int Mp=5000;
-		double mean=.2*Hs;
-		double width=.3*Hs;
-
-		Preisach2D ps=new Preisach2D(Mp,mean,width,Hs,Bs,3564656);
-
-		//ps.getRes().hshow();
 		
-
-
-
-/*		Mat R=ps.getLocusHRotation(.4);
-	
-		R.show();
-		*/
-		
-
-
-
 	}
 	
 	public  Mat initial(double Bpeak,int L){
@@ -150,25 +121,6 @@ public class Preisach2D {
 		
 		return BH1;
 	}
-
-/*	public  Mat initial(double Hm,int L, boolean distill){
-
-	
-		this.demagnetize();
-
-		Vect seqH=new Vect().linspace(0, Hm, L);
-
-		Mat BH1=this.getCurveAlt(seqH);
-		util.plot(BH1.getColVect(0),BH1.getColVect(1));
-		
-		if(!distill) return BH1;
-
-		Mat BH=this.distill(BH1);
-
-
-		return BH;
-	}
-*/
 
 	public Mat getCurveAlt(Vect H){
 
@@ -548,6 +500,8 @@ public class Preisach2D {
 
 
 			int k=kh+nh;
+			
+			int kr=(k+kRotated)%nphi;
 
 			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
 
@@ -559,7 +513,7 @@ public class Preisach2D {
 
 				if(i==0){
 					//B[i][k]=er.times(this.getRes());
-					B[i][k]=B[i][k].add(this.getRes(k));
+					B[i][k]=B[i][k].add(this.getRes(kr));
 
 					continue;
 				}
@@ -568,17 +522,17 @@ public class Preisach2D {
 				for(int j=0;j<M;j++)
 				{
 
-					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][k]){
-						if(!on[j][k]){
-							dB=dB.add(er.times(this.DB2D*K[j][k]));
-							on[j][k]=true;
+					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][kr]){
+						if(!on[j][kr]){
+							dB=dB.add(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=true;
 						}
 					}
-					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][k] ){
+					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][kr] ){
 
-						if(on[j][k]){
-							dB=dB.sub(er.times(this.DB2D*K[j][k]));
-							on[j][k]=false;
+						if(on[j][kr]){
+							dB=dB.sub(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=false;
 						}
 					}
 
@@ -677,26 +631,28 @@ public class Preisach2D {
 		}
 
 		public  Mat symDesc(double Bpeak,int L){
-			
 
+			Mat[] m=new Mat[3];
+		
 		this.demagnetize();
 
 		Mat BH1=this.magnetizeUpTo(Bpeak,L);
-		
 
 		int L1=BH1.nRow;
 		double H1=BH1.el[L1-1][0];
 	
 		this.demagnetize();
-		
+
 		Vect seqH=new Vect().linspace(0, H1, L).aug(new Vect().linspace(H1, -Hs, L));
 		BH1=this.getCurveAlt(seqH);
 
-	
+		//util.plot(BH1.getColVect(0),BH1.getColVect(1));
 		
 	int jx=0;
 		
 		while(jx<BH1.nRow && BH1.el[jx+1][0]>=BH1.el[jx][0]){jx++;}
+		
+
 
 
 		
@@ -705,6 +661,7 @@ public class Preisach2D {
 
 		for(int i=0;i<BH2.nRow;i++)
 			BH2.el[i]=BH1.el[i+jx];
+
 
 		
 	//util.plot(BH2.getColVect(0),BH2.getColVect(1));
