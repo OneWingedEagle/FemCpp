@@ -1065,6 +1065,7 @@ x2.hshow();
 			System.out.println();
 	}
 	}
+	
 	public void rswap(int m, int n){
 		double[] temp=new double[this.nCol];
 		temp=this.el[m];

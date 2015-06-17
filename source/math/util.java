@@ -620,7 +620,7 @@ public class util {
 		plot("y=f(x)",Color.black,x,y);
 	}
 	
-public static void plot(Mat M){
+	public static void plot(Mat M){
 		
 		plot("y=f(x)",Color.black,M.el);
 	}

@@ -12,7 +12,7 @@ public class Preisach2D {
 	public Random r;
 	public int M,nphi,nh,dim,kRotated;
 	public long seed;
-	public double cfm,cfw,mean,width,Hs,Bs,DB2D,projCoef,dphiRad;
+	public double cfm,cfw,mean,width,Hs,BsM,Bseff,DB2D,projCoef,dphiRad;
 	public boolean[][] on;
 	public double[] phi;
 	public double[][][] a;
@@ -24,19 +24,20 @@ public class Preisach2D {
 	public Preisach2D(){}
 
 
-	public Preisach2D(int M, double mean,double width,double Hmax,double Bs, long seed){
+	public Preisach2D(int M, double mean,double width,double Hmax,double BsM,double Bseff, long seed){
 
 		this.M=M;
 		this.mean=mean;
 		this.width=width;
 		this.seed=seed;
 		this.Hs=Hmax;
-		this.Bs=Bs;
+		this.BsM=BsM;
+		this.Bseff=Bseff;
 
 		dim=2;
 
-		cfm=0;
-		cfw=4;
+		cfm=5;
+		cfw=5;
 
 		nh=9;
 
@@ -59,7 +60,7 @@ public class Preisach2D {
 		projCoef=sum;
 
 
-		DB2D=Bs/M/nphi/sum;;
+		DB2D=BsM/M/nphi/sum;;
 
 
 		r=new Random(3564656);
@@ -82,6 +83,7 @@ public class Preisach2D {
 				K[j][kp]=1-.0*sin(2*phirad);
 
 				double am=mean*r.nextGaussian()*(1+cfm*abs(sin(phirad)));
+				//double am=2*mean*(.5-r.nextDouble())*(1+cfm*abs(sin(phirad)));
 				double d=width*abs(r.nextGaussian())*(1+cfw*abs(sin(phirad)));
 
 				a[j][0][kp]=am-d/2;
@@ -101,7 +103,7 @@ public class Preisach2D {
 
 		//Random r=new Random();
 		long ss=this.seed;
-		Preisach2D pr=new Preisach2D(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
+		Preisach2D pr=new Preisach2D(this.M, this.mean,this.width,this.Hs,this.BsM,this.Bseff,ss);
 		pr.projCoef=this.projCoef;
 		pr.dphiRad=this.dphiRad;
 
@@ -231,13 +233,10 @@ public class Preisach2D {
 
 
 		for(int kh=-nh;kh<=nh;kh++){
-			//	for(int kh=0;kh<=0;kh++){
-
 
 			int k=kh+nh;
-
-
-
+			
+			int kr=(k+kRotated)%nphi;
 
 			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
 
@@ -250,7 +249,7 @@ public class Preisach2D {
 
 				if(i==0){
 
-					B[i][k]=B[i][k].add(this.getRes(k));
+					B[i][k]=B[i][k].add(this.getRes(kr));
 
 					continue;
 				}
@@ -259,17 +258,17 @@ public class Preisach2D {
 				for(int j=0;j<M;j++)
 				{
 
-					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][k]){
-						if(!on[j][k]){
-							dB=dB.add(er.times(this.DB2D*K[j][k]));
-							on[j][k]=true;
+					if(Hr.el[i]>Hr.el[i-1] && Hr.el[i]>a[j][1][kr]){
+						if(!on[j][kr]){
+							dB=dB.add(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=true;
 						}
 					}
-					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][k] ){
+					else if(Hr.el[i]<=Hr.el[i-1] && Hr.el[i]<a[j][0][kr] ){
 
-						if(on[j][k]){
-							dB=dB.sub(er.times(this.DB2D*K[j][k]));
-							on[j][k]=false;
+						if(on[j][kr]){
+							dB=dB.sub(er.times(this.DB2D*K[j][kr]));
+							on[j][kr]=false;
 						}
 					}
 
@@ -421,14 +420,14 @@ public class Preisach2D {
 
 
 	public Mat demagnetize(){
-		return demagnetize(Hs,200,20);
+		return demagnetize(Hs,100,20);
 	}
 	public Mat demagnetize(double Hm){
-		return demagnetize(Hm,200,20);
+		return demagnetize(Hm,100,20);
 	}
 
 	public Mat demagnetize(int nCycles){
-		return demagnetize(Hs,200,nCycles);
+		return demagnetize(Hs,100,nCycles);
 	}
 
 
@@ -627,7 +626,7 @@ public class Preisach2D {
 
 
 		public  Mat symMajorDesc(int L){
-			return symDesc(Bs,L);
+			return symDesc(Bseff,L);
 		}
 
 		public  Mat symDesc(double Bpeak,int L){
