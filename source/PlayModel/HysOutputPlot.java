@@ -87,21 +87,15 @@ int L=Integer.parseInt(line);
 			*/
 					
 			Mat[] XX=new Mat[2];
-			XX[0]=BB.times(60);
+			XX[0]=BB.times(1);
 			XX[1]=HH;
-			//util.plotBunch(XX);
+			util.plotBunch(XX);
 			
+			HH.show();
 			
 				Vect Hr=new Vect(BB.nRow);
 			Vect Br=new Vect(BB.nRow);
 			
-				for(int i=0;i<Hr.length;i++){
-					Hr.el[i]=new Vect(HH.el[i][0],HH.el[i][1]).norm();
-					Br.el[i]=new Vect(BB.el[i][0],BB.el[i][1]).norm();
-				}
-				//Hr.show();
-			//	Br.show();
-
 		
 				
 		double ang=Math.atan(XX[0].el[1][1]/XX[0].el[1][0]);
@@ -111,7 +105,7 @@ int L=Integer.parseInt(line);
 		for(int i=0;i<Hr.length;i++){
 			Hr.el[i]=new Vect(HH.el[i][0],HH.el[i][1]).dot(er);
 			Br.el[i]=new Vect(BB.el[i][0],BB.el[i][1]).dot(er);
-			util.pr(Hr.el[i]+"\t"+Br.el[i]);
+			//util.pr(Hr.el[i]+"\t"+Br.el[i]);
 		}
 
 		util.plot(Hr,Br);

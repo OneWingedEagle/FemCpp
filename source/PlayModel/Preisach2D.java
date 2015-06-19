@@ -10,9 +10,9 @@ import math.util;
 public class Preisach2D {
 
 	public Random r;
-	public int M,nphi,nh,dim,kRotated;
+	public int M,nphi,dim,kRotated;
 	public long seed;
-	public double cfm,cfw,mean,width,Hs,BsM,Bseff,DB2D,projCoef,dphiRad;
+	public double cfm,cfw,mean,width,Hs,BsM,Bseff,DB2D,dphiRad;
 	public boolean[][] on;
 	public double[] phi;
 	public double[][][] a;
@@ -39,7 +39,7 @@ public class Preisach2D {
 		cfm=5;
 		cfw=5;
 
-		nh=9;
+		int nh=18;
 
 		nphi=2*nh+1;
 
@@ -49,15 +49,13 @@ public class Preisach2D {
 
 
 		double sum=0;
-		for(int i=-nh;i<=nh;i++){
-			sum+=cos(i*dphiRad);
+		for(int i=0;i<nphi;i++){
+			sum+=sin(i*dphiRad);
 		}
 
 
 		sum/=nphi;
 
-
-		projCoef=sum;
 
 
 		DB2D=BsM/M/nphi/sum;;
@@ -72,23 +70,23 @@ public class Preisach2D {
 
 		double dphiDeg=180.0/(nphi-1);
 
-		for(int k=-nh;k<=nh;k++){
-			int kp=k+nh;
-
-			phi[kp]=k*dphiDeg;
+		for(int k=0;k<nphi;k++){
+	
+			phi[k]=k*dphiDeg;
+			
 			double phirad=k*this.dphiRad;
 
 			for(int j=0;j<M;j++){
 
-				K[j][kp]=1-.0*sin(2*phirad);
+				K[j][k]=1-.0*sin(2*phirad);
 
 				double am=mean*r.nextGaussian()*(1+cfm*abs(sin(phirad)));
 				//double am=2*mean*(.5-r.nextDouble())*(1+cfm*abs(sin(phirad)));
 				double d=width*abs(r.nextGaussian())*(1+cfw*abs(sin(phirad)));
 
-				a[j][0][kp]=am-d/2;
+				a[j][0][k]=am-d/2;
 
-				a[j][1][kp]=am+d/2;
+				a[j][1][k]=am+d/2;
 		
 
 
@@ -104,7 +102,6 @@ public class Preisach2D {
 		//Random r=new Random();
 		long ss=this.seed;
 		Preisach2D pr=new Preisach2D(this.M, this.mean,this.width,this.Hs,this.BsM,this.Bseff,ss);
-		pr.projCoef=this.projCoef;
 		pr.dphiRad=this.dphiRad;
 
 		return pr;
@@ -133,17 +130,16 @@ public class Preisach2D {
 				B[i][k]=new Vect(2);
 
 
-		for(int kh=-nh;kh<=nh;kh++){
+		for(int k=0;k<nphi;k++){
 
 
-			int k=kh+nh;
-			
 			int kr=(k+kRotated)%nphi;
 
-			Vect Halt=H.times(cos(kh*dphiRad));
+			
+			Vect Halt=H.times(cos(k*dphiRad));
 
 
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 			for(int i=0;i<L;i++){
 
@@ -232,13 +228,12 @@ public class Preisach2D {
 		Vect Hr=new Vect(L);
 
 
-		for(int kh=-nh;kh<=nh;kh++){
+		for(int k=0;k<nphi;k++){
 
-			int k=kh+nh;
 			
 			int kr=(k+kRotated)%nphi;
-
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+	
+			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 			for(int i=0;i<L;i++)
 				Hr.el[i]=new Vect(H.el[i]).dot(er);
@@ -333,12 +328,9 @@ public class Preisach2D {
 			H[i]=new Vect(cos(i*dphi),sin(i*dphi)).times(Hp);
 			}
 	//	H[i].hshow();
-		for(int kh=-nh;kh<=nh;kh++){
-	
-
-			int k=kh+nh;
-				
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+			for(int k=0;k<nphi;k++){
+					
+			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 		
 			Hrp=Hr;
@@ -495,17 +487,14 @@ public class Preisach2D {
 		Vect Hr=new Vect(L);
 		
 
-		for(int kh=-nh;kh<=nh;kh++){
+		for(int k=0;k<nphi;k++){
 
-
-			int k=kh+nh;
-			
 			int kr=(k+kRotated)%nphi;
 
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 		
-				Hr=H.times(cos(kh*dphiRad));
+				Hr=H.times(cos(k*dphiRad));
 
 			for(int i=0;i<L;i++){
 
@@ -578,12 +567,10 @@ public class Preisach2D {
 		Vect Br=new Vect(2);
 
 
-		for(int kh=-nh;kh<=nh;kh++){
-
-			int k=kh+nh;
+		for(int k=0;k<nphi;k++){
 
 
-			Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 			for(int j=0;j<M;j++)
 			{
@@ -603,10 +590,9 @@ public class Preisach2D {
 
 	public Vect getRes(int k){
 
-		int kh=k-nh;
 		Vect Br=new Vect(2);
 
-		Vect er=new Vect(cos(kh*dphiRad),sin(kh*dphiRad));
+		Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
 		for(int j=0;j<M;j++)
 		{

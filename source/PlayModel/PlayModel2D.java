@@ -1,5 +1,7 @@
 package PlayModel;
 
+import io.Loader;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -50,11 +52,11 @@ public class PlayModel2D {
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataHy";
 
-	//	pm.createData(file);
+		pm.createData(file);
 
 		//pm.rotation();
 		
-	pm.getBHloop();
+	//pm.getBHloop();
 /*		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -85,40 +87,29 @@ public class PlayModel2D {
 		
 	Mat[] MM=new Mat[ps.nphi];
 	
-	for(int i=0;i<ps.nphi;i++){
+	for(int i=0;i<0*ps.nphi;i++){
 		if(i!=iang)continue;
 		ps.demagnetize();
 		ps.kRotated=i;
 		Mat BH=ps.getCurveAlt(Hp.getColVect(0).times(1));
 		
 		MM[iang]=this.getHBij(BH, 0);
-		//Mat BH=ps.getLocus(Hp);
-	
-//BH.show();
-
-/*		Vect Hr=new Vect(BH.nRow);
-	Vect Br=new Vect(BH.nRow);
-	
-	for(int j=0;j<Hr.length;j++){
-		Hr.el[j]=new Vect(BH.el[j][0],BH.el[j][1]).dot(er);
-		Br.el[j]=new Vect(BH.el[j][2],BH.el[j][3]).dot(er);
-		//util.pr(Hr.el[i]+"\t"+Br.el[i]);
-	}
-	MM[iang]=new Mat(Hr.length,2);
-	
-	MM[iang].setCol(Hr, 0);
-	MM[iang].setCol(Br, 1);*/
 
 }
 
-		
-		//MM[i]=this.getHBij(BH,0);
+
+
 	
-	util.plot(MM[iang]);
 
-	MM[iang].show();
+Mat HH=new Mat(new Loader().loadArrays(360,2,"C:\\Works\\HVID\\hpath.txt"));	
+		//MM[i]=this.getHBij(BH,0);
 
-//	util.plotBunch(MM);
+	Mat BH=ps.getLocus(HH);
+	
+	util.plot(BH.getColVect(2),BH.getColVect(3));
+
+	//util.plot(MM[iang]);
+	
 	}
 
 
@@ -126,7 +117,7 @@ public class PlayModel2D {
 	public void createData(String file){
 
 
-		int nSet=18;
+		int nSet=37;
 		int nInit=1;
 		int nMajor=1;
 		int nSymLoops=14;
@@ -134,6 +125,8 @@ public class PlayModel2D {
 		int nAscending=0;
 		int nAni=18;
 		int Lani=18;
+		
+		double dang=180.0/nSet;
 		
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
 	
@@ -166,7 +159,7 @@ public class PlayModel2D {
 			
 	
 			Mat BHtemp=ps.initial(Bs,LL);
-
+	
 			int L=50;
 			Vect B0=new Vect().linspace(0,.1,4);
 			Vect B1=new Vect().linspace(.125,Bseff,L-4);
@@ -283,7 +276,7 @@ public class PlayModel2D {
 		
 		for(int i=0;i<nAni;i++){
 
-			double phiRad=i*10*Math.PI/180;
+			double phiRad=i*dang*Math.PI/180;
 			//phiRad=0*Math.PI/2;
 
 			Vect Hr=new Vect().linspace(0,1.8*Hs,LL);
@@ -373,7 +366,7 @@ if(write){
 for(int ia=0;ia<nSet;ia++){
 	
 
-			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia);
+			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ps.phi[ia]);
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bseff+"\t"+Hseff);
 

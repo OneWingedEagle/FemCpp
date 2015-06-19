@@ -426,7 +426,7 @@ public class HysDataGraph {
 
 	for(int ia=0;ia<nSet;ia++){
 
-				pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia);
+				pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
 				pwBun.println("*Bs*Hs*");
 				pwBun.println(Bseff+"\t"+Hseff);
 
