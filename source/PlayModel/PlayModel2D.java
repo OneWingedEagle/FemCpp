@@ -52,11 +52,11 @@ public class PlayModel2D {
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataHy";
 
-		pm.createData(file);
+	//	pm.createData(file);
 
 		//pm.rotation();
 		
-	//pm.getBHloop();
+	pm.getBHloop();
 /*		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -105,6 +105,8 @@ Mat HH=new Mat(new Loader().loadArrays(360,2,"C:\\Works\\HVID\\hpath.txt"));
 		//MM[i]=this.getHBij(BH,0);
 
 	Mat BH=ps.getLocus(HH);
+	
+	BH.show();
 	
 	util.plot(BH.getColVect(2),BH.getColVect(3));
 

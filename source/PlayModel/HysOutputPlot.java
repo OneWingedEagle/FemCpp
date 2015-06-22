@@ -20,7 +20,7 @@ import fem.Model;
 
 public class HysOutputPlot {
 	
-Mat BB,HH;
+Mat BB[],HH[];
 
 String regex="[:; ,\\t]+";
 
@@ -52,14 +52,32 @@ public void loadData(){
 			String s;
 			String[] sp;
 
+int Nmax=200;
 
-			line=br.readLine();
+BB=new Mat[Nmax];
+HH=new Mat[Nmax];
+
+Mat[] BHt=new Mat[Nmax];
+
+
+Mat[] XX=new Mat[2*Nmax];
+
+int numbCurves=0;
+for(int i=0;i<Nmax;i++){
+	
+
+		line=br.readLine();
+		
+		if(line==null) break;
+		
 			line=br.readLine();
 			line=br.readLine();
 
 int L=Integer.parseInt(line);
 
-	Mat bbhh=new Mat(L,4);
+numbCurves++;
+
+Mat bbhh=new Mat(L,4);
 	
 	for( int p=0;p<L;p++)
 	{
@@ -69,60 +87,110 @@ int L=Integer.parseInt(line);
 	}
 		
 			
-			BB=new Mat(L,2);
-			HH=new Mat(L,2);
+			BB[i]=new Mat(L,2);
+			HH[i]=new Mat(L,2);
 			
 		
-		BB.setCol(bbhh.getColVect(0).times(1), 0);
-		BB.setCol(bbhh.getColVect(1).times(1), 1);
+		BB[i].setCol(bbhh.getColVect(0).times(1), 0);
+		BB[i].setCol(bbhh.getColVect(1).times(1), 1);
 			
-			HH.setCol(bbhh.getColVect(2), 0);
-			HH.setCol(bbhh.getColVect(3), 1);
+			HH[i].setCol(bbhh.getColVect(2), 0);
+			HH[i].setCol(bbhh.getColVect(3), 1);
+	
+
+	
+			XX[2*i]=BB[i].times(100);
+			XX[2*i+1]=HH[i];
 			
-/*			int Lx=90;
-			BB.el[Lx][0]*=2;
-			BB.el[Lx][1]*=2;
-			HH.el[Lx][0]*=2;
-			HH.el[Lx][1]*=2;
-			*/
-					
-			Mat[] XX=new Mat[2];
-			XX[0]=BB.times(1);
-			XX[1]=HH;
-			util.plotBunch(XX);
+			BHt[i]=new Mat(L,2);
 			
-			HH.show();
+		//	HH.show();
 			
-				Vect Hr=new Vect(BB.nRow);
-			Vect Br=new Vect(BB.nRow);
+				Vect Hr=new Vect(HH[i].nRow);
+			Vect Br=new Vect(BB[i].nRow);
 			
 		
 				
-		double ang=Math.atan(XX[0].el[1][1]/XX[0].el[1][0]);
+		double ang=Math.atan(BB[i].el[1][1]/BB[i].el[1][0]);
+		util.pr(ang/Math.PI*180);
 		//util.pr(ang/Math.PI*180);
 		
 		Vect er=new Vect(Math.cos(ang),Math.sin(ang));
-		for(int i=0;i<Hr.length;i++){
-			Hr.el[i]=new Vect(HH.el[i][0],HH.el[i][1]).dot(er);
-			Br.el[i]=new Vect(BB.el[i][0],BB.el[i][1]).dot(er);
+		for(int j=0;j<Hr.length;j++){
+			Hr.el[j]=new Vect(HH[i].el[j][0],HH[i].el[j][1]).dot(er);
+			Br.el[j]=new Vect(BB[i].el[j][0],BB[i].el[j][1]).dot(er);
 			//util.pr(Hr.el[i]+"\t"+Br.el[i]);
 		}
 
-		util.plot(Hr,Br);
+		BHt[i].setCol(Hr,0);
+		BHt[i].setCol(Br,1);
 
-	
+		
+		line=br.readLine();
+
+}
+		
 			//BH[1].show();
 			
 			br.close();
 			fr.close();
 	
-		
+			util.plotBunch(XX,numbCurves);
+
+		//	util.plotBunch(BHt,numbCurves/2);
+			
+			String file1="C:\\Works\\HVID\\b_times";
+			
+			try{
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file1)));		
+
+				int K=3;
+				double dB=.1;
+				Vect div=	new Vect().linspace(0,1.7,K);
+				//util.pr(div.length);
+			int nAng=18;
+			
+			pwBun.println(1);
+			pwBun.println((K-2)*nAng);
+			
+		for(int k=0;k<nAng;k++){
+			
+			double rad=k*Math.PI/18;
+			double cos=Math.cos(rad);
+			double sin=Math.sin(rad);
+			
+				for(int i=2;i<div.length;i++){
+					Vect v=new Vect(7);
+					v.el[0]=-div.el[i]*sin;
+					v.el[1]=-div.el[i]*cos;
+					v.el[2]=div.el[i]*sin;
+					v.el[3]=div.el[i]*cos;
+					v.el[4]=-div.el[i]*sin;
+					v.el[5]=-div.el[i]*cos;
+					
+					v.el[6]=dB;
+				
+					for(int p=0;p<v.length;p++)
+						pwBun.print(v.el[p]+"\t");
+					pwBun.println();
+				}
+		}		
+				
+					
+
+				util.pr("b_Time was written to "+file1+".");
+
+				pwBun.close();
+			}
+			catch(IOException e){}
 		
 			}
 		
 			catch(IOException e){System.err.println("Error in loading BH data file.");
 
 			}
+		
+		
 
 		}
 
