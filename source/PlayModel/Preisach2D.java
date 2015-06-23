@@ -39,7 +39,7 @@ public class Preisach2D {
 		cfm=5;
 		cfw=5;
 
-		int nh=18;
+		int nh=9;
 
 		nphi=2*nh+1;
 
@@ -48,8 +48,8 @@ public class Preisach2D {
 			this.dphiRad=Math.PI/(nphi-1);
 
 
-		double sum=0;
-		for(int i=0;i<nphi;i++){
+		double sum=1;
+		for(int i=1;i<nphi;i++){
 			sum+=sin(i*dphiRad);
 		}
 
@@ -296,46 +296,70 @@ public class Preisach2D {
 
 	}
 	
-	public Mat getLocusHRotation(double Br){
+	public Mat getLoopBinput(double Br){
 
+		
 		this.demagnetize();
+
+
+	
+		int iang=0;
+		double phiRad=iang*Math.PI/18;;
+
+		int steps = 360;
+		Mat  X= new Mat(steps, 2);
+
+
+		double yxRatio = 1;
+		double a11 = Math.cos(phiRad);
+		double a21 = Math.sin(phiRad);
+		double a12 = -a21*yxRatio;
+		double a22 = a11*yxRatio;
+
+
+		double Xm = 1000;
+
+		for (int i = 0; i < steps; ++i){
+			double wt = 4 * Math.PI*i / steps;
+			double xx = Xm* Math.cos(wt);
+			double yy = Xm* Math.sin(wt);
+
+			double xxt = a11*xx + a12*yy;
+			double yyt = a21*xx + a22*yy;
+
+			X.el[i][0] = xxt;
+			X.el[i][1] = yyt;
+
+		}
+
+
+		Vect[] H=new Vect[steps];
 		
-		int L=10000;
-		Vect[] H=new Vect[L];
-		
-		Vect[][] B=new Vect[L][nphi];
-		for(int i=0;i<L;i++){
+		Vect[][] B=new Vect[steps][nphi];
+		for(int i=0;i<steps;i++){
 			H[i]=new Vect(2);
 			for(int k=0;k<nphi;k++)
 				B[i][k]=new Vect(2);
 		}
-		
-		double dphi=20*PI/L;
-		
 
-		int i=0;
 		double kr=0;
 		double Hrp,Hr=0;
 
-		while(i<L){
-			
-		
-			if(i>0){
-				
-		double Hp=400*(Math.PI/2+Math.atan(.005*kr));
-				//kr=4000;
-				
-			H[i]=new Vect(cos(i*dphi),sin(i*dphi)).times(Hp);
-			}
-	//	H[i].hshow();
+
+		for (int i = 0; i < steps; ++i){
+
+			H[i]=new Vect(X.el[i]);
+	
+
 			for(int k=0;k<nphi;k++){
-					
-			Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
+				
+				 kr=(k+kRotated)%nphi;
 
-		
-			Hrp=Hr;
-				Hr=H[i].dot(er);
+				Vect er=new Vect(cos(k*dphiRad),sin(k*dphiRad));
 
+			
+					Hrp=Hr;
+					Hr=H[i].dot(er);
 
 				if(i==0){
 
@@ -345,6 +369,7 @@ public class Preisach2D {
 				}
 
 				Vect dB=new Vect(2);
+				
 				for(int j=0;j<M;j++)
 				{
 
@@ -365,7 +390,7 @@ public class Preisach2D {
 				}
 
 				B[i][k]=B[i-1][k].add(dB.times(2));
-			
+				dB.hshow();
 			//}
 		}
 		
@@ -376,16 +401,14 @@ public class Preisach2D {
 
 		if(Bri>Br) kr--;
 		else kr++;
-		
-		util.pr(Bri);
-		//util.pr(kr);
+	
 		i++;
 		
 		}
 
-		Vect[] Bsum=new Vect[L];
+		Vect[] Bsum=new Vect[steps];
 
-		for(int j=0;j<L;j++){
+		for(int j=0;j<steps;j++){
 			Bsum[j]=new Vect(2);
 			for(int k=0;k<nphi;k++)
 				Bsum[j]=Bsum[j].add(B[j][k]);
@@ -394,13 +417,15 @@ public class Preisach2D {
 		}
 
 
-		Mat BH=new Mat(L,4);
-		for(int j=0;j<L;j++){
+		Mat BH=new Mat(steps,4);
+		for(int j=0;j<steps;j++){
 			BH.el[j][0]=H[j].el[0];
 			BH.el[j][1]=H[j].el[1];
 			BH.el[j][2]=Bsum[j].el[0];
 			BH.el[j][3]=Bsum[j].el[1];
 		}
+
+		//BH.show();
 
 
 
@@ -556,8 +581,7 @@ public class Preisach2D {
 
 		 Mat BH=this.distill(BH1);
 
-
-		 
+	 
 		return BH;
 
 	}

@@ -15,10 +15,11 @@ import math.util;
 public class PlayModel1D {
 
 	public Mat shapeFunc;
-	public int nSym, nDesc,nAsc, nInit, nMajor,nTotCurves;
+	public int nSym, nDesc,nAsc, nInit, nMajor,nTot;
 
-	public double Bs,Hs;
-	public Mat[] BHraw,BH;
+	public double Bs,Bseff,Hs,ddeg;
+	public Mat[] BHraw,BHs;
+	public Mat[][] BHsSet;
 	public double[] zk,pk;
 	public int dim=2,nHyst;
 
@@ -33,7 +34,7 @@ public class PlayModel1D {
 		PlayModel1D pm=new PlayModel1D();
 
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
-		String file="C:\\Works\\HVID\\hys_dataH";
+		String file="C:\\Works\\HVID\\hys_dataHvv";
 
 		pm.createData(file);
 
@@ -99,25 +100,49 @@ public class PlayModel1D {
 	public void createData(String file){
 
 
+		int nSet=10;
+		
+		ddeg=180.0/(nSet);
+		
 		double Bs=1.8;
+		this.Bseff=1.8;
+		
 		double Hs=1600;
 
-		int nInit=0;
+		int nInit=1;
 		int nMajor=1;
-		int nSymLoops=0;
+		int nSymLoops=30;
 		int nDescending=0;
 		int nAscending=0;
 		int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
+		
+		this.nInit=nInit;
+		this.nMajor=nMajor;
+		this.nSym=nSymLoops;
+		this.nDesc=nDescending;
+		this.nAsc=nAscending;
+		this.nTot=nTot;
+		
 
 		int Mp=5000;
 		double mean=200;
-		double width=300;
+		double width=200;
 
-		Preisach1D ps=new Preisach1D(Mp,mean,width,Hs,Bs,3564656);
+		Preisach1D ps=new Preisach1D(Mp,mean,width,Hs,Bs,Bseff,3564656);
 
-		Mat[] BHs=new Mat[nTot];
+		 BHs=new Mat[nTot];
+		 BHsSet=new Mat[nSet][nTot];
 
-		int ix=0;
+
+		for(int ia=0;ia<nSet;ia++){
+			
+			double c1=ia*(nSet-ia)*1.0/nSet/2;
+			double c2=c1;
+			
+			ps.updateAni(c1, c2);
+
+			
+			int ix=0;
 
 		for(int i=0;i<nInit;i++){
 
@@ -131,7 +156,7 @@ public class PlayModel1D {
 
 		for(int i=0;i<nMajor;i++){
 			
-			double Bpeak=Bs;
+			double Bpeak=Bseff;
 			int L=1000;
 			Mat BH1x=ps.symAsc(Bpeak,L);
 
@@ -166,35 +191,19 @@ public class PlayModel1D {
 			}
 
 			BH3.el[L1+L2]=BH1.el[0];
-			util.plot(BH3);
-			BH3.getColVect(1).show();
-		//	BH3.show();
-			
-			BHs[ix]=ps.symMajorFull(500);
-			//BHs[ix]=ps.symMajorDesc(1000);
-			
-/*			Vect H=new Vect().linspace(-Hs,Hs,200);
-			Vect B=new Vect(H.length);
-			for(int j=0;j<H.length;j++){
-				B.el[j]=this.getB(BHs[ix], H.el[j]);
-			}
 
-			//B.show();
-			Mat X=new Mat(H.length,2);
-			X.setCol(H, 0);
-			X.setCol(B, 1);
-			util.plot(X);*/
-		//	BHs[ix].show();
+			BHs[ix]=ps.symMajorDesc(1000);
+
 			ix++;
 		}
 
 
 
 		for(int i=0;i<nSymLoops;i++){
-			double Bp=Bs-(i+1)*Bs/(nSymLoops+1);
+			double Bp=Bseff-(i+1)*Bseff/(nSymLoops+1);
 
-			BHs[ix++]=ps.symFull(Bp,500);
-			//BHs[ix++]=ps.symDesc(Bp,1000);
+			//BHs[ix++]=ps.symFull(Bp,500);
+			BHs[ix++]=ps.symDesc(Bp,1000);
 			//util.pr(ps.getRes());
 
 		}
@@ -202,7 +211,7 @@ public class PlayModel1D {
 
 		for(int i=0;i<nDescending;i++){
 
-			double Bp=Bs*(1-2.0*(i+1)/(nDescending+1));
+			double Bp=Bseff*(1-2.0*(i+1)/(nDescending+1));
 			BHs[ix++]=ps.revDesc(Bp,1000);
 		}
 
@@ -211,20 +220,21 @@ public class PlayModel1D {
 			double Bp=-Bs*(1-2.0*(i+1)/(nAscending+1));
 			BHs[ix++]=ps.revAsc(Bp,1000);
 		}
-
 		
+		for(int j=0;j<nTot;j++)
+			BHsSet[ia][j]=	BHs[j].deepCopy();
 
-		Hs=800;
-
-
-
+	}
 		
+	
 
 
 	//	BHs[0].show();
 
 	//util.plotBunch(BHaniT,5);
-	util.plotBunch(BHs);
+//	util.plotBunch(BHs);
+	util.plotBunch(BHsSet[0]);
+	util.plotBunch(BHsSet[nSet/2]);
 		
 		int L=200;
 		Vect H=new Vect().linspace(Hs, -Hs, L);
@@ -234,17 +244,73 @@ public class PlayModel1D {
 				BB.el[i][j]=getB(BHs[j],H.el[i]);
 		}
 	//	H.show();
-		BB.show();
+	//	BB.show();
 		
-		boolean write=false;
+		boolean write =true;
+		
+		
 
-if(write=true){
+		if(write)
+			write(file);
 
 
 
-	DecimalFormat dfB=new DecimalFormat("#.00");
-	DecimalFormat dfH=new DecimalFormat("#.0");
+	}
+	
+	
+	public void write(String file){
+		
+		double Hseff=BHsSet[0][0].el[BHsSet[0][0].nRow-1][0];
 
+		DecimalFormat dfB=new DecimalFormat("#.00");
+		DecimalFormat dfH=new DecimalFormat("#.0");
+		
+		int nSet =BHsSet.length;
+
+			try{
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+
+	for(int ia=0;ia<nSet;ia++){
+
+			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*ddeg);
+			pwBun.println("*Bs*Hs*");
+			pwBun.println(Bseff+"\t"+Hseff);
+
+			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSym+"\t"+nDesc+"\t"+nAsc);
+
+			for(int i=0;i<nTot;i++){
+				pwBun.println("*xxx");
+				pwBun.println(BHsSet[ia][i].nRow);
+				for(int j=0;j<BHsSet[ia][i].nRow;j++)
+					pwBun.println(BHsSet[ia][i].el[j][0]+"\t"+BHsSet[ia][i].el[j][1]);
+			}
+
+			pwBun.println("* ----- 回転ヒステリシス損");
+			pwBun.println("* B数 *");
+			pwBun.println("0");
+			pwBun.println("* B * 損失");
+			pwBun.println("* ----- 異方性");
+			pwBun.println("* B数 * 角度数 *");
+			pwBun.println(0+"\t"+0);
+			pwBun.println("* B * H ･････ *　磁化容易軸");
+			
+	}
+				
+			util.pr("Simulated hysteresis data was written to "+file+".");
+
+			pwBun.close();
+		}
+	
+				
+		catch(IOException e){}
+
+
+	}
+
+	
+	
+	public void writeOld(String file){
 
 		try{
 			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
@@ -254,7 +320,7 @@ if(write=true){
 			pwBun.println(Bs+"\t"+Hs);
 
 			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
-			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSym+"\t"+nDesc+"\t"+nAsc);
 
 			for(int i=0;i<nTot;i++){
 				pwBun.println("*xxx");
@@ -278,17 +344,14 @@ if(write=true){
 
 			pwBun.close();
 		}
+				
 		catch(IOException e){}
 
 
 	}
 
-
-
-	}
 	
-
-	public void doIdentification(){
+	public void doIdentification(){/*
 		this.shapeFunc=new Mat(nHyst+1,nHyst+1);
 
 		int j = nHyst;
@@ -364,7 +427,7 @@ if(write=true){
 	//p.show();
 		shapeFunc.show();
 
-	}
+	*/}
 
 	public double shapeFuncAt(int kz, double p){
 
@@ -607,14 +670,14 @@ if(write=true){
 
 	}
 
-	public void distillBHData(){
+	public void distillBHData(){/*
 
-		BH=new Mat[this.nTotCurves];
+		BH=new Mat[this.nTot];
 
 		int nDB=2*(this.nSym+nMajor)+1;
 
-		Vect divBinit=new Vect().linspace(0, Bs, (this.nSym+nMajor)+1);
-		Vect divB=new Vect().linspace(Bs, -Bs,nDB);
+		Vect divBinit=new Vect().linspace(0, Bseff, (this.nSym+nMajor)+1);
+		Vect divB=new Vect().linspace(Bseff, -Bseff,nDB);
 
 
 
@@ -678,7 +741,7 @@ if(write=true){
 
 
 
-	}
+	*/}
 
 	public double[] gethbDesc(int i,double B ){
 		double[] hb=new double[2];

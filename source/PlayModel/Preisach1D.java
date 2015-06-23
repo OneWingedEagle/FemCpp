@@ -1,6 +1,7 @@
 package PlayModel;
 
 import java.util.Random;
+
 import static java.lang.Math.*;
 import math.Mat;
 import math.Vect;
@@ -9,9 +10,9 @@ import math.util;
 public class Preisach1D {
 
 	public Random r;
-	public int M,nphi,kk,dim;
+	public int M,kk,dim;
 	public long seed;
-	public double cfm,cfw,mean,width,Hs,Bs,DB;
+	public double cfm,cfw,mean,width,Hs,Bs,Bseff,DB;
 	public boolean[] on;
 	public double[][] a;
 	public double[] K;
@@ -22,7 +23,7 @@ public class Preisach1D {
 	public Preisach1D(){}
 
 
-	public Preisach1D(int M, double mean,double width,double Hmax,double Bs, long seed){
+	public Preisach1D(int M, double mean,double width,double Hmax,double Bs,double Bseff, long seed){
 
 		this.M=M;
 		this.mean=mean;
@@ -30,15 +31,18 @@ public class Preisach1D {
 		this.seed=seed;
 		this.Hs=Hmax;
 		this.Bs=Bs;
+		this.Bseff=Bseff;
 		this.DB=Bs/M;
 		
 		
 		dim=1;
 
+		 double phideg=10;
 		 
-		 double dphiRad=PI/nphi;
+		 double phirad=phideg*PI/180;
 		 
-	
+			cfm=0;
+			cfw=0;
 			 
 		r=new Random(3564656);
 
@@ -52,8 +56,8 @@ public class Preisach1D {
 
 			K[j]=1;
 
-			double am=mean*r.nextGaussian();
-			double d=abs(width*r.nextGaussian());
+			double am=mean*r.nextGaussian()*(1+cfm*abs(sin(phirad)));
+			double d=width*abs(r.nextGaussian())*(1+cfw*abs(sin(phirad)));
 			a[j][0]=am-d/2;
 
 			a[j][1]=am+d/2;
@@ -64,11 +68,36 @@ public class Preisach1D {
 
 	}
 	
+	public void updateAni(double c1, double c2){
+
+
+				cfm=c1;
+				cfw=c2;
+				 
+			r=new Random(3564656);
+
+			for(int j=0;j<M;j++){
+
+
+
+				double am=mean*r.nextGaussian()*(1+cfm);
+				double d=width*abs(r.nextGaussian())*(1+cfw);
+				a[j][0]=am-d/2;
+
+				a[j][1]=am+d/2;
+
+
+			}
+
+
+		}
+	
+	
 	public Preisach1D deepCopy(){
 		
 		Random r=new Random();
 		long ss=this.seed;
-		Preisach1D pr=new Preisach1D(this.M, this.mean,this.width,this.Hs,this.Bs,ss);
+		Preisach1D pr=new Preisach1D(this.M, this.mean,this.width,this.Hs,this.Bs,this.Bseff,ss);
 		
 		return pr;
 	}
@@ -168,6 +197,7 @@ public Mat magnetizeUpTo(double Bpeak,int L){
 				break;
 			}
 			
+
 			
 		}
 
@@ -336,39 +366,25 @@ public Mat getCurveX(Vect H){
 	
 
 	public  Mat initial(int L){
-		
-	
-		return 	initLoopUptoBpeak(this.Bs,L);
-	}
-	
-
-	public  Mat initLoopUptoBpeak(double Bpeak,int L){
 		this.demagnetize();
 
-		Vect seqH=new Vect().linspace(0, this.Hs, L);
-
-		Mat BH1=this.getCurve(seqH);
-
-		Mat BH=this.distill(BH1);
-
-
-		return BH;
+		return 	magnetizeUpTo(this.Bseff,L);
 	}
-	
+
 
 	public  Mat symMajorDesc(int L){
-		return symDesc(Bs,L);
+		return symDesc(Bseff,L);
 	}
 
 
 	public  Mat symMajorAsc(int L){
 		
-		return symAsc(-Bs,L);
+		return symAsc(-Bseff,L);
 	}
 	
 	public  Mat symMajorFull(int L){
 		
-		return symFull(Bs,L);
+		return symFull(Bseff,L);
 	}
 	
 	public  Mat symDesc(double Bpeak,int L){
@@ -470,7 +486,7 @@ public Mat getCurveX(Vect H){
 	public  Mat revDesc(double Bpeak,int L){
 		
 	this.demagnetize();
-	this.magnetizeDownTo(-Bs,L);
+	this.magnetizeDownTo(-Bseff,L);
 	
 	Vect H=new Vect().linspace(-Hs, Hs, L);
 	
@@ -532,7 +548,7 @@ public Mat getCurveX(Vect H){
 	public  Mat revAsc(double Bpeak,int L){
 		
 		this.demagnetize();
-		this.magnetizeUpTo(Bs,L);
+		this.magnetizeUpTo(Bseff,L);
 		
 		Vect H=new Vect().linspace(Hs, -Hs, L);
 	

@@ -61,10 +61,10 @@ public static void main2(String[] args){
 				pm.nDesc=numb[3];
 				pm.nAsc=numb[4];
 				
-			pm.nTotCurves=pm.nInit+pm.nMajor+pm.nSym+pm.nDesc+pm.nAsc;
+			pm.nTot=pm.nInit+pm.nMajor+pm.nSym+pm.nDesc+pm.nAsc;
 				
 				
-				pm.BHraw=new Mat[pm.nTotCurves];
+				pm.BHraw=new Mat[pm.nTot];
 				
 				//line=br.readLine();
 	/*			line=br.readLine();
@@ -86,7 +86,7 @@ public static void main2(String[] args){
 				line=br.readLine();
 				*/
 				int L1=0;
-				for( int ip=0;ip<pm.nTotCurves;ip++){
+				for( int ip=0;ip<pm.nTot;ip++){
 					line=br.readLine();
 					if(line.startsWith("*")) {line=br.readLine();};
 					L1=Integer.parseInt(line);
