@@ -34,7 +34,7 @@ public class PlayModel2D {
 		double Hs=1900;
 
 		int Mp=4000;
-		double Hs0=100;
+		double Hs0=1000;
 		double mean=.2*Hs0;
 		double width=.2*Hs0;
 
@@ -56,7 +56,8 @@ public class PlayModel2D {
 
 		//pm.rotation();
 
-		pm.getBHloopBinput();
+	pm.getBHloopBinput();
+		//pm.getBHloopHinput();
 		/*		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -89,6 +90,7 @@ public class PlayModel2D {
 
 		for (int i = 0; i < steps; ++i){
 			double wt = 4 * Math.PI*i / steps;
+		
 			double xx = Xm* Math.cos(wt);
 			double yy = Xm* Math.sin(wt);
 
@@ -97,7 +99,7 @@ public class PlayModel2D {
 
 			X.el[i][0] = xxt;
 			X.el[i][1] = yyt;
-
+	
 		}
 		
 	//	util.plot(X);
@@ -110,8 +112,8 @@ public class PlayModel2D {
 		//Mat[] MM=new Mat[ps.nphi];
 		
 		Mat BH=ps.getLocus(X);
-		Mat MM=this.getHBij(BH, 1);
-
+		Mat MM=this.getHBij(BH, 0);
+//BH.show();
 		//MM[iang]=this.getHBij(BH, 1);
 		
 
@@ -150,11 +152,11 @@ public class PlayModel2D {
 
 		
 
-		Mat BH=ps.getLoopBinput(1);
+		Mat BH=ps.getLoopBinput(1.0);
 
 	
-	Mat MM=this.getHBij(BH, 0);
-	
+	Mat MM=this.getHBij(BH,1);
+	//MM.show();
 	util.plot(MM);
 
 }
