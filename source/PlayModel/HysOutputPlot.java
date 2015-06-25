@@ -112,7 +112,7 @@ Mat bbhh=new Mat(L,4);
 		
 				
 		double ang=Math.atan(BB[i].el[1][1]/BB[i].el[1][0]);
-		util.pr(ang/Math.PI*180);
+		//util.pr(ang/Math.PI*180);
 		//util.pr(ang/Math.PI*180);
 		
 		Vect er=new Vect(Math.cos(ang),Math.sin(ang));
@@ -135,12 +135,21 @@ Mat bbhh=new Mat(L,4);
 			br.close();
 			fr.close();
 	
-			util.plotBunch(XX,numbCurves);
+			util.plotBunch(XX,2);
 
-		//	util.plotBunch(BHt,numbCurves/2);
+
+			int L=HH[0].nRow/2;
+			Mat M=new Mat(L,2);
+			for(int i=0;i<L;i++){
+				M.el[i]=HH[0].el[i+L];
+			}
+			
+			M.show();
+		//	util.plotBunch(BHt,1);
 			
 			String file1="C:\\Works\\HVID\\b_times";
 			
+			if(2>5)
 			try{
 				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file1)));		
 

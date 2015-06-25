@@ -43,7 +43,7 @@ public class HysDataGraph {
 		//	String file="C:\\Works\\HVID\\folder1\\data\\A_B“ü—Í‘ÎÌƒ‹[ƒvhts_data\\hys_data";
 
 		//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-		String file="C:\\Works\\HVID\\hys_dataHAv";
+		String file="C:\\Works\\HVID\\hys_dataHSet";
 	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		
 
@@ -201,8 +201,10 @@ public class HysDataGraph {
 			}
 			
 			util.plotBunch(BH[0]);
+			util.plotBunch(BH[9]);
+
 			
-			boolean ani=true;
+			boolean ani=false;
 			
 			if(ani){
 				

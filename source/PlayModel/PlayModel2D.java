@@ -31,10 +31,10 @@ public class PlayModel2D {
 		int kr=0;
 		double BsM=1.8;
 		double Bseff=1.7;
-		double Hs=1900;
+		double Hs=500;
 
-		int Mp=4000;
-		double Hs0=1000;
+		int Mp=1000;
+		double Hs0=100;
 		double mean=.2*Hs0;
 		double width=.2*Hs0;
 
@@ -56,8 +56,8 @@ public class PlayModel2D {
 
 		//pm.rotation();
 
-	pm.getBHloopBinput();
-		//pm.getBHloopHinput();
+		pm.getHRotationalBinput();
+	//	pm.getBRotationalHinput();
 		/*		try {
 			Thread.sleep(200);
 		} catch (InterruptedException e) {
@@ -70,7 +70,7 @@ public class PlayModel2D {
 
 	}
 
-	public void getBHloopHinput(){
+	public void getBRotationalHinput(){
 
 		int iang=0;
 		double phiRad=iang*Math.PI/18;;
@@ -79,14 +79,14 @@ public class PlayModel2D {
 		Mat  X= new Mat(steps, 2);
 
 
-		double yxRatio = 1;
+		double yxRatio = 0;
 		double a11 = Math.cos(phiRad);
 		double a21 = Math.sin(phiRad);
 		double a12 = -a21*yxRatio;
 		double a22 = a11*yxRatio;
 
 
-		double Xm = 1000;
+		double Xm = 75;
 
 		for (int i = 0; i < steps; ++i){
 			double wt = 4 * Math.PI*i / steps;
@@ -102,9 +102,9 @@ public class PlayModel2D {
 	
 		}
 		
-	//	util.plot(X);
+		//util.plot(X);
 
-		Vect er=new Vect(Math.cos(phiRad),Math.sin(phiRad));
+		//X.show();
 
 
 		iang=0;
@@ -112,24 +112,49 @@ public class PlayModel2D {
 		//Mat[] MM=new Mat[ps.nphi];
 		
 		Mat BH=ps.getLocus(X);
-		Mat MM=this.getHBij(BH, 0);
-//BH.show();
-		//MM[iang]=this.getHBij(BH, 1);
 		
+		Mat MM=this.getHBij(BH, 0);
+		Mat NN=this.getHBij(BH, 1);
+		//util.plot(BH.getColVect(2));
+		
+		int L=BH.nRow/2;
+		Mat BHr=new Mat(L,2);
+		
+	//	HH.show();
+		
+			Vect Hr=new Vect(L);
+		Vect Br=new Vect(L);
+		
+	
+			
+	double ang=Math.atan(BH.el[1][1]/BH.el[1][0]);
+	//util.pr(ang/Math.PI*180);
+	//util.pr(ang/Math.PI*180);
+	
+	Vect er=new Vect(Math.cos(ang),Math.sin(ang));
+	for(int j=0;j<Hr.length;j++){
+		int jx=j+L;
+/*		Hr.el[j]=new Vect(BH.el[jx][0],BH.el[jx][1]).dot(er);
+		Br.el[j]=new Vect(BH.el[jx][2],BH.el[jx][3]).dot(er);*/
+		Hr.el[j]=new Vect(BH.el[jx][0],BH.el[jx][1]).dot(er);
+		Br.el[j]=new Vect(BH.el[jx][2],BH.el[jx][3]).dot(er);
+		//util.pr(Hr.el[i]+"\t"+Br.el[i]);x
+	}
 
-	/*	for(int i=0;i<ps.nphi;i++){
-			if(i!=iang)continue;
-			ps.demagnetize();
-			ps.kRotated=i;
-			//Mat BH=ps.getCurveAlt(X.getColVect(0).times(1));
-			Mat BH=ps.getLocus(X);
+/*	Hr=BH.getColVect(0);
+	Br=BH.getColVect(2);*/
 
-			MM[iang]=this.getHBij(BH, 1);
+	BHr.setCol(Hr,0);
+	BHr.setCol(Br,1);
 
-		}*/
-
-
-
+	util.plot(BHr);
+	
+	double loss=0;
+	for(int i=0;i<MM.nRow-1;i++){
+		Vect dB=new Vect(NN.el[i+1]).sub(new Vect(NN.el[i]));
+		loss+=new Vect(MM.el[i]).dot(dB);
+	}
+	util.pr("Alternating loss per cycle: "+loss);
 
 
 	//	Mat HH=new Mat(new Loader().loadArrays(360,2,"C:\\Works\\HVID\\hpath.txt"));	
@@ -141,33 +166,47 @@ public class PlayModel2D {
 
 	//	util.plot(BH.getColVect(2),BH.getColVect(3));
 
-		util.plot(MM);
+	//	util.plot(MM);
 
 	}
 
 
 
-	public void getBHloopBinput(){
+	public void getHRotationalBinput(){
 
-
-		
 
 		Mat BH=ps.getLoopBinput(1.0);
 
+	//BH.show();
+	Mat MM=this.getHBij(BH,0);
+	Mat NN=this.getHBij(BH,1);
 	
-	Mat MM=this.getHBij(BH,1);
+	for(int i=0;i<0;i++){
+	MM.el[i*10][0]*=2;
+	MM.el[i*10][1]*=2;
+	NN.el[i*10][0]*=2;
+	NN.el[i*10][1]*=2;
+	}
 	//MM.show();
 	util.plot(MM);
+	
+	double loss=0;
+	for(int i=0;i<MM.nRow-1;i++){
+		Vect dB=new Vect(NN.el[i+1]).sub(new Vect(NN.el[i]));
+		loss+=new Vect(MM.el[i]).dot(dB);
+	}
+	util.pr("Rotational loss per cycle: "+loss);
+	util.plot(NN);
 
 }
 
 public void createData(String file){
 
 
-	int nSet=1;
+	int nSet=18;
 	int nInit=1;
-	int nMajor=0;
-	int nSymLoops=0;
+	int nMajor=1;
+	int nSymLoops=14;
 	int nDescending=0;
 	int nAscending=0;
 	int nAni=0;
