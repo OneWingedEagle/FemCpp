@@ -195,7 +195,6 @@ public class Preisach2D {
 		return BH;
 
 
-
 	}
 
 
@@ -567,17 +566,24 @@ public class Preisach2D {
 	}
 
 
-	public Mat getLoopBinput(double Br){
+	public Mat getLoopBinput(double Br,double cf){
 
 
 		this.demagnetize();
+		
+		Mat BH1=this.magnetizeUpTo(Br, 1000);
+		this.demagnetize();
+		this.getCurveAlt(BH1.getColVect(0)); // this is to reset the model to the given Bpeak;
 
+		double  H0=1;
 
 		int iang=0;
 		double phiRad=iang*Math.PI/18;;
 
 		int steps = 360*2;
+
 		Mat  X= new Mat(steps, 2);
+
 
 
 		double yxRatio = 1;
@@ -587,7 +593,7 @@ public class Preisach2D {
 		double a22 = a11*yxRatio;
 
 
-		double Xm = 30;
+		double Xm = H0;
 
 		for (int i = 0; i < steps; ++i){
 			double wt = 4 * Math.PI*i / steps;
@@ -620,17 +626,17 @@ public class Preisach2D {
 
 		double Hrp,Hr=0;
 
-		double Bm=0;
+		double Bm=Br;
 		double eps=.1;
 
 		int ix=-1;
 
 		boolean reached;
 
-		double cr=1,dH=1;
+		double cr=1;
 
 		for(int i=0;i<steps;i++){
-		//	cr=1;
+			//cr=0;
 			Vect eH=new Vect(X.el[i]).normalized();
 			
 			int px=0;
@@ -642,20 +648,23 @@ public class Preisach2D {
 				reached=false;
 				
 				if(Bm<Br)
-				cr*=1+1*(Br-Bm);
+				cr*=1+cf*(Br-Bm);
 				else
-					cr/=1+1*(Bm-Br);
+					cr/=1+cf*(Bm-Br);
 				
-	/*			if(Bm<Br)
-				cr+=2;//*(Br-Bm);
+/*				if(Bm<Br)
+				cr+=cf*(Br-Bm);
 				else
-					cr-=1;	
-			*/
-				if(cr<=0) cr=1;
+					cr-=cf*(Bm-Br);	
+			
+				if(cr<=0) cr=1;*/
+				
 				
 				H[ix]=new Vect(X.el[i]).add(eH.times(cr));
+				if(ix==0)H[ix].hshow();
 
-			Hrp=Hr;
+				if(ix==0) Hrp=Hr-1;
+				else 	Hrp=Hr;
 			
 			for(int k=0;k<nphi;k++){
 
@@ -712,7 +721,7 @@ public class Preisach2D {
 
 			Bf[i]=Bt.deepCopy();
 			
-			Hf[i]=new Vect(X.el[i]).add(eH.times(cr*dH));
+			Hf[i]=new Vect(X.el[i]).add(eH.times(cr));
 		}
 
 		Mat R=new Mat();
@@ -754,7 +763,7 @@ public class Preisach2D {
 		}
 		//v.show();
 
-		util.plot(v);
+	//	util.plot(v);
 
 		return BH;
 
@@ -898,6 +907,10 @@ public class Preisach2D {
 			if(Bsum[i].el[0]>Bpeak) break;
 			ix++;
 		}
+		
+		
+		
+	
 
 		Mat BH1=new Mat(ix,3);
 		for(int i=0;i<ix;i++){
@@ -906,6 +919,7 @@ public class Preisach2D {
 			BH1.el[i][2]=Bsum[i].el[1];
 		}
 
+		
 		Mat BH=this.distill(BH1);
 
 

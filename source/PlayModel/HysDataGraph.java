@@ -1,5 +1,8 @@
 package PlayModel;
 
+import static java.lang.Math.PI;
+import static java.lang.Math.acos;
+import static java.lang.Math.cos;
 import static java.lang.Math.sqrt;
 
 import java.io.BufferedReader;
@@ -33,7 +36,10 @@ public class HysDataGraph {
 
 		HysDataGraph pg=new HysDataGraph();
 
-		pg.loadHysData();
+		//pg.loadHysData();
+		
+		pg.loadRotHysData();
+		
 	}
 
 	public boolean loadHysData(){
@@ -266,6 +272,45 @@ public class HysDataGraph {
 		}
 
 	}	
+	
+	public void loadRotHysData(){
+
+
+		String file="C:\\Works\\HVID\\hysRotation";
+
+		
+	 HystDataLoader loader=new HystDataLoader();
+	 
+
+	Mat BHij=new Mat(loader.loadArrays(1024,69,file));
+		
+
+
+		
+		Mat[] BB=new Mat[17];
+		Mat[] HH=new Mat[17];
+		
+		for(int i=0;i<BB.length;i++){
+			BB[i]=new Mat(BHij.nRow,2);
+			HH[i]=new Mat(BHij.nRow,2);
+			
+			BB[i].setCol(BHij.getColVect(4*i+1), 0);
+			BB[i].setCol(BHij.getColVect(4*i+3), 1);
+			
+			HH[i].setCol(BHij.getColVect(4*i+2), 0);
+			HH[i].setCol(BHij.getColVect(4*i+4), 1);
+		}
+	
+		
+		//util.plotBunch(HH,12);
+		
+		util.plot(HH[9]);
+
+		
+
+
+	}	
+	
 	
 	Mat[][] distHysData(Mat[][] BH){
 		

@@ -52,7 +52,7 @@ public void loadData(){
 			String s;
 			String[] sp;
 
-int Nmax=200;
+int Nmax=20;
 
 BB=new Mat[Nmax];
 HH=new Mat[Nmax];
@@ -131,7 +131,8 @@ Mat bbhh=new Mat(L,4);
 }
 		
 			//BH[1].show();
-			
+//util.plotBunch(BHt,1);
+BHt[0].show();
 			br.close();
 			fr.close();
 	
@@ -141,10 +142,10 @@ Mat bbhh=new Mat(L,4);
 			int L=HH[0].nRow/2;
 			Mat M=new Mat(L,2);
 			for(int i=0;i<L;i++){
-				M.el[i]=HH[0].el[i+L];
+				M.el[i]=BB[0].el[i+L];
 			}
 			
-			M.show();
+		//	M.show();
 		//	util.plotBunch(BHt,1);
 			
 			String file1="C:\\Works\\HVID\\b_times";

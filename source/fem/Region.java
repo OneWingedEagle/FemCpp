@@ -84,7 +84,7 @@ public class Region {
 
 	public void setM(Vect M){
 	
-		this.M=M.deepCopy().times(1);
+		this.M=M.deepCopy().times(0);
 		if(M.norm()==0)
 		this.hasM=false;
 		else
