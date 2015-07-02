@@ -32,10 +32,10 @@ public class PlayModel2D {
 		int kr=0;
 		double BsM=1.8;
 		double Bseff=1.7;
-		double Hs=3300;
+		double Hs=430;
 
 		int Mp=1000;
-		double Hs0=1000;
+		double Hs0=100;
 		double mean=.2*Hs0;
 		double width=.2*Hs0;
 
@@ -53,11 +53,11 @@ public class PlayModel2D {
 		//String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		String file="C:\\Works\\HVID\\hys_dataHy";
 
-		//pm.createData(file);
-
+		pm.createData(file);
+		//pm.createDataMath(file);
 		//pm.rotation();
 
-	//	pm.getHRotationalBinput();
+		//pm.getHRotationalBinput();
 	//	pm.getBRotationalHinput();
 		/*		try {
 			Thread.sleep(200);
@@ -305,10 +305,443 @@ public void createData(String file){
 	//util.plotBunch(BHs);
 
 	boolean write =true;
+	if(write){
+	
+		
+			String file1="C:\\Works\\HVID\\hys_dataHXAv";
+		this.writeHystDataAv(BHsAv, BHani, file1);
+			String file2="C:\\Works\\HVID\\hys_dataHX";
+		this.writeHystData(BHs, file2);
+		
+	}
 
+/*
 
 
 	if(write){
+
+
+		double Hseff=BHs[0][0].el[BHs[0][0].nRow-1][0];
+
+		DecimalFormat dfB=new DecimalFormat("#.00");
+		DecimalFormat dfH=new DecimalFormat("#.0");
+
+
+		try{
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+
+			for(int ia=0;ia<nSet;ia++){
+
+
+				pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ps.phi[ia]);
+				pwBun.println("*Bs*Hs*");
+				pwBun.println(Bseff+"\t"+Hseff);
+
+				pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+				pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+
+				for(int i=0;i<nTot;i++){
+					pwBun.println("*xxx");
+					pwBun.println(BHs[ia][i].nRow);
+					for(int j=0;j<BHs[ia][i].nRow;j++)
+						pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
+				}
+
+				pwBun.println("* ----- 回転ヒステリシス損");
+				pwBun.println("* B数 *");
+				pwBun.println("0");
+				pwBun.println("* B * 損失");
+				pwBun.println("* ----- 異方性");
+				pwBun.println("* B数 * 角度数 *");
+				pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
+				pwBun.println("* B * H ･････ *　磁化容易軸");
+
+				for(int i=0;i<0*Lani;i++){
+					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
+					for(int j=0;j<nAni;j++){
+						pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
+					}
+					pwBun.println();
+				}
+				pwBun.println("* B * H ･････ *　磁化困難軸");
+				for(int i=0;i<0*Lani;i++){
+					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
+					for(int j=0;j<nAni;j++){
+						pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
+					}
+					pwBun.println();
+				}
+	
+			}
+
+
+			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
+
+			pwBun.close();
+		}
+		catch(IOException e){}*/
+
+
+/*
+		String fileAv="C:\\Works\\HVID\\hys_dataHAvy";
+
+
+		try{
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fileAv)));		
+
+
+			pwBun.println(1+"\t"+1+"\t"+1+"\t"+0);
+			pwBun.println("*Bs*Hs*");
+			pwBun.println(Bseff+"\t"+Hseff);
+
+			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+
+			for(int i=0;i<nTot;i++){
+				pwBun.println("*xxx");
+				pwBun.println(BHsAv[i].nRow);
+				for(int j=0;j<BHsAv[i].nRow;j++)
+					pwBun.println(BHsAv[i].el[j][0]+"\t"+BHsAv[i].el[j][1]);
+			}
+
+			pwBun.println("* ----- 回転ヒステリシス損");
+			pwBun.println("* B数 *");
+			pwBun.println("0");
+			pwBun.println("* B * 損失");
+			pwBun.println("* ----- 異方性");
+			pwBun.println("* B数 * 角度数 *");
+			pwBun.println(Lani+"\t"+nAni);
+			pwBun.println("* B * H ･････ *　磁化容易軸");
+
+			for(int i=0;i<Lani;i++){
+				pwBun.print(dfB.format(Bani.el[i])+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
+				}
+				pwBun.println();
+			}
+			pwBun.println("* B * H ･････ *　磁化困難軸");
+			for(int i=0;i<Lani;i++){
+				pwBun.print(dfB.format(Bani.el[i])+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
+				}
+				pwBun.println();
+			}
+						pwBun.println();
+				pwBun.println("End of hysteresis data set "+ia);
+				pwBun.println();
+
+
+
+			util.pr("Simulated angle-averaged hysteresis data was written to "+fileAv+".");
+
+			pwBun.close();
+		}
+		catch(IOException e){}
+
+
+
+	}
+
+*/
+
+}
+
+public void writeHystData(Mat[][] BHs, String file){
+	
+	int nSet=BHs.length;
+	
+	double Bseff= BHs[0][0].el[BHs[0][0].nRow-1][1];
+	
+	Mat[] BHani=new Mat[1];
+	int nAni=0;
+	int Lani=0;
+	int nInit=1;
+	int nMajor=1;
+	int nTot=BHs[0].length;
+	int nSymLoops=nTot-2;
+	int nDescending=0;
+	int nAscending=0;
+	
+
+
+	DecimalFormat dfB=new DecimalFormat("#.00");
+	DecimalFormat dfH=new DecimalFormat("#.0");
+
+
+		try{
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+
+for(int ia=0;ia<nSet;ia++){
+
+	double Hsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][0];
+	double Bsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][1];
+			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
+			pwBun.println("*Bs*Hs*");
+			pwBun.println(Bsefft+"\t"+Hsefft);
+
+			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+
+			for(int i=0;i<nTot;i++){
+				pwBun.println("*xxx");
+				pwBun.println(BHs[ia][i].nRow);
+				for(int j=0;j<BHs[ia][i].nRow;j++)
+					pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
+			}
+
+			pwBun.println("* ----- 回転ヒステリシス損");
+			pwBun.println("* B数 *");
+			pwBun.println("0");
+			pwBun.println("* B * 損失");
+			pwBun.println("* ----- 異方性");
+			pwBun.println("* B数 * 角度数 *");
+			pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
+			pwBun.println("* B * H ･････ *　磁化容易軸");
+			
+			for(int i=0;i<0*Lani;i++){
+				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
+				}
+				pwBun.println();
+			}
+			pwBun.println("* B * H ･････ *　磁化困難軸");
+			for(int i=0;i<0*Lani;i++){
+				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
+				for(int j=0;j<nAni;j++){
+					pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
+				}
+				pwBun.println();
+			}
+/*			pwBun.println();
+			pwBun.println("End of hysteresis data set "+ia);
+			pwBun.println();*/
+}
+				
+
+			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
+
+			pwBun.close();
+		}
+		catch(IOException e){}
+		
+
+}
+
+
+public void createDataMath(String file){
+
+
+	double c1=3;
+	double c2=.01;
+
+	double c3=.1;
+	
+	double c4=.02;
+	
+	
+	int nSet=18;
+	int nInit=1;
+	int nMajor=1;
+	int nSymLoops=14;
+	int nDescending=0;
+	int nAscending=0;
+	int nAni=18;
+	int Lani=50;
+
+	double dang=180.0/nSet;
+
+	int nTot=nInit+nMajor+nSymLoops+nDescending+nAscending;
+
+	double Bs=ps.Bseff;
+	double Hs=ps.Hs;
+
+
+	int LL=1000;
+
+	double Bseff=ps.Bseff;
+
+	Mat[][] BHs=new Mat[nSet][nTot];
+	Mat[][] BHsr=new Mat[nSet][nTot];
+	Mat[]BHsAv=new Mat[nTot];
+	Mat[] BHsrAv=new Mat[nTot];
+	Mat[] BHani=new Mat[nAni];
+	Vect Bani=new Vect();
+
+	Vect Bdiv=new Vect().linspace(Bs, 0, nSymLoops+2);
+
+
+	for(int ia=0;ia<nSet;ia++){
+
+		ps.kRotated=ia;
+		
+		
+
+		int ix=0;
+
+		for(int i=0;i<nInit;i++){
+
+
+			int L=50;
+			Vect B=new Vect().linspace(0,Bseff,L);
+
+			BHs[ia][ix]=new Mat(L,3);
+
+	
+			for(int j=0;j<L;j++){
+				BHs[ia][ix].el[j][0]=Hs*Math.sinh(B.el[j]*(c1/(1+c2*ia)))*B.el[j];
+				BHs[ia][ix].el[j][1]=B.el[j];
+
+			}
+			
+			
+
+			//	util.plot(BHs[ix].getColVect(0),BHs[ix].getColVect(1));
+
+			BHsr[ia][ix]=BHs[ia][ix];
+
+
+
+			ix++;
+
+		}
+
+
+
+
+		for(int i=0;i<nMajor;i++){
+
+
+			int L=100;
+			Vect B=new Vect().linspace(Bdiv.el[0],-Bdiv.el[0],L);
+
+			BHs[ia][ix]=new Mat(L,3);
+			for(int j=0;j<L;j++){
+			//	BHs[ia][ix].el[j][0]=Hs*Math.sinh(B.el[j]*(c1/(1+c2*ia)))-c3/(1+c4*ia)*Math.pow(Bdiv.el[0]-B.el[j],2)*Math.pow(B.el[j]+Bdiv.el[0],2);
+				BHs[ia][ix].el[j][0]=Hs*Math.sinh(B.el[j]*(c1/(1+c2*ia)));//-c3/(1+c4*ia)*Math.abs((Bdiv.el[0]-B.el[j])*(B.el[j]+Bdiv.el[0]));
+				
+				BHs[ia][ix].el[j][1]=B.el[j]+c3/(1+c4*ia)*Math.pow(Bdiv.el[0]-B.el[j],2)*Math.pow(B.el[j]+Bdiv.el[0],2);;
+
+			}
+
+
+			BHsr[ia][ix]=BHs[ia][ix];
+
+
+			ix++;
+
+		}
+
+		for(int i=0;i<nSymLoops;i++){
+
+			//double Bp=Bseff-(i+1)*Bseff/(nSymLoops+1);	
+
+			double Bp=Bdiv.el[i+1];
+
+
+			int L=100;
+			Vect B=new Vect().linspace(Bp,-Bp,L);
+			BHs[ia][ix]=new Mat(L,3);
+			for(int j=0;j<L;j++){
+				//BHs[ia][ix].el[j][0]=Hs*Math.sinh(B.el[j]*(c1/(1+c2*ia)))-c3/(1+c4*ia)*Math.pow(Bp-B.el[j],2)*Math.pow(B.el[j]+Bp,2);
+				
+				BHs[ia][ix].el[j][0]=Hs*Math.sinh(B.el[j]*(c1/(1+c2*ia)));
+
+				BHs[ia][ix].el[j][1]=B.el[j]+c3/(1+c4*ia)*Math.pow(Bp-B.el[j],2)*Math.pow(B.el[j]+Bp,2);
+
+			}
+
+
+			BHsr[ia][ix]=BHs[ia][ix];
+
+
+
+			ix++;
+
+
+
+		}
+
+
+		for(int i=0;i<nDescending;i++){
+
+		}
+
+		for(int i=0;i<nAscending;i++){
+
+		}
+
+	}
+
+
+	if(nTot>0){
+		util.plotBunch(BHsr[0]);
+		//util.plotBunch(BHsr[9]);
+	}
+
+
+	for(int i=0;i<nTot;i++){
+		Mat M=BHs[0][i].deepCopy();
+		for(int j=1;j<nSet;j++)
+			M=M.add(BHs[j][i]);
+		BHsAv[i]=M.times(1.0/nSet);
+
+		BHsrAv[i]=this.getHBij(BHsAv[i],0);
+	}
+
+	//	util.plotBunch(BHsrAv);
+
+
+	if(nAni>0){
+
+		Bani=new Vect().linspace(0, 1.7, Lani);
+
+		Mat[] BHaniT=new Mat[nAni];
+
+
+		for(int i=0;i<nAni;i++){
+
+			BHaniT[i]=new Mat(Lani,2);
+			double phiRad=i*dang*Math.PI/180;
+			//phiRad=0*Math.PI/2;
+
+		
+			for(int j=0;j<Lani;j++){
+			BHaniT[i].el[j][0]=Hs*Math.sinh(Bani.el[j]*(c1/(1+c2*i)));
+			BHaniT[i].el[j][1]=Bani.el[j];
+			}
+			
+
+			BHani[i]=new Mat(Lani,4); 
+			
+			for(int j=0;j<Lani;j++){
+				BHani[i].el[j][0]=BHaniT[i].el[j][0]*Math.cos(phiRad);
+				BHani[i].el[j][1]=BHaniT[i].el[j][0]*Math.sin(phiRad);
+				BHani[i].el[j][2]=BHaniT[i].el[j][1]*Math.cos(phiRad);
+				BHani[i].el[j][3]=BHaniT[i].el[j][1]*Math.sin(phiRad);
+			}
+
+
+		}
+
+
+		util.plotBunch(BHaniT);
+	}
+
+	boolean write =true;
+	if(write){
+		
+			String file1="C:\\Works\\HVID\\hys_dataHXAv";
+		this.writeHystDataAv(BHsAv, BHani, file1);
+			String file2="C:\\Works\\HVID\\hys_dataHX";
+		this.writeHystData(BHs, file2);
+		
+	}
+
+
+/*	if(write){
 
 
 		double Hseff=BHs[0][0].el[BHs[0][0].nRow-1][0];
@@ -418,9 +851,9 @@ public void createData(String file){
 				}
 				pwBun.println();
 			}
-			/*			pwBun.println();
+						pwBun.println();
 				pwBun.println("End of hysteresis data set "+ia);
-				pwBun.println();*/
+				pwBun.println();
 
 
 
@@ -433,7 +866,7 @@ public void createData(String file){
 
 
 	}
-
+*/
 
 
 }
@@ -543,7 +976,7 @@ public void createData(String file){
 	public void getHRotationalBinput(){
 
 
-		Mat BH=ps.getLoopBinput(.8,.5);
+		Mat BH=ps.getLoopBinput(1,.5);
 
 	//BH.show();
 	Mat MM=this.getHBij(BH,0);
@@ -565,89 +998,11 @@ public void createData(String file){
 	}
 	util.pr("Rotational loss per cycle: "+loss);
 	util.plot(NN);
+	MM.show();
 
 }
 
 
-public void writeHystData(Mat[][] BHs, String file){
-	
-	int nSet=BHs.length;
-	
-	double Bseff= BHs[0][0].el[BHs[0][0].nRow-1][1];
-	
-	Mat[] BHani=new Mat[1];
-	int nAni=0;
-	int Lani=0;
-	int nInit=1;
-	int nMajor=1;
-	int nTot=BHs[0].length;
-	int nSymLoops=nTot-2;
-	int nDescending=0;
-	int nAscending=0;
-	
-	double Hseff=BHs[0][0].el[BHs[0][0].nRow-1][0];
-
-	DecimalFormat dfB=new DecimalFormat("#.00");
-	DecimalFormat dfH=new DecimalFormat("#.0");
-
-
-		try{
-			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
-
-for(int ia=0;ia<nSet;ia++){
-
-			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
-			pwBun.println("*Bs*Hs*");
-			pwBun.println(Bseff+"\t"+Hseff);
-
-			pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
-			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
-
-			for(int i=0;i<nTot;i++){
-				pwBun.println("*xxx");
-				pwBun.println(BHs[ia][i].nRow);
-				for(int j=0;j<BHs[ia][i].nRow;j++)
-					pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
-			}
-
-			pwBun.println("* ----- 回転ヒステリシス損");
-			pwBun.println("* B数 *");
-			pwBun.println("0");
-			pwBun.println("* B * 損失");
-			pwBun.println("* ----- 異方性");
-			pwBun.println("* B数 * 角度数 *");
-			pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ･････ *　磁化容易軸");
-			
-			for(int i=0;i<0*Lani;i++){
-				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
-				}
-				pwBun.println();
-			}
-			pwBun.println("* B * H ･････ *　磁化困難軸");
-			for(int i=0;i<0*Lani;i++){
-				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
-				}
-				pwBun.println();
-			}
-/*			pwBun.println();
-			pwBun.println("End of hysteresis data set "+ia);
-			pwBun.println();*/
-}
-				
-
-			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
-
-			pwBun.close();
-		}
-		catch(IOException e){}
-		
-
-}
 
 
 public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
@@ -733,37 +1088,6 @@ public void rotation(){}
 public void loadData(String file){}
 
 
-public double shapeFuncAt(int kz, double p){
-
-
-
-	double f;
-
-	/*		
-		if(kz>zk.length-1)
-			kz=zk.length-1;
-
-
-		if(p<=this.pk[0] )
-			return shapeFunc.el[kz][0];
-
-		if(p>=this.pk[pk.length-1] )
-			return shapeFunc.el[kz][pk.length-1];
-	 */
-
-	int jp=getj(this.pk,p);
-
-
-	f=shapeFunc.el[kz][jp]*(p-this.pk[jp])+shapeFunc.el[kz][jp+1]*(this.pk[jp+1]-p);
-
-	f*=1.0/(this.pk[jp+1]-this.pk[jp]);
-
-
-	f=Math.cbrt(p);
-
-	return f;
-
-}
 
 public  double getH(Mat BH,double B){
 	return getH(BH,B,0);

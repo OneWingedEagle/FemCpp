@@ -79,7 +79,7 @@ public class ScalarPlayModelDataGen {
 		HysOutputPlot hop=new HysOutputPlot();
 		hop.loadData();
 		Mat[] M2=new Mat[3];
-		M2[0]=hop.HH[0];
+		//M2[0]=hop.HH[0];
 		
 
 		M2[1]=HH[9];

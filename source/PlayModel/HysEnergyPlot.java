@@ -18,31 +18,27 @@ import fem.Model;
 
 
 
-public class HysOutputPlot {
+public class HysEnergyPlot {
 	
-Mat BHs[];
+Mat BE[];
 
 String regex="[:; ,\\t]+";
 
 
 public static void main(String[] args){
 
-	HysOutputPlot pg=new HysOutputPlot();
+	HysEnergyPlot pg=new HysEnergyPlot();
 	
 	pg.loadData();
 	
 }
 	
-public  HysOutputPlot(){}
+public  HysEnergyPlot(){}
 
 public void loadData(){
 
-	/*String file=util.getFile();
-	if(file==null || file.equals("") )return false;*/
-//	String file="C:\\Works\\HVID\\folder1\\data\\A_Bì¸óÕëŒèÃÉãÅ[Évhts_data\\hys_data";
 
-	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-	String file="C:\\Works\\HVID\\output";
+	String file="C:\\Works\\HVID\\energy";
 	
 	
 
@@ -55,148 +51,48 @@ public void loadData(){
 
 int Nmax=20;
 
-Mat[] BB=new Mat[Nmax];
-Mat[] HH=new Mat[Nmax];
+BE=new Mat[Nmax];
 
-BHs=new Mat[Nmax];
-
-
-Mat[] XX=new Mat[2*Nmax];
 
 int numbCurves=0;
 for(int i=0;i<Nmax;i++){
 	
-
 		line=br.readLine();
 		
 		if(line==null) break;
-		
-			line=br.readLine();
-			line=br.readLine();
 
 int L=Integer.parseInt(line);
 
 numbCurves++;
 
-Mat bbhh=new Mat(L,4);
+Mat be=new Mat(L,2);
 	
 	for( int p=0;p<L;p++)
 	{
 		line=br.readLine();
 		double[] ar=this.getCSV(line);
-		bbhh.el[p]=ar;
+		be.el[p]=ar;
 	}
 		
-			
-			BB[i]=new Mat(L,2);
-			HH[i]=new Mat(L,2);
-			
-		
-		BB[i].setCol(bbhh.getColVect(0).times(1), 0);
-		BB[i].setCol(bbhh.getColVect(1).times(1), 1);
-			
-			HH[i].setCol(bbhh.getColVect(2), 0);
-			HH[i].setCol(bbhh.getColVect(3), 1);
-	
 
-	
-			XX[2*i]=BB[i].times(100);
-			XX[2*i+1]=HH[i];
 			
-			BHs[i]=new Mat(L,2);
-			
-		//	HH.show();
-			
-				Vect Hr=new Vect(HH[i].nRow);
-			Vect Br=new Vect(BB[i].nRow);
+			BE[i]=new Mat(L,2);
 			
 		
-				
-		double ang=Math.atan(BB[i].el[1][1]/BB[i].el[1][0]);
-		//util.pr(ang/Math.PI*180);
-		//util.pr(ang/Math.PI*180);
-		
-		Vect er=new Vect(Math.cos(ang),Math.sin(ang));
-		for(int j=0;j<Hr.length;j++){
-			Hr.el[j]=new Vect(HH[i].el[j][0],HH[i].el[j][1]).dot(er);
-			Br.el[j]=new Vect(BB[i].el[j][0],BB[i].el[j][1]).dot(er);
-			//util.pr(Hr.el[i]+"\t"+Br.el[i]);
-		}
+		BE[i].setCol(be.getColVect(0).times(1), 0);
+		BE[i].setCol(be.getColVect(1).times(1), 1);
 
-		BHs[i].setCol(Hr,0);
-		BHs[i].setCol(Br,1);
 
 		
 		line=br.readLine();
-
 }
-		
-			//BH[1].show();
-//util.plotBunch(BHs,1);
-//BHs[0].show();
+
 			br.close();
 			fr.close();
 	
-			util.plotBunch(XX,2);
+			util.plotBunch(BE,1);
 
-
-			int L=HH[0].nRow/2;
-			Mat M=new Mat(L,2);
-			for(int i=0;i<L;i++){
-				M.el[i]=BB[0].el[i+L];
-			}
-			
-			//M.show();
-		//	util.plot(M);
-		//	util.plotBunch(BHs,1);
-			
-			String file1="C:\\Works\\HVID\\b_times";
-			
-			if(2>5)
-			try{
-				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file1)));		
-
-				int K=3;
-				double dB=.1;
-				Vect div=	new Vect().linspace(0,1.7,K);
-				//util.pr(div.length);
-			int nAng=18;
-			
-			pwBun.println(1);
-			pwBun.println((K-2)*nAng);
-			
-		for(int k=0;k<nAng;k++){
-			
-			double rad=k*Math.PI/18;
-			double cos=Math.cos(rad);
-			double sin=Math.sin(rad);
-			
-				for(int i=2;i<div.length;i++){
-					Vect v=new Vect(7);
-					v.el[0]=-div.el[i]*sin;
-					v.el[1]=-div.el[i]*cos;
-					v.el[2]=div.el[i]*sin;
-					v.el[3]=div.el[i]*cos;
-					v.el[4]=-div.el[i]*sin;
-					v.el[5]=-div.el[i]*cos;
-					
-					v.el[6]=dB;
-				
-					for(int p=0;p<v.length;p++)
-						pwBun.print(v.el[p]+"\t");
-					pwBun.println();
-				}
-		}		
-				
-					
-
-				util.pr("b_Time was written to "+file1+".");
-
-				pwBun.close();
-			}
-			catch(IOException e){}
-		
-			}
+		}
 		
 			catch(IOException e){System.err.println("Error in loading BH data file.");
 

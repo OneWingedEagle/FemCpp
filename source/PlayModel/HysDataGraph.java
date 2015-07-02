@@ -36,9 +36,9 @@ public class HysDataGraph {
 
 		HysDataGraph pg=new HysDataGraph();
 
-		//pg.loadHysData();
+		pg.loadHysData();
 		
-		pg.loadRotHysData();
+		//pg.loadRotHysData();
 		
 	}
 
@@ -49,7 +49,7 @@ public class HysDataGraph {
 		//	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
 
 		//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
-		String file="C:\\Works\\HVID\\hys_dataHSet";
+		String file="C:\\Works\\HVID\\hys_data";
 	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		
 
@@ -65,8 +65,9 @@ public class HysDataGraph {
 			line=br.readLine();
 			
 			sp=line.split(regex);
-
-			this.nSet=Integer.parseInt(sp[2]);
+			if(sp.length<3) this.nSet=1;
+			else this.nSet=Integer.parseInt(sp[2]);
+			
 			this.Bs=new double[this.nSet];
 			this.Hs=new double[this.nSet];
 			this.nInitial=new int[this.nSet];
@@ -199,15 +200,13 @@ public class HysDataGraph {
 					}
 				}
 
-				
-/*				line=br.readLine();
-				line=br.readLine();
-				line=br.readLine();
-*/
+
 			}
 			
-			util.plotBunch(BH[0]);
-			util.plotBunch(BH[9]);
+			//util.plotBunch(BH[0]);
+			//util.plotBunch(BH[9],3);
+			
+		createAngleDepData();
 
 			
 			boolean ani=false;
@@ -233,10 +232,11 @@ public class HysDataGraph {
 				}
 			
 				}
-
+				
 			
+						
 			
-			util.plotBunch(BHaniT,9);
+		//	util.plotBunch(BHaniT,0);
 
 			}
 	
@@ -273,6 +273,37 @@ public class HysDataGraph {
 
 	}	
 	
+	
+	public void createAngleDepData(){
+		
+		int nSet=18;
+		int nTot=16;
+		
+		Mat[][] BHs=new Mat[nSet][nTot];
+		
+		
+		for(int ia=0;ia<nSet;ia++)
+			for(int i=0;i<BHs[ia].length;i++){
+			BHs[ia][i]=this.BH[0][i].deepCopy();
+			for(int j=0;j<BHs[ia][i].nRow;j++){
+				//BHs[ia][i].el[j][0]*=(1+1*Math.sin(ia*Math.PI/nSet));
+			//if(i>0)
+			BHs[ia][i].el[j][0]*=1+2.5*Math.sin(ia*Math.PI/nSet);//*(BHs[ia][i].el[j][0]-BHs[ia][i].el[0][0])*(BHs[ia][i].el[j][0]-BHs[ia][i].el[BHs[ia][i].nRow-1][0])/Math.pow(BHs[ia][i].el[0][0]-BHs[ia][i].el[BHs[ia][i].nRow-1][0], 2);
+			//BHs[ia][i].el[j][1]*=1+.5*Math.sin(ia*Math.PI/nSet)*(BHs[ia][i].el[j][1]-BHs[ia][i].el[0][1])*(BHs[ia][i].el[j][1]-BHs[ia][i].el[BHs[ia][i].nRow-1][1])/Math.pow(BHs[ia][i].el[0][1]-BHs[ia][i].el[BHs[ia][i].nRow-1][1], 2);
+			}
+			
+			}
+		
+		util.plotBunch(BHs[0],16);
+		util.plotBunch(BHs[9],16);
+
+		
+		String file="C:\\Works\\HVID\\hys_dataGen";
+		
+		writeHystData(BHs,  file);
+		
+	}
+	
 	public void loadRotHysData(){
 
 
@@ -302,9 +333,9 @@ public class HysDataGraph {
 		}
 	
 		
-		//util.plotBunch(HH,12);
+	util.plotBunch(HH);
 		
-		util.plot(HH[9]);
+		//util.plot(HH[9]);
 
 		
 
@@ -462,7 +493,7 @@ public class HysDataGraph {
 		int nDescending=0;
 		int nAscending=0;
 		
-		double Hseff=BHs[0][0].el[BHs[0][0].nRow-1][0];
+	
 
 		DecimalFormat dfB=new DecimalFormat("#.00");
 		DecimalFormat dfH=new DecimalFormat("#.0");
@@ -473,9 +504,11 @@ public class HysDataGraph {
 
 	for(int ia=0;ia<nSet;ia++){
 
+		double Hsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][0];
+		double Bsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][1];
 				pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
 				pwBun.println("*Bs*Hs*");
-				pwBun.println(Bseff+"\t"+Hseff);
+				pwBun.println(Bsefft+"\t"+Hsefft);
 
 				pwBun.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
 				pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
