@@ -36,9 +36,11 @@ public class HysDataGraph {
 
 		HysDataGraph pg=new HysDataGraph();
 
-		pg.loadHysData();
+		//pg.loadHysData();
 		
 		//pg.loadRotHysData();
+		pg.loadAngData();
+		//pg.loadAngSymData();
 		
 	}
 
@@ -340,7 +342,171 @@ public class HysDataGraph {
 		
 
 
-	}	
+	}
+	
+	public void loadAngSymData(){
+		
+		int deg=0;
+		
+		 HystDataLoader loader=new HystDataLoader();
+		
+		 
+		 
+		 int nset=7;
+	
+		 
+		 Mat[][] hys=new Mat[nset][];
+	
+		 
+		 for(int ia=0;ia<nset;ia++){
+		 String file="C:\\Works\\HVID\\KitaoData\\symmetricData\\sym"+ia*15+".dat";
+	;
+
+		 Mat[][] syms=loader.loadDataSym(file);
+		 
+		 hys[ia]=new Mat[syms[1].length+1];
+				 
+		 Mat init=new Mat(syms[1].length+1,2);
+		 for(int i=1;i<init.nRow;i++){
+			 init.el[i][0]=syms[1][i-1].el[0][0];
+			 init.el[i][1]=syms[1][i-1].el[0][1];
+		 }
+		 
+		 hys[ia][0]=init;
+		 
+		 for(int i=1;i<hys[ia].length;i++)
+		 hys[ia][hys[ia].length-i]=syms[1][i-1];
+		 
+		 }
+		 
+		//util.plotBunch(hys[0]);
+		
+		PlayModel2D pm=new PlayModel2D();
+
+		
+		Mat[][] BHs=new Mat[nset][];
+
+		 int L=50;
+		 
+		 for(int ia=0;ia<nset;ia++){
+			 int nc=hys[ia].length;
+			 BHs[ia]=new Mat[nc];
+			 
+		 for(int i=0;i<nc;i++)
+		 {
+			 BHs[ia][i]=new Mat(L,2);
+			 Vect B=new Vect().linspace(hys[ia][i].el[0][1], hys[ia][i].el[hys[ia][i].nRow-1][1], L);
+	
+			 for(int j=0;j<L;j++){
+				 BHs[ia][i].el[j][1]=B.el[j];
+				 BHs[ia][i].el[j][0]=pm.getH(hys[ia][i], B.el[j]);
+			 }
+
+		 }
+		 }
+		
+		
+		 util.plotBunch(BHs[0]);
+		 util.plotBunch(BHs[3]);
+		 
+		// util.plotBunch(BHs[0]);
+		 
+		//String fileout="C:\\Works\\HVID\\KitaoData\\symmetricData\\hys_data"+deg;
+		String fileout="C:\\Works\\HVID\\KitaoData\\symmetricData\\hys_dataAll";
+		pm.writeHystData(BHs, fileout);
+		
+}
+	
+	
+	
+	public void loadAngData(){
+
+		int deg=60;
+		
+		Vect er=new Vect(Math.cos(deg*180.0/Math.PI),Math.sin(deg*180/Math.PI));
+
+		//String file="C:\\Works\\HVID\\KitaoData\\deg45";
+
+		String file="C:\\Works\\HVID\\KitaoData\\deg"+deg;
+
+
+	 HystDataLoader loader=new HystDataLoader();
+	 
+
+	Mat BHij=new Mat(loader.loadArrays(1024,72,file));
+	
+		int nc=72/4;
+		
+		double err=1e-4;
+		
+		Mat[] BB=new Mat[nc];
+		Mat[] HH=new Mat[nc];
+		
+		Mat[] BH=new Mat[nc];
+		Mat[] BHs=new Mat[nc];
+		
+		for(int i=0;i<BB.length;i++){
+			BB[i]=new Mat(BHij.nRow,2);
+			HH[i]=new Mat(BHij.nRow,2);
+			
+			BB[i].setCol(BHij.getColVect(4*i+0), 0);
+			BB[i].setCol(BHij.getColVect(4*i+1), 1);
+			
+			HH[i].setCol(BHij.getColVect(4*i+2), 0);
+			HH[i].setCol(BHij.getColVect(4*i+3), 1);
+			
+			int L=BB[i].nRow;
+			
+			BH[i]=new Mat(L,2);
+			
+			for(int j=0;j<L;j++){
+				
+				BH[i].el[j][0]=new Vect(HH[i].el[j]).dot(er);
+				BH[i].el[j][1]=new Vect(BB[i].el[j]).dot(er);
+			}
+			
+
+			double Bmax=BH[i].getColVect(1).max();
+			double Bmin=BH[i].getColVect(1).min();
+			
+			int n1=0;
+			int n2=0;
+			int jx=0;
+
+			
+			while(BH[i].el[jx][1]<-err+Bmax /*|| BH[i].el[jx+1][0]>=BH[i].el[jx][0]*/){jx++;}
+			n1=jx;
+
+			while(BH[i].el[jx][1]>err+Bmin /*|| BH[i].el[jx+1][0]<=BH[i].el[jx][0]*/){jx++;}
+			
+			n2=jx;
+			
+			int Ls=n2-n1;
+			
+			BHs[i]=new Mat(Ls,2);
+			
+			for(int j=0;j<Ls;j++){
+				
+				BHs[i].el[j]=BH[i].el[j+n1];
+			}
+			
+			
+		}
+	
+
+		
+	//util.plotBunch(HH,1);
+	util.plotBunch(BH,10);
+/*	BHs[0].show();	
+	BH[0].show();*/
+		//util.plot(HH[9]);
+
+		
+
+
+	}
+	
+
 	
 	
 	Mat[][] distHysData(Mat[][] BH){

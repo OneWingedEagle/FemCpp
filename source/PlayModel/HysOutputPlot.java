@@ -137,19 +137,19 @@ Mat bbhh=new Mat(L,4);
 			br.close();
 			fr.close();
 	
-			util.plotBunch(XX,2);
+			//util.plotBunch(XX,2);
 
 
 			int L=HH[0].nRow/2;
 			Mat M=new Mat(L,2);
 			for(int i=0;i<L;i++){
-				M.el[i]=BB[0].el[i+L];
+				M.el[i]=HH[0].el[i+L];
 			}
 			
 			//M.show();
 		//	util.plot(M);
-		//	util.plotBunch(BHs,1);
-			
+			util.plotBunch(BHs,1);
+		//	BHs[0].show();
 			String file1="C:\\Works\\HVID\\b_times";
 			
 			if(2>5)

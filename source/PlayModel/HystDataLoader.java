@@ -116,6 +116,67 @@ public static void main2(String[] args){
 
 	}	
 	
+	
+	public Mat[][] loadDataSym( String file){
+
+		Mat[][] syms=new Mat[2][1];
+
+		try{
+			FileReader fr=new FileReader(file);
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			String s;
+			String[] sp;
+
+
+			line=br.readLine();
+
+			sp=line.split(regex);	
+
+			int nc=Integer.parseInt(sp[0]);
+			
+			syms=new Mat[2][nc];
+			
+			line=br.readLine();
+			
+			for(int i=0;i<nc;i++){
+				int jx=0;
+				double[][] data=new double[1000][3];
+				
+				line=br.readLine();
+
+			while(line!=null && line.length()>0){
+				data[jx]=this.getCSV(line);
+				jx++;
+				line=br.readLine();
+
+			}
+			
+			syms[0][i]=new Mat(jx,2);
+			syms[1][i]=new Mat(jx,2);
+			for(int j=0;j<jx;j++){
+				syms[0][i].el[j][0]=data[jx-1-j][1];
+				syms[0][i].el[j][1]=data[jx-1-j][0];
+				
+				syms[1][i].el[j][0]=data[jx-1-j][2];
+				syms[1][i].el[j][1]=data[jx-1-j][0];
+	
+				
+			}
+			
+		}
+
+		
+			}
+		
+			catch(IOException e){System.err.println("Error in loading BH data file.");
+		
+			}
+		
+		return syms;
+
+}	
+
 
 
 	private Vect getVectData(String line, int dim){

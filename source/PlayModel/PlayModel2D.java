@@ -1104,14 +1104,18 @@ public  double getH(Mat BH,double B, int mode){
 	}
 
 	boolean ascending=true;
-	int im=BH.nRow/2;
-	if (BH.el[im+1][ih]<BH.el[im][ih]) ascending=false;
+	
+	
 
+	int im=BH.nRow-1;
+
+	if (BH.el[im][ih]<BH.el[0][ih]) ascending=false;
+
+	 
 	int i1=0;
 	int i2=BH.nRow-1;
 
 	if(ascending){
-
 
 		if(B<=BH.el[i1][ib]){
 			double cc=(BH.el[i1+1][ih]-BH.el[i1][ih])/(BH.el[i1+1][ib]-BH.el[i1][ib]);
@@ -1131,14 +1135,16 @@ public  double getH(Mat BH,double B, int mode){
 	}
 	else{
 
+	
 		if(B<=BH.el[i2][ib]){
 			double cc=(BH.el[i2][ih]-BH.el[i2-1][ih])/(BH.el[i2][ib]-BH.el[i2-1][ib]);
+		
 			return BH.el[i2][ih];//+cc*(B-BH.el[i2][ib]);
 			//return BH.el[i1][ih];
 		}
 		if(B>=BH.el[i1][ib]){
 
-
+			
 			//return BH.el[i2][ih];
 			double cc=(BH.el[i1+1][ih]-BH.el[i1][ih])/(BH.el[i1+1][ib]-BH.el[i1][ib]);
 
@@ -1160,7 +1166,6 @@ public  double getH(Mat BH,double B, int mode){
 	double cc=(BH.el[j+1][ih]-BH.el[j][ih])/(BH.el[j+1][ib]-BH.el[j][ib]);
 
 	double H=BH.el[j][ih]+(B-BH.el[j][ib])*cc;
-
 
 	return H;
 
