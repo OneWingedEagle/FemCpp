@@ -111,7 +111,11 @@ import components.GUI;
 	}
 
 	public void runMag(){
-		if(model.numberOfRegions==17 && model.motor){
+		if(model.numberOfRegions==10 && model.motor){
+			 RunMagGear mt=new RunMagGear();
+			 mt.runMag(model, this);
+				}
+		else if(model.numberOfRegions==17 && model.motor){
 		 RunMagIPM mt=new RunMagIPM();
 		 mt.runMag(model, this);
 		}else{

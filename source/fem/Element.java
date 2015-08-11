@@ -16,7 +16,6 @@ public class Element {
 	private Vect yng,pois,shear;
 	private boolean hasJ,hasM,isConductor,deformable,nonlin,MS,thermal;
 	public boolean rotor;
-	public Vect F,Fms;
 	
 
 	public Element(String type){
@@ -61,10 +60,8 @@ public class Element {
 		this.nu=new Vect().ones(dim);
 
 
-
 		
 	}
-
 
 	public void setJ(Vect J){
 		this.J=J.deepCopy();
@@ -104,18 +101,6 @@ public class Element {
 
 	public Vect getB(){
 		return this.B.deepCopy();
-
-	}
-
-	public void setF(Vect F){
-
-		this.F=F.deepCopy();
-
-	}
-	
-
-	public Vect getF(){
-		return this.F.deepCopy();
 
 	}
 

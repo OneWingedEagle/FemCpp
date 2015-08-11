@@ -1183,16 +1183,105 @@ public class BoundarySet {
 	}
 
 	public int[][] getCommonNodeSorted(Model model){
+		
+		
 		int nNodes=model.numberOfNodes;
 
+		boolean rotOut=model.region[model.numberOfRegions].rotor;
+				
 		double rm=0;
+		
+		if(rotOut){
+			 rm=1e10;
+		}
+	
+		for(int i=1;i<=nNodes;i++)
+		{
+			Vect z=model.node[i].getCoord();
+			double s=new Vect(z.el[0],z.el[1]).norm();
+			if(model.node[i].rotor){
+				if(rotOut){
+					if(s<rm) rm=s;
+				}
+				else 
+					if(s>rm) rm=s;
+			}
+				
+
+		}
+		model.rm=rm;
+		
+
+		int ix=0;
+		for(int i=1;i<=nNodes;i++){
+			if(Math.abs(model.node[i].getCoord().norm()-rm)<epsr) 
+			{
+				ix++;
+				model.node[i].common=true;
+			}
+
+		}
+
+
+		int L=ix;
+		if(model.hasTwoNodeNumb)
+			L=L/2;
+		
+
+
+		if(L==0) return null;
+
+		int[] commonNodeNumb1=new int[L];
+		int[] commonNodeInd1=new int[nNodes+1];
+		int[] commonNodeNumb2=new int[L];
+		int[] commonNodeInd2=new int[nNodes+1];
+		Vect angs1=new Vect(L);
+		Vect angs2=new Vect(L);
+		int ixr=0;
+		int ixs=0;
+		for(int i=1;i<=nNodes;i++)
+			if(model.node[i].common) {
+				if(model.node[i].rotor){
+
+					commonNodeInd1[i]=ixr;
+					commonNodeNumb1[ixr]=i;
+					angs1.el[ixr]=util.getAng(model.node[i].getCoord());
+					ixr++;
+				}
+				else{
+
+					commonNodeInd2[i]=ixs;
+					commonNodeNumb2[ixs]=i;
+					angs2.el[ixs]=util.getAng(model.node[i].getCoord());
+					ixs++;
+				}
+			}
+
+		int[] indSorted1=angs1.bubble();
+		int[] indSorted2=angs2.bubble();
+
+		int[][] commonNodeNumbSorted=new int[2][L];
+		for(int i=0;i<L;i++)
+			commonNodeNumbSorted[0][i]= commonNodeNumb1[indSorted1[i]];
+
+		for(int i=0;i<L;i++)
+			commonNodeNumbSorted[1][i]= commonNodeNumb2[indSorted2[i]];
+
+
+		return commonNodeNumbSorted;
+	}
+	
+	public int[][] getCommonNodeSortedOutRot(Model model){
+		int nNodes=model.numberOfNodes;
+
+		double rm=1e10;
 
 		for(int i=1;i<=nNodes;i++)
 		{
 			Vect z=model.node[i].getCoord();
 			double s=new Vect(z.el[0],z.el[1]).norm();
 			if(model.node[i].rotor)
-				if(s>rm) rm=s;
+				if(s<rm) rm=s;
 
 		}
 		model.rm=rm;
@@ -1260,7 +1349,7 @@ public class BoundarySet {
 
 
 	public int[][] mapBorderNodes2D(Model model,int nb1,int nb2){
-
+		
 		int nNodes=model.numberOfNodes;
 
 		int[] onb1=new int[nNodes/2];
@@ -1268,7 +1357,8 @@ public class BoundarySet {
 
 		int ix1=0,ix2=0;
 		for(int i=1;i<=nNodes;i++){
-
+			
+		
 			if(model.node[i].onBound[nb1]) {
 				onb1[ix1]=i;
 				ix1++;
@@ -1370,7 +1460,7 @@ public class BoundarySet {
 
 	public void setNodeOnBound(Model model)
 	{
-
+	
 		double eps=1e-6;
 		if( model.coordCode==1) {setNodeOnMotorBound(model);return;}
 
@@ -1448,7 +1538,7 @@ public class BoundarySet {
 				nodeOnBound[i][0]=true;
 				if(!closed){
 					nodeOnBound[i][2]=true;
-
+				
 					nodeOnBound[i][3]=true;
 				}
 			} 

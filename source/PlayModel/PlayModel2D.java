@@ -315,136 +315,7 @@ public void createData(String file){
 		
 	}
 
-/*
 
-
-	if(write){
-
-
-		double Hseff=BHs[0][0].el[BHs[0][0].nRow-1][0];
-
-		DecimalFormat dfB=new DecimalFormat("#.00");
-		DecimalFormat dfH=new DecimalFormat("#.0");
-
-
-		try{
-			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
-
-			for(int ia=0;ia<nSet;ia++){
-
-
-				pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ps.phi[ia]);
-				pwBun.println("*Bs*Hs*");
-				pwBun.println(Bseff+"\t"+Hseff);
-
-				pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
-				pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
-
-				for(int i=0;i<nTot;i++){
-					pwBun.println("*xxx");
-					pwBun.println(BHs[ia][i].nRow);
-					for(int j=0;j<BHs[ia][i].nRow;j++)
-						pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
-				}
-
-				pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-				pwBun.println("* B” *");
-				pwBun.println("0");
-				pwBun.println("* B * ‘¹Ž¸");
-				pwBun.println("* ----- ˆÙ•û«");
-				pwBun.println("* B” * Šp“x” *");
-				pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-				pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
-
-				for(int i=0;i<0*Lani;i++){
-					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-					for(int j=0;j<nAni;j++){
-						pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
-					}
-					pwBun.println();
-				}
-				pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
-				for(int i=0;i<0*Lani;i++){
-					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-					for(int j=0;j<nAni;j++){
-						pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
-					}
-					pwBun.println();
-				}
-	
-			}
-
-
-			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
-
-			pwBun.close();
-		}
-		catch(IOException e){}*/
-
-
-/*
-		String fileAv="C:\\Works\\HVID\\hys_dataHAvy";
-
-
-		try{
-			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fileAv)));		
-
-
-			pwBun.println(1+"\t"+1+"\t"+1+"\t"+0);
-			pwBun.println("*Bs*Hs*");
-			pwBun.println(Bseff+"\t"+Hseff);
-
-			pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
-			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
-
-			for(int i=0;i<nTot;i++){
-				pwBun.println("*xxx");
-				pwBun.println(BHsAv[i].nRow);
-				for(int j=0;j<BHsAv[i].nRow;j++)
-					pwBun.println(BHsAv[i].el[j][0]+"\t"+BHsAv[i].el[j][1]);
-			}
-
-			pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-			pwBun.println("* B” *");
-			pwBun.println("0");
-			pwBun.println("* B * ‘¹Ž¸");
-			pwBun.println("* ----- ˆÙ•û«");
-			pwBun.println("* B” * Šp“x” *");
-			pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
-
-			for(int i=0;i<Lani;i++){
-				pwBun.print(dfB.format(Bani.el[i])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
-				}
-				pwBun.println();
-			}
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
-			for(int i=0;i<Lani;i++){
-				pwBun.print(dfB.format(Bani.el[i])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
-				}
-				pwBun.println();
-			}
-						pwBun.println();
-				pwBun.println("End of hysteresis data set "+ia);
-				pwBun.println();
-
-
-
-			util.pr("Simulated angle-averaged hysteresis data was written to "+fileAv+".");
-
-			pwBun.close();
-		}
-		catch(IOException e){}
-
-
-
-	}
-
-*/
 
 }
 
@@ -481,7 +352,7 @@ for(int ia=0;ia<nSet;ia++){
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bsefft+"\t"+Hsefft);
 
-			pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
+			pwBun.println("* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èï¿½ * ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ÎÌƒï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ï¿½ï¿½~ï¿½Èï¿½ * ï¿½ã¸ï¿½Èï¿½ *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 			for(int i=0;i<nTot;i++){
@@ -491,14 +362,14 @@ for(int ia=0;ia<nSet;ia++){
 					pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
 			}
 
-			pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-			pwBun.println("* B” *");
+			pwBun.println("* ----- ï¿½ï¿½]ï¿½qï¿½Xï¿½eï¿½ï¿½ï¿½Vï¿½Xï¿½ï¿½");
+			pwBun.println("* Bï¿½ï¿½ *");
 			pwBun.println("0");
-			pwBun.println("* B * ‘¹Ž¸");
-			pwBun.println("* ----- ˆÙ•û«");
-			pwBun.println("* B” * Šp“x” *");
+			pwBun.println("* B * ï¿½ï¿½ï¿½ï¿½");
+			pwBun.println("* ----- ï¿½Ù•ï¿½");
+			pwBun.println("* Bï¿½ï¿½ * ï¿½pï¿½xï¿½ï¿½ *");
 			pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ÕŽï¿½");
 			
 			for(int i=0;i<0*Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
@@ -507,7 +378,7 @@ for(int ia=0;ia<nSet;ia++){
 				}
 				pwBun.println();
 			}
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ïŽ²");
 			for(int i=0;i<0*Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
 				for(int j=0;j<nAni;j++){
@@ -760,7 +631,7 @@ public void createDataMath(String file){
 				pwBun.println("*Bs*Hs*");
 				pwBun.println(Bseff+"\t"+Hseff);
 
-				pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
+				pwBun.println("* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èï¿½ * ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ÎÌƒï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ï¿½ï¿½~ï¿½Èï¿½ * ï¿½ã¸ï¿½Èï¿½ *");
 				pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 				for(int i=0;i<nTot;i++){
@@ -770,14 +641,14 @@ public void createDataMath(String file){
 						pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
 				}
 
-				pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-				pwBun.println("* B” *");
+				pwBun.println("* ----- ï¿½ï¿½]ï¿½qï¿½Xï¿½eï¿½ï¿½ï¿½Vï¿½Xï¿½ï¿½");
+				pwBun.println("* Bï¿½ï¿½ *");
 				pwBun.println("0");
-				pwBun.println("* B * ‘¹Ž¸");
-				pwBun.println("* ----- ˆÙ•û«");
-				pwBun.println("* B” * Šp“x” *");
+				pwBun.println("* B * ï¿½ï¿½ï¿½ï¿½");
+				pwBun.println("* ----- ï¿½Ù•ï¿½");
+				pwBun.println("* Bï¿½ï¿½ * ï¿½pï¿½xï¿½ï¿½ *");
 				pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-				pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
+				pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ÕŽï¿½");
 
 				for(int i=0;i<0*Lani;i++){
 					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
@@ -786,7 +657,7 @@ public void createDataMath(String file){
 					}
 					pwBun.println();
 				}
-				pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
+				pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ïŽ²");
 				for(int i=0;i<0*Lani;i++){
 					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
 					for(int j=0;j<nAni;j++){
@@ -817,7 +688,7 @@ public void createDataMath(String file){
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bseff+"\t"+Hseff);
 
-			pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
+			pwBun.println("* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èï¿½ * ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ÎÌƒï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ï¿½ï¿½~ï¿½Èï¿½ * ï¿½ã¸ï¿½Èï¿½ *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 			for(int i=0;i<nTot;i++){
@@ -827,14 +698,14 @@ public void createDataMath(String file){
 					pwBun.println(BHsAv[i].el[j][0]+"\t"+BHsAv[i].el[j][1]);
 			}
 
-			pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-			pwBun.println("* B” *");
+			pwBun.println("* ----- ï¿½ï¿½]ï¿½qï¿½Xï¿½eï¿½ï¿½ï¿½Vï¿½Xï¿½ï¿½");
+			pwBun.println("* Bï¿½ï¿½ *");
 			pwBun.println("0");
-			pwBun.println("* B * ‘¹Ž¸");
-			pwBun.println("* ----- ˆÙ•û«");
-			pwBun.println("* B” * Šp“x” *");
+			pwBun.println("* B * ï¿½ï¿½ï¿½ï¿½");
+			pwBun.println("* ----- ï¿½Ù•ï¿½");
+			pwBun.println("* Bï¿½ï¿½ * ï¿½pï¿½xï¿½ï¿½ *");
 			pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ÕŽï¿½");
 
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(Bani.el[i])+"\t");
@@ -843,7 +714,7 @@ public void createDataMath(String file){
 				}
 				pwBun.println();
 			}
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ïŽ²");
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(Bani.el[i])+"\t");
 				for(int j=0;j<nAni;j++){
@@ -1034,7 +905,7 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bseff+"\t"+Hseff);
 
-			pwBun.println("* ‰Ž¥‰»‹Èü” * ƒƒWƒƒ[ƒ‹[ƒv” * ‘ÎÌƒ‹[ƒv” * ‰º~‹Èü” * ã¸‹Èü” *");
+			pwBun.println("* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Èï¿½ * ï¿½ï¿½ï¿½Wï¿½ï¿½ï¿½[ï¿½ï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ÎÌƒï¿½ï¿½[ï¿½vï¿½ï¿½ * ï¿½ï¿½ï¿½~ï¿½Èï¿½ * ï¿½ã¸ï¿½Èï¿½ *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 			for(int i=0;i<nTot;i++){
@@ -1044,14 +915,14 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 					pwBun.println(BHs[i].el[j][0]+"\t"+BHs[i].el[j][1]);
 			}
 
-			pwBun.println("* ----- ‰ñ“]ƒqƒXƒeƒŠƒVƒX‘¹");
-			pwBun.println("* B” *");
+			pwBun.println("* ----- ï¿½ï¿½]ï¿½qï¿½Xï¿½eï¿½ï¿½ï¿½Vï¿½Xï¿½ï¿½");
+			pwBun.println("* Bï¿½ï¿½ *");
 			pwBun.println("0");
-			pwBun.println("* B * ‘¹Ž¸");
-			pwBun.println("* ----- ˆÙ•û«");
-			pwBun.println("* B” * Šp“x” *");
+			pwBun.println("* B * ï¿½ï¿½ï¿½ï¿½");
+			pwBun.println("* ----- ï¿½Ù•ï¿½");
+			pwBun.println("* Bï¿½ï¿½ * ï¿½pï¿½xï¿½ï¿½ *");
 			pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»—eˆÕŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ÕŽï¿½");
 			
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
@@ -1060,7 +931,7 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 				}
 				pwBun.println();
 			}
-			pwBun.println("* B * H ¥¥¥¥¥ *@Ž¥‰»¢“ïŽ²");
+			pwBun.println("* B * H ï¿½ï¿½ï¿½ï¿½ï¿½ *ï¿½@ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ïŽ²");
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
 				for(int j=0;j<nAni;j++){

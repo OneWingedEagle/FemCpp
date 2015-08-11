@@ -51,30 +51,39 @@ public class ScalarPlayModelDataGen {
 		String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 	//	String file="C:\\Works\\HVID\\hys_dataH";
 		
-		String file2="C:\\Works\\HVID\\hysRotation.txt";
+		//String file2="C:\\Works\\PlayModel\\hysRotation";
+		String file2="C:\\Works\\PlayModel\\hysRotNew";
 		Loader ld=new Loader();
 
-		Mat BHij=new Mat(ld.loadArrays(1024,69,file2));
 		
-
-
+		int nloop=15;
 		
-		Mat[] BB=new Mat[17];
-		Mat[] HH=new Mat[17];
+		Mat BHij=new Mat(ld.loadArrays(1024,4*nloop+1,file2));
+		//BHij.show();
+		
+		Mat[] BB=new Mat[nloop];
+		Mat[] HH=new Mat[nloop];
 		
 		for(int i=0;i<BB.length;i++){
 			BB[i]=new Mat(BHij.nRow,2);
 			HH[i]=new Mat(BHij.nRow,2);
 			
-			BB[i].setCol(BHij.getColVect(4*i+1), 0);
+/*			BB[i].setCol(BHij.getColVect(4*i+1), 0);
 			BB[i].setCol(BHij.getColVect(4*i+3), 1);
 			
 			HH[i].setCol(BHij.getColVect(4*i+2), 0);
-			HH[i].setCol(BHij.getColVect(4*i+4), 1);
+			HH[i].setCol(BHij.getColVect(4*i+4), 1);*/
+			
+			BB[i].setCol(BHij.getColVect(4*i), 0);
+			BB[i].setCol(BHij.getColVect(4*i+1), 1);
+			
+			HH[i].setCol(BHij.getColVect(4*i+2), 0);
+			HH[i].setCol(BHij.getColVect(4*i+3), 1);
 		}
 	
-
-		
+		//HH[8].show();
+	
+		util.plot(HH[12]);
 		
 		HysOutputPlot hop=new HysOutputPlot();
 		hop.loadData();

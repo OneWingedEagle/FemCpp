@@ -2683,11 +2683,6 @@ public void setJStrandedCircuit(double t){
 	}
 
 
-	public void writeElF(String file){
-		writer.writeElF(this, file);
-
-	}
-
 	public void writeA(String file){
 		writer.writeA(this, file);
 

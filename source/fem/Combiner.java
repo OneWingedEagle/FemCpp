@@ -677,6 +677,68 @@ public class Combiner {
 	}
 		
 	
+	
+	public void setGearsPositionFull(Model motor, double newAng,double angStep0){
+
+
+		double dangNew=newAng-motor.rotAng;
+		
+		if(dangNew==0) return;
+
+		int nSteps=(int)Math.round(newAng/angStep0);
+
+		double diff=newAng-nSteps*angStep0;
+
+		motor.rotSubAng=diff;
+
+		motor.rotAng=newAng;
+		double dangx=dangNew;
+
+		int L=motor.commonNodes[0].length;
+		int[] commonNodeIndSorted=new int[motor.numberOfNodes+1];
+
+		for(int i=0;i<L;i++)
+			commonNodeIndSorted[motor.commonNodes[0][i]]=i+1;
+		
+		Mat R=util.rotMat2D(dangx*Math.PI/180);
+
+		int Ld=L;
+	
+		boolean[] nodeRotated=new boolean[motor.numberOfNodes+1];
+
+		for(int ir=1;ir<=motor.numberOfRegions;ir++)
+			if(motor.region[ir].rotor)
+				for(int i=motor.region[ir].getFirstEl();i<=motor.region[ir].getLastEl();i++){
+
+					Vect Mr=R.mul(motor.element[i].getM());
+					if(motor.element[i].hasM())
+					motor.element[i].setM(Mr);
+
+					int[] vertNumb=motor.element[i].getVertNumb();
+					for(int j=0;j<motor.nElVert;j++){
+
+						int nn=vertNumb[j];
+
+						if(nodeRotated[nn]) continue;
+
+						if( motor.hasTwoNodeNumb){
+							motor.node[nn].setCoord(R.mul(motor.node[nn].getCoord()));	
+							nodeRotated[nn]=true;
+							if(motor.node[nn].common)
+							{
+								int ind=commonNodeIndSorted[nn];
+								int k=nSteps+ind-1;
+								int p=(k)%Ld;						
+								motor.node[nn].setMap(motor.commonNodes[1][p]);
+								
+
+							}
+						}
+
+					}
+				}
+	}
+		
 
 	
 	public void setRotorIndexFull(Model motor, int steps){

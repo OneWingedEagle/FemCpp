@@ -1842,36 +1842,7 @@ public class Writer {
 
 	}
 
-	public void writeElF(Model model,String fluxFile){
-		int dim=model.dim;
-		try{
-			PrintWriter pw=new PrintWriter(new BufferedWriter(new FileWriter(fluxFile)));
-			pw.println("flux");
-			pw.println(dim);
-			pw.println(model.numberOfElements);
-			for(int i=1;i<=model.numberOfElements;i++){
 
-
-				if(model.element[i].F!=null){
-
-					Vect F=model.element[i].getF();
-
-					for(int k=0;k<dim;k++)					
-						pw.format("%E\t",F.el[k]);
-				}
-				else
-					for(int k=0;k<dim;k++)					
-						pw.format("%E\t",0*1e6);
-
-				pw.println();
-			}
-			pw.close();
-		} catch(IOException e){System.out.println("writing flux file failed.");}
-
-		System.out.println(" Magnetic force density was written to "+fluxFile);
-
-	}
-	
 	
 
 	public void writeA(Model model,String vPotFile){

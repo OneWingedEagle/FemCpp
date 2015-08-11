@@ -240,7 +240,7 @@ public class RunMagIPM {
 			elAngStep=mechAngStep/kme;
 			
 			
-		double elAng0=1*260;
+		double elAng0=0*260;
 			
 			if(model.circuit) elAng0=280;
 			//if(model.circuit) elAng0=0;
@@ -294,8 +294,6 @@ public class RunMagIPM {
 					fluxFolder = System.getProperty("user.dir")+"\\flux6AFull-0-90";
 				else
 					fluxFolder = System.getProperty("user.dir")+"\\flux6A4th-0-90";
-				
-				
 				File dfolder = new File(fluxFolder);
 				if(dfolder.exists())
 					util.deleteDir(dfolder);
@@ -709,12 +707,11 @@ public class RunMagIPM {
 
 							if(model.saveFlux){
 								String fluxFile = fluxFolder+"\\flux"+i+".txt";
+							
 								model.writeB(fluxFile);
-								
-								if(i==0)
-									model.writeMesh(fluxFolder+"\\bun"+i+".txt");
 		
 							}
+
 
 							util.pr(" >>>>>>>>>> Bmax >>>>>>>"+model.Bmax);
 

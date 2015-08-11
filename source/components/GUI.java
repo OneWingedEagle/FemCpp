@@ -47,7 +47,7 @@ public class GUI extends JFrame implements ActionListener{
 				String dataFile= "";
 
 
-			int	tag=0;	
+			int	tag=20;	
 				
 				if(tag==0){
 					//meshFile= System.getProperty("user.dir") + "\\quiz.txt";
@@ -65,8 +65,8 @@ public class GUI extends JFrame implements ActionListener{
 					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataLabyringth.txt";
 					
-					meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
-					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";
+				/*	meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";*/
 				}
 				
 				else if(tag==1){
@@ -233,9 +233,9 @@ public class GUI extends JFrame implements ActionListener{
 	else if(tag==20){
 		
 		
-		meshFile= System.getProperty("user.dir") + "\\reactorLessAir.txt";
+		meshFile= System.getProperty("user.dir") + "\\gears\\magGearRotOut.txt";
 	
-			dataFile= System.getProperty("user.dir") + "\\dataMechReact.txt";
+			dataFile= System.getProperty("user.dir") + "\\gears\\dataMagGear.txt";
 			
 	/*		meshFile= System.getProperty("user.dir") + "\\bunRing.txt";
 			
@@ -307,7 +307,7 @@ public class GUI extends JFrame implements ActionListener{
 				
 				tfIterMax=new TextField("3000");
 				tfIterMax.setPreferredSize(new Dimension(60,30));
-				tfErrorMax=new TextField("1e-5");
+				tfErrorMax=new TextField("1e-8");
 				tfErrorMax.setPreferredSize(new Dimension(60,30));
 				Label lbIterMax=new Label("ICCG Iteration max.");
 				Label lbErrorMax=new Label(" Error max.");

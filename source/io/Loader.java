@@ -392,6 +392,7 @@ public static void main2(String[] args){
 					model.meshAngStep =getScalarData(line);		
 				}
 				line=br.readLine();
+
 				if(line!=null){
 					
 					int nSteps=1;
@@ -1125,6 +1126,8 @@ public boolean loadFlux(Model model,String fluxFilePath, double angDeg){
 			
 				for(int j=0;j<dim;j++)
 					B1.el[j]=Double.parseDouble(scr.next());
+				
+				
 				if(rotating && model.element[i].rotor) B1=R.mul(B1);
 				model.element[i].setB(B1);
 				
@@ -1484,7 +1487,7 @@ public void average(String bun1, String bun2,String bun3){
 			}
 			int nn;
 			double sn2=0,smax2=0,smin2=0;
-
+		
 			while(scr.hasNext()){
 	
 				nn=Integer.parseInt(scr.next());
@@ -1492,7 +1495,7 @@ public void average(String bun1, String bun2,String bun3){
 					for(int j=0;j<dim;j++)
 						v.el[j]=Double.parseDouble(scr.next());			
 			
-					
+				
 					if(model.coordCode==1){
 
 						Mat R2=new Mat();
@@ -1530,7 +1533,7 @@ public void average(String bun1, String bun2,String bun3){
 							}
 						
 							model.node[nn].setF(v);
-
+					
 						}
 						else if(mode==2)
 							model.node[nn].setFms(v);

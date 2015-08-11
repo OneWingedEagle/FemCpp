@@ -37,7 +37,8 @@ public boolean loadShapeFunc(){
 	/*String file=util.getFile();
 	if(file==null || file.equals("") )return false;*/
 
-	String file="C:\\Works\\HVID\\shape";
+//	String file="C:\\Works\\PlayModel\\shape";
+	String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\shapeAve\\shape";
 
 		try{
 			FileReader fr=new FileReader(file);
@@ -45,6 +46,8 @@ public boolean loadShapeFunc(){
 			String line;
 			String s;
 			String[] sp;
+			
+			line=br.readLine();
 			
 			line=br.readLine();
 			sp=line.split(regex);	
@@ -67,8 +70,10 @@ public boolean loadShapeFunc(){
 			this.Bs=Double.parseDouble(sp[1]);
 			this.Hs=Double.parseDouble(sp[2]);
 			this.numb2=Integer.parseInt(sp[3]);
+			if(sp.length>4){
 			this.numb3=Integer.parseInt(sp[4]);
 			this.numb4=Integer.parseInt(sp[5]);
+			}
 			//this.numb5=Integer.parseInt(sp[6]);
 			
 		

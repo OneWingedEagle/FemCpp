@@ -620,7 +620,7 @@ public class util {
 		plot("y=f(x)",Color.black,x,y);
 	}
 	
-	public static void plot(Mat M){
+public static void plot(Mat M){
 		
 		plot("y=f(x)",Color.black,M.el);
 	}
@@ -673,8 +673,7 @@ public static void plot(double[][] XY){
 		//plot.setFont( new Font("Times New Roman", 1, 120));
 	//	 util.pr(plot.getFont().toString());
 		  JFrame frame = new JFrame("a plot panel");
-		//   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
@@ -704,7 +703,7 @@ public static void plot(double[][] XY){
 		plot.addLegend("EAST");
 		
 		  JFrame frame = new JFrame("plot panel");
-		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
@@ -736,7 +735,7 @@ public static void plot(double[][] XY){
 		plot.addLegend("EAST");
 		
 		  JFrame frame = new JFrame("plot panel");
-		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
@@ -773,7 +772,7 @@ public static void plot(double[][] XY){
 			plot.addLegend("EAST");
 			
 			  JFrame frame = new JFrame("plot panel");
-			   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			  frame.setSize(500,400);
 			  frame.setContentPane(plot);
 			  frame.setVisible(true);
@@ -805,7 +804,7 @@ public static void plot(double[][] XY){
 		 }
 
 		  JFrame frame = new JFrame("a plot panel");
-		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		  frame.setSize(800,800);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);

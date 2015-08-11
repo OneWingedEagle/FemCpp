@@ -2,6 +2,7 @@ package fem;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 
+
+import io.Loader;
 import io.Writer;
 import math.Mat;
 import math.SpBlockMat;
@@ -36,21 +39,177 @@ public class MeshFactory {
 	public static void main(String[] args){
 
 		MeshFactory mf=new MeshFactory();
+		//	mf.meshQx();
+
+/*		Loader wr=new Loader();
+		String fani=System.getProperty("user.dir") + "\\aniso.txt";
+		double[][] ani=wr.loadArrays(38, 14, fani);
+		util.show(ani);
+		*/
+
+		//mf.getNeuMeshQ(0);
+		//mf.getPostMeshQ();
+	//mf.getNeuMeshHexa(1);
+	//	mf.getPostMeshHex();
 		
+		int nf=121;
+		//mf.getEMSolFlux(3, 121);
+		Vect T=new Vect(nf);
+		String bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\magnetic";
+		//bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDisk\\Small model\\magnetization";
+	
+	//	String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
+		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
+		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso";
 		
-		String b1=System.getProperty("user.dir") + "\\rotRing.txt";
-		String b2=System.getProperty("user.dir") + "\\statRing2.txt";
-		//mf.assemble(b1, b2);
-	//	mf.connect(b1, b2);
-	//	mf.reRegion();
-		int[] nr={1,3,4};
+	//	mf.extractFlux( bbf,3,nf,  6780);
+	Mat BH=	mf.getBHcurve( bhfolder,3,nf, 6780,0);
+//	BH.show(); 
+	Mat HB=new Mat(BH.size());
+	HB.setCol(BH.getColVect(1), 0);
+	HB.setCol(BH.getColVect(0), 1);
+	HB.show();
+	
+	util.plot(BH);
+	//util.plot(BH.getColVect(0));
+	//util.plot(BH.getColVect(1));
+		//mf.getEMSolFlux(bbf,3, nf);
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(2>10){
+		String bbx=System.getProperty("user.dir") + "\\EMSol\\aHexa.txt";
+		Model mb=new Model(bbx);
+		
+		Vect[] B12=new Vect[nf];
+		
+		for(int i=0;i<B12.length;i++){
+		String bf=System.getProperty("user.dir") + "\\EMSol\\flux"+i+".txt";
+		mb.loadFlux(bf);
+		B12[i]=mb.element[12].getB();
+		}
+		
+		for(int i=0;i<B12.length;i++){
+			B12[i].hshow();
+			T.el[i]=B12[i].el[0];
+		}
+		
+		util.plot(T);
+		
+		}
+		//mf.rotate(PI);
+		//mf.rescale(.038/.035);
+		//mf.rescale(1.0);
+		//mf.deform();
+	//	mf.extractReg(0,.1,0,2*PI/3);
+	//mf.connectivity(2e-4);
 		//mf.dropUnusedNodes();
+	//mf.rotExtendNfoldW(2);
+		boolean transFlax=false;
+		
+		if(transFlax) mf.makeFullFlux();
+		
+	 //mf.makeFullForce();
+
+		
+		//mf.onlyIronForce();
+		String mm=System.getProperty("user.dir") + "\\fluxesGear\\bun0.txt";
+		String bb=System.getProperty("user.dir") + "\\fluxesGearAir\\flux0.txt";
+			/*Model mmx=new Model(mm);
+			int ppx=0;
+			for(int i=1;i<=mmx.numberOfNodes;i++)
+			{
+				Vect v=mmx.node[i].getCoord();
+				  double r=v.norm();
+				  double tt=util.getAng(v);
+				if(Math.abs(v.el[1])<.0001)
+					for(int j=1;j<=mmx.numberOfNodes;j++)
+					{
+						Vect v1=mmx.node[j].getCoord();
+						  double r1=v.norm();
+						  double tt1=util.getAng(v1);
+						if(Math.abs(v1.el[1])<.0001){
+							double d=v.sub(v1).norm();
+							if(i!=j && d<1e-4) util.pr(d+" "+(ppx++));
+						}
+			}
+			}
+/*		mmx.setSliceBounds();
+		util.pr(mmx.r1);
+	for(int i=1;i<=mmx.numberOfNodes;i++){
+		  Vect v=mmx.node[i].getCoord();
+		  double r=v.norm();
+		  double tt=util.getAng(v);
+		  if(tt>PI/3-.001){
+			  mmx.node[i].setCoord(new Vect(r*Math.cos(PI/3),r*Math.sinf(PI/3)));
+		  }
+			  
+		}
+		
+
+		
+		Vect T=new Vect(360);
+		
+		double r=.092;
+		for(int i=0;i<T.length;i++){
+			double tt=(i+.5)*PI/180;
+			Vect z=new Vect(r*Math.cos(tt),r*Math.sin(tt));
+			T.el[i]=mmx.getBAt(z).dot(z.normalized());
+					
+					}
+		util.plot(T);
+		T.show();
+		*/
+		
+		String b1=System.getProperty("user.dir") + "\\gears\\magGear.txt";
+		String b2=System.getProperty("user.dir") + "\\gears\\1to2.txt";
+		//String b2=System.getProperty("user.dir") + "\\gears\\noUnusedNodes2.txt";
+		
+		double[] boundx={0,1,-.001,.001};
+		//mf.connectCyl(b1, b2, boundx, 1e-4);
+	//mf.assemble(b1, b2);
+	//mf.connect(b1, b2);
+		//mf.reRegion();
+
+		
+/*		Model mx=new Model(System.getProperty("user.dir") + "\\model2D.txt");
+		
+		double tt=PI/180;
+	for(int i=1;i<=mx.numberOfNodes;i++){
+		if(mx.node[i].getCoord(1)>.0001){
+			double r=mx.node[i].getCoord(0);
+			double x=r*Math.cos(tt);
+			double y=r*Math.sin(tt);
+			mx.node[i].setCoord(new Vect(x,y));
+		}
+	}
+	mx.writeMesh(System.getProperty("user.dir") + "\\model2Dx.txt");*/
+		
+	
+		
+		//int[] nr={1,2,3,4,5,6,7};
+		int[] nr={1};
+
+	
+
+//mf.extractReg(nr); mf.dropUnusedNodes();
+		//mf.extendFlip(0);
+		//mf.translate(new Vect(200e-3,0));
+		//mf.meshQx();
+
+	//	int[] nr={1,3,4};
+	//	mf.dropUnusedNodes();
 		//mf.getNeuMeshQ();
-//jjjj
+
 //	mf.extractReg(nr); mf.dropUnusedNodes();
 		//mf.extendFlip(0);
 		//mf.translate(new Vect(200e-3,0));
 		//mf.meshQ();
+
 		
 	//	mf.rescale(.1);
 		//mf.reRegionf();
@@ -532,12 +691,12 @@ public class MeshFactory {
 			
 		//mf.deform();
 			
-			double[]  bound={.087,.088,-10,10,-1,1};
-			//double[]  bound={0,1,-10,10,-1e-3,1e-3};
+			//double[]  bound={.087,.088,-10,10,-1,1};
+			double[]  bound={0,1,-10,10,-1e-3,1e-3};
 		
 			//mf.connect( bun1, bun2);
 
-	//	mf.connectCyl( bun1, bun2,bound,1e-4);
+		//mf.connectCyl( bun1, bun2,bound,1e-4);
 	
 			
 			
@@ -636,7 +795,7 @@ public class MeshFactory {
 		
 		//mf.extractReg(-1,1,-10,10,-1,0.00003);
 		
-	//	mf.extractReg(0,1,0,PI/18,-1,1);
+		//mf.extractReg(0,.01,0,2*PI);
 	
 		//mf.dropUnusedNodes();
 
@@ -1339,11 +1498,12 @@ public class MeshFactory {
 
 		String sqaledMesh = System.getProperty("user.dir") + "//scaled.txt";
 
-
-
+;
 		for(int i=1;i<=model.numberOfNodes;i++)
 		{
 			Vect v=model.node[i].getCoord().times(scale);
+		
+			//if(util.getAng(v)<.003) v.el[1]-=.00002;
 
 			//	if(v.norm()<.027755) v=v.normalized().times(.02775);
 			model.node[i].setCoord(v);
@@ -1763,45 +1923,112 @@ public void hexaToTetra()
 		Model model=new Model();
 		model.loadMesh(bun);
 
+		
 		for(int ir=1;ir<=1*model.numberOfRegions;ir++){
 
 			
 			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
-			
-				if(ir==1 || ir==3)model.element[i].setRegion(1);
-					if(ir==2 || ir==4) model.element[i].setRegion(2);
-				/*Vect c=model.getElementCenter(i);
+		;;	if(ir>10) model.element[i].setRegion(ir-10);
+				/*if(ir==1 || ir==3)model.element[i].setRegion(1);
+					if(ir==2 || ir==4) model.element[i].setRegion(2);*/
+				Vect c=model.getElementCenter(i);
+				double r=c.norm();
+				double tt=util.getAng(c);
+				if(tt>6.2){
+					
+					model.element[i].setRegion(4);
+					}
+				/*
+				if(ir>8){
+					double td=12;
+					int v=(int)(tt*180/PI/td);
+					model.element[i].setRegion(9+v%2);
+					}
+				else 	if(ir==5 || ir==6){
+					double td=10;
+					int v=(int)(tt*180/PI/td);
+					model.element[i].setRegion(5+v%2);
+					}
 				
-				if(c.el[0]>.3 || c.el[1]>.3  ) model.element[i].setRegion(1);
-				else
-					 model.element[i].setRegion(2);*/
-				
-			//	if(abs(c.el[0])>.220 || abs(c.el[1])>.15 || abs(c.el[2])>.15 ) model.element[i].setRegion(19);
-/*				if(c.el[0]<0){
-				int[] vn1=model.element[i].getVertNumb();
-				int[] vn2={vn1[0],vn1[1],vn1[2],vn1[3],vn1[4],vn1[5],vn1[6],vn1[7]};
-				
-				model.element[i].setVertNumb(vn2);
-				}*/
-
-/*			if(ir%2==1)
-					model.element[i].setRegion(1);
-				else
-					model.element[i].setRegion(2);
-
-			*/
-			}
-		}
-
-		for(int i=1;i<=0*model.numberOfNodes;i++){
-
-			Vect v=model.node[i].getCoord();
-			if(v.el[2]<-1e-6){
-				v.el[2]+=.01;
-				model.node[i].setCoord(v);
-			}
+				else 	if(ir==1 || ir==2){
+					double td=60;
+					int v=(int)(tt*180/PI/td);
+					model.element[i].setRegion(1+v%2);
+					}*/
 		
+					/*if(tt<PI/5) model.element[i].setRegion(1);
+					
+					else if(tt<2*PI/5) model.element[i].setRegion(2);
+					
+					else if(tt<3*PI/5) model.element[i].setRegion(1);
+					
+					else if(tt<4*PI/5) model.element[i].setRegion(2);
+					
+					else if(tt<5*PI/5) model.element[i].setRegion(1);
+					
+					else if(tt<6*PI/5) model.element[i].setRegion(2);
+					
+					else if(tt<7*PI/5) model.element[i].setRegion(1);
+					
+					else if(tt<8*PI/5) model.element[i].setRegion(2);
+					
+					else if(tt<9*PI/5) model.element[i].setRegion(1);
+					else model.element[i].setRegion(2);*/
+					
+							
+				//}
+		/*		if(r<.065 && tt<PI/10) model.element[i].setRegion(1);
+				else 
+					if(r<.065 && tt>PI/10) model.element[i].setRegion(2);
+					else if(r<.066 ) model.element[i].setRegion(3);
+					else model.element[i].setRegion(4);
+*/
+				
+/*				if(r<.035 ) model.element[i].setRegion(1);
+				else if(r<.04 ) model.element[i].setRegion(2);
+				else if(r<.06) model.element[i].setRegion(3);
+				else if(r<.065 ) model.element[i].setRegion(4);
+				else  model.element[i].setRegion(5);*/
+				
+
+			}
 		}
+		
+		double rm=0;
+for(int i=1;i<=0*model.numberOfNodes;i++){
+
+			
+				Vect c=model.node[i].getCoord();
+				double r=c.norm();
+				double tt=util.getAng(c);
+				
+				if(r>rm) rm=r;
+				
+			/*	if(r>.0351 && r<.041){
+					Vect cm=c.normalized();
+					//Vect ct=c.times((.037/.04));
+					Vect ct=cm.times(r-.002);
+					model.node[i].setCoord(ct);
+				}*/
+				
+				if(r>.03651){
+					Vect cm=c.normalized();
+					Vect ct=c.times(1+.0365/r);
+					//Vect ct=cm.times(r-.005);
+					model.node[i].setCoord(ct);
+				}
+/*				if(r<.035 ) model.element[i].setRegion(1);
+				else if(r<.04 ) model.element[i].setRegion(2);
+				else if(r<.06) model.element[i].setRegion(3);
+				else if(r<.065 ) model.element[i].setRegion(4);
+				else  model.element[i].setRegion(5);*/
+				
+
+			
+		}
+
+
+util.pr(rm);
 
 
 		reRegionGroupEls(model);
@@ -1935,49 +2162,24 @@ public void hexaToTetra()
 		List<Double> list1=new ArrayList<Double>();
 
 			
-		for(int i=1;i<=0*model.numberOfNodes;i++){
+		for(int i=1;i<=1*model.numberOfNodes;i++){
 
 			Vect c=model.node[i].getCoord();
 			
 			double r=c.norm();
-			if(r>.05468){
-			double tt=util.getAng(c);
-			double td=Math.round(tt/(PI/18/200))*(PI/18/200);
-			Vect v=new Vect(r*Math.cos(td),r*Math.sin(td));
+			if(Math.abs(c.el[1])<1e-4){ c.el[1]=0;
 			
-			model.node[i].setCoord(v);
+			model.node[i].setCoord(c.times(1));
 			}
 			//list1.add(c.el[2]);
 		}
-		int[] nn=model.getRegNodes(4);
-		
-		for(int i=0;i<0*nn.length;i++){
-			int n=nn[i];
-			
-			
-			Vect v=model.node[n].getCoord();
-			
-			if(n>689 && n<693){
 
-			model.node[n].setCoord(0,model.node[693].getCoord(0));
-			}
-			
-			else if(n>737 && n<741){
-
-				model.node[n].setCoord(0,model.node[737].getCoord(0));
-				}
-			
-			else if(n>641 && n<645){
-
-				model.node[n].setCoord(0,model.node[645].getCoord(0));
-				}
-	
-		
-		}
 		
 
 		
-		for(int n=1;n<=model.numberOfNodes;n++){
+
+		
+		for(int n=1;n<=model.numberOfNodes;n++){/*
 			Vect v=model.node[n].getCoord();
 			if(v.el[0]>.0198)
 				model.node[n].setCoord(0,.02);
@@ -2012,7 +2214,7 @@ public void hexaToTetra()
 					}
 		
 		
-		}
+		*/}
 
 
 		
@@ -6953,10 +7155,7 @@ for(int i=0; i<dh.length; i++){
 			
 			
 			for(int j=0;j<model.nElVert;j++){
-				//if(model.node[vn[j]].getCoord().v2().norm()<.088) continue;
-			//	if(abs(model.node[vn[j]].getCoord(2))>1e-3) continue;
-
-				nnc[vn[j]]=true;
+					nnc[vn[j]]=true;
 			}
 		}
 		}
@@ -6966,31 +7165,40 @@ for(int i=0; i<dh.length; i++){
 			if(!nnc[i]) continue;
 			    
 			Vect v1=model.node[i].getCoord();
-			for(int j=1;j<=model.numberOfNodes;j++){
+			for(int j=i+1;j<=model.numberOfNodes;j++){
 				
 				if(!nnc[j]) continue;
 				
 				Vect v2=model.node[j].getCoord();
 				
-				if(i!=j && map[j]==0&& v1.sub(v2).norm()<eps) {
+				if(map[j]==0 && v1.sub(v2).norm()<eps) 
+
 					map[j]=i;
 					ix++;
 				}
 			}
-		}
 		
-		for(int i=1;i<=model.numberOfElements;i++){
+		
+
+		
+		for(int i=1;i<=1*model.numberOfElements;i++){
 			int[] vn=model.element[i].getVertNumb();
 			int[] vn2=new int[vn.length];
 			for(int j=0;j<model.nElVert;j++){
+		
+				
 				if(map[vn[j]]>0){
 				 vn2[j]=map[vn[j]];
+				
 				}
-				else vn2[j]=vn[j];
-			}
-			
+				else{
+					vn2[j]=vn[j];
+				}
+		}
+		
 			model.element[i].setVertNumb(vn2);
 		}
+		
 
 		util.pr(ix+"/"+model.numberOfNodes);
 			
@@ -9184,7 +9392,134 @@ for(int j=0;j<bb.length;j++){
 
 	}
 	
-	public void getNeuMeshQ(){
+
+	
+	public void meshQx(){
+		
+			//double[][] bb={{50,65,0,5},{65,67,0,5}};
+		double[][] bb={{88,89,0,5}};
+			//double[][] bb={{67,87,0,5},{87,89,0,5}};
+			//double[][] bb={{89,99,0,5}};
+		
+		
+
+		double scale=1;
+	//	scale=1000;
+
+		for(int j=0;j<bb.length;j++)
+			for(int k=0;k<bb[0].length;k++){
+				bb[j][k]*=scale;
+			
+			}
+
+		ModelGeo mg=new ModelGeo(bb);
+
+		mg.blockName[0]="outPM";
+		//mg.blockName[1]="inAir2";
+	
+
+		
+for(int j=0;j<bb.length;j++){
+			
+			for(int k=0;k<bb[0].length/2;k++){
+			
+		
+			mg.baseLeft[j][k]=1;
+			mg.baseRight[j][k]=1;
+	
+			if(j<1){
+				mg.minMeshRight[j][k]=.24;
+				mg.minMeshLeft[j][k]=.26;
+			} else {
+				mg.minMeshRight[j][k]=.3;
+				mg.minMeshLeft[j][k]=.3;
+			}
+		
+		
+			}	
+}
+
+
+		
+
+
+		Model model=getOrthogMesh2D(mg,"",false);
+
+		double tt=1.0*Math.PI/180;
+		
+		for(int i=1; i<=model.numberOfNodes;i++){
+			if(model.node[i].getCoord(1)>1e-4){
+				
+			double r=model.node[i].getCoord(0);
+				model.node[i].setCoord(0,r*Math.cos(tt));
+				model.node[i].setCoord(1,r*Math.sin(tt));
+				
+			}
+		}
+/*
+		model.motor=true;
+		
+		Model model2=this.rotExtendNfold(model,1);*/
+		
+		
+		String bun=System.getProperty("user.dir") + "\\model2D.txt";
+		model.writeMesh(bun);
+
+	
+
+}
+	
+	public void meshQz(){
+		
+		  int nr=20;
+		  int nt=361;
+		   int nNodes=nt*nr;
+		   double r0=.020;
+		   double r1=.080;
+		   double dr=(r1-r0)/nr;
+		   double dtt=2*PI/(nt-1);
+		   int ne=(nt-1)*(nr-1);
+		   
+		   Model model=new Model();
+		   model.alloc(1, ne, nNodes, "quadrangle");
+		   int nx=0;
+		   for(int i=0;i<nt;i++){
+			   double tt=i*dtt;
+			   for(int j=0;j<nr;j++){
+				   nx++;
+				   double r=r0+j*dr;
+				   Vect v=new Vect(r*Math.cos(tt),r*Math.sin(tt));
+				   model.node[nx].setCoord(v);
+				   if(i<nt-1 && j<nr-1){
+					   {
+						   int kx=i*(nr-1)+j+1;
+						   model.element[kx].setVertNumb(0, i*nr+j+1);  
+						   model.element[kx].setVertNumb(1, i*nr+j+1+1); 
+						   model.element[kx].setVertNumb(2, (i+1)*nr+j+1+1); 
+						   model.element[kx].setVertNumb(3, (i+1)*nr+j+1); 
+					   }
+				  
+			   }
+			   
+		   }
+	}
+		   
+		   model.region[1].setFirstEl(1);
+		   model.region[1].setLastEl(ne);
+
+		   
+
+		   model.scaleFactor=1000;
+
+	
+	String bun=System.getProperty("user.dir") + "\\model2D.txt";
+	model.writeMesh(bun);
+
+
+
+}
+
+	public void getNeuMeshQ(int mode){
 		String regex="[ ,\\t]+";
 		String s=util.getFile();
 		try{
@@ -9193,10 +9528,9 @@ for(int j=0;j<bb.length;j++){
 			BufferedReader br = new BufferedReader(fr);
 			String line="";
 			String[] sp=new String[15];
-			
-	while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){
-	
-			}
+
+	if(mode==0)
+	while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){		}
 
 	for(int i=1;i<100000;i++)
 			{
@@ -9325,7 +9659,7 @@ for(int j=0;j<bb.length;j++){
 
 			int nNodes=nnMax;
 			double scaleFactor=1;
-			double scx=1000;
+			double scx=1;
 			DecimalFormat formatter;
 			if(scaleFactor==1)
 				formatter= new DecimalFormat("0.000000000");
@@ -9336,7 +9670,7 @@ for(int j=0;j<bb.length;j++){
 			try{
 
 
-				String fout=System.getProperty("user.dir")+"\\quadExtracted.txt";
+				String fout=System.getProperty("user.dir")+"\\EMSol\\quad.txt";
 				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
 
 				pwBun.println("quadrangle");
@@ -9395,6 +9729,239 @@ for(int j=0;j<bb.length;j++){
 
 		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
 	}
+	
+	
+	
+	public void getNeuMeshHexa(int mode){
+		String regex="[ ,\\t]+";
+		String s=util.getFile();
+		try{
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String linep="";
+			String[] sp=new String[15];
+
+	if(mode==0)
+	while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){		}
+
+	for(int i=1;i<100000;i++)
+			{
+
+				line=br.readLine();
+				sp=line.split(regex);
+				if(sp.length==15 && !sp[0].equals("0")) break;
+			
+				
+			}
+			
+	
+
+			int nnMax=0,nn=1;
+			Vect[] coord1=new Vect[1000000];
+			int[] map=new int[1000000];
+			int nx=0;
+			for(int i=1;i<1000000;i++)
+			{
+				sp=line.split(regex);
+				
+				line=br.readLine();
+
+				if(sp.length!=15) break;
+
+			
+				nn=Integer.parseInt(sp[0]);
+				nx++;
+			
+				map[nn]=nx;
+		
+
+				coord1[nx]=new Vect(Double.parseDouble(sp[11]),Double.parseDouble(sp[12]),Double.parseDouble(sp[13]));
+		
+
+			}
+			
+			nnMax=nx;
+
+
+			int[][] vernumb=new int[10*nnMax+1][8];
+			int[] nReg=new int[1000000+1];
+			
+			for(int i=0;i<nReg.length;i++)
+				nReg[i]=-1;
+				
+			int ix=0;
+		
+				line=br.readLine();
+			//	line=br.readLine();
+	for(int i=0;i<7;i++)
+		line=br.readLine();
+
+			sp=new String[13];
+			for(int i=1;i<=vernumb.length;i++)
+			{
+				
+				linep=br.readLine();
+				line=br.readLine();
+	
+				
+				sp=line.split(regex);
+	
+				if(sp.length<5) break;
+				
+				if(sp[6].equals("0")) {
+					for(int j=0;j<5;j++)
+						line=br.readLine();
+					continue;
+				}
+				
+
+				
+				sp=linep.split(regex);
+				ix++;
+				nReg[ix]=Integer.parseInt(sp[2]);
+			
+			
+				sp=line.split(regex);
+
+
+				for(int j=0;j<8;j++){
+
+					vernumb[ix][j]=map[Integer.parseInt(sp[j])];
+				}
+				
+			
+
+				for(int j=0;j<8;j++){
+					if(vernumb[ix][j]==0) {
+						if(j>0) vernumb[ix][j]=vernumb[ix][j-1];
+						ix--;
+						break;
+					}
+				}
+				
+	
+				
+				for(int j=0;j<5;j++)
+					line=br.readLine();
+
+			}
+			
+			int nEl=ix;
+
+		
+			
+			List<Integer> list1=new ArrayList<Integer>();
+			for(int i=1;i<nReg.length;i++){
+				if(nReg[i]!=-1)
+					list1.add(nReg[i]);
+			}
+		
+				Set<Integer> set = new HashSet<Integer>(list1);
+				
+				ArrayList<Integer> regNumbs = new ArrayList<Integer>(set);
+				
+				int nRegions=regNumbs.size();
+				
+				util.pr(nRegions);
+
+				
+				int[] regNumber=new int[nRegions+1];
+				for(int ir=1;ir<=nRegions;ir++)
+					regNumber[ir]=regNumbs.get(ir-1);
+				
+
+					
+			int[] elOrd=new int[nEl+1];
+			int[][]regEnd=new int[nRegions+1][2];
+			
+			 nx=0;
+			for(int ir=1;ir<=nRegions;ir++)
+			{
+				regEnd[ir][0]=nx+1;
+				for(int i=1;i<=nEl;i++)
+					if(nReg[i]==regNumber[ir])
+						elOrd[++nx]=i;
+				regEnd[ir][1]=nx;
+				
+			}
+
+
+			int nNodes=nnMax;
+			double scaleFactor=1;
+			double scx=1;
+			DecimalFormat formatter;
+			if(scaleFactor==1)
+				formatter= new DecimalFormat("0.000000000");
+			else 
+				formatter= new DecimalFormat("0.000000");
+			
+
+			try{
+
+
+				String fout=System.getProperty("user.dir")+"\\EMSol\\Hexa.txt";
+
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+				pwBun.println("hexahedron");
+				pwBun.println("//Number_of_Node");
+				pwBun.println(nNodes);
+
+				pwBun.println("//Number_of_Element");
+				pwBun.println(nEl);
+
+				pwBun.println("//Number_of_Region");
+				pwBun.println(nRegions);
+				pwBun.println("//Factor");
+				pwBun.println(scx);
+
+				for(int ir=1;ir<=nRegions;ir++)
+					for(int i=regEnd[ir][0];i<=regEnd[ir][1];i++){
+						for(int j=0;j<8;j++){
+							int mpn=vernumb[elOrd[i]][j];
+							pwBun.print(mpn+",");
+						}
+					
+						pwBun.println();
+					}
+
+			Vect v;
+			for(int i=1;i<=nnMax;i++){ 
+				if(coord1[i]==null)
+					v=new Vect(0,0,0);
+				else
+					v=coord1[i].deepCopy();
+						for(int j=0;j<3;j++){
+							pwBun.print(formatter.format(v.el[j]*scaleFactor)+" ,");
+						}
+					pwBun.println();	
+
+				}
+
+				for(int ir=1;ir<=nRegions;ir++)
+					pwBun.println(regEnd[ir][0]+","+regEnd[ir][1]+","+"region"+ir);
+				
+				pwBun.close();
+				br.close();
+				fr.close();
+				
+				System.out.println();
+				System.out.println(" Bun data was written to:");
+				System.out.println("    "+fout);
+			}
+			catch(IOException e){ System.err.println("error");e.printStackTrace(); }
+
+		
+		
+		}
+		
+		
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	}
+	
 	
 	public void getPostMeshQ(){
 		String regex="[ ,\\t]+";
@@ -9615,37 +10182,268 @@ for(int j=0;j<bb.length;j++){
 	}
 	
 	
-	
-	public void getEMSolFlux(int dim){
-
+	public void getPostMeshHex(){
 		String regex="[ ,\\t]+";
 		String s=util.getFile();
 		try{
-			
-			String fout=System.getProperty("user.dir")+"\\EMSolFlux.txt";
-			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
-
 			File f=new File(s);
 			FileReader fr=new FileReader(f);
 			BufferedReader br = new BufferedReader(fr);
 			String line="";
+			String linep="";
 			String[] sp=new String[15];
+
+	//if(mode==0)
+	//while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){		}
+
+			for(int i=0;i<7;i++)
+				line=br.readLine();
+			
+			line=br.readLine();
+
+			int nnMax=0,nn=1;
+			Vect[] coord1=new Vect[1000000];
+			int[] map=new int[1000000];
+			int nx=0;
+			for(int i=1;i<1000000;i++)
+			{
+				
+				
+				
+				line=br.readLine();
+
+				sp=line.split(regex);
+			
+				if(sp.length<14) break;
+
+			
+				nn=Integer.parseInt(sp[0]);
+				nx++;
+			
+				map[nn]=nx;
+		
+
+				coord1[nx]=new Vect(Double.parseDouble(sp[11]),Double.parseDouble(sp[12]),Double.parseDouble(sp[13]));
+		
+
+			}
+			
+			nnMax=nx;
+
+
+			int[][] vernumb=new int[10*nnMax+1][8];
+			int[] nReg=new int[1000000+1];
+			
+			for(int i=0;i<nReg.length;i++)
+				nReg[i]=-1;
+				
+			int ix=0;
+		
+	for(int i=0;i<2;i++)
+		line=br.readLine();
+
+			sp=new String[13];
+			for(int i=1;i<=vernumb.length;i++)
+			{
+				
+				linep=br.readLine();
+				line=br.readLine();
+				
+					
+				sp=line.split(regex);
+	
+				if(sp.length<5) break;
+				
+				if(sp[6].equals("0")) {
+					for(int j=0;j<5;j++)
+						line=br.readLine();
+					continue;
+				}
+				
+
+				
+				sp=linep.split(regex);
+				ix++;
+				nReg[ix]=Integer.parseInt(sp[2]);
 			
 			
+				sp=line.split(regex);
+
+
+				for(int j=0;j<8;j++){
+
+					vernumb[ix][j]=map[Integer.parseInt(sp[j])];
+				}
+				
+			
+
+				for(int j=0;j<8;j++){
+					if(vernumb[ix][j]==0) {
+						if(j>0) vernumb[ix][j]=1;//vernumb[ix][j-1];
+						//ix--;
+						//break;
+					}
+				}
+				
+	
+				
+				for(int j=0;j<5;j++)
+					line=br.readLine();
+
+			}
+			
+			int nEl=ix;
+
+		
+			
+			List<Integer> list1=new ArrayList<Integer>();
+			for(int i=1;i<nReg.length;i++){
+				if(nReg[i]!=-1)
+					list1.add(nReg[i]);
+			}
+		
+				Set<Integer> set = new HashSet<Integer>(list1);
+				
+				ArrayList<Integer> regNumbs = new ArrayList<Integer>(set);
+				
+				int nRegions=regNumbs.size();
+				
+				util.pr(nRegions);
+
+				
+				int[] regNumber=new int[nRegions+1];
+				for(int ir=1;ir<=nRegions;ir++)
+					regNumber[ir]=regNumbs.get(ir-1);
+				
+
+					
+			int[] elOrd=new int[nEl+1];
+			int[][]regEnd=new int[nRegions+1][2];
+			
+			 nx=0;
+			for(int ir=1;ir<=nRegions;ir++)
+			{
+				regEnd[ir][0]=nx+1;
+				for(int i=1;i<=nEl;i++)
+					if(nReg[i]==regNumber[ir])
+						elOrd[++nx]=i;
+				regEnd[ir][1]=nx;
+				
+			}
+
+
+			int nNodes=nnMax;
+			double scaleFactor=1;
+			double scx=1;
+			DecimalFormat formatter;
+			if(scaleFactor==1)
+				formatter= new DecimalFormat("0.000000000");
+			else 
+				formatter= new DecimalFormat("0.000000");
+			
+
+			try{
+
+
+				String fout=System.getProperty("user.dir")+"\\EMSol\\Hexa.txt";
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+				pwBun.println("hexahedron");
+				pwBun.println("//Number_of_Node");
+				pwBun.println(nNodes);
+
+				pwBun.println("//Number_of_Element");
+				pwBun.println(nEl);
+
+				pwBun.println("//Number_of_Region");
+				pwBun.println(nRegions);
+				pwBun.println("//Factor");
+				pwBun.println(scx);
+
+				for(int ir=1;ir<=nRegions;ir++)
+					for(int i=regEnd[ir][0];i<=regEnd[ir][1];i++){
+						for(int j=0;j<8;j++){
+							int mpn=vernumb[elOrd[i]][j];
+							pwBun.print(mpn+",");
+						}
+					
+						pwBun.println();
+					}
+
+			Vect v;
+			for(int i=1;i<=nnMax;i++){ 
+				if(coord1[i]==null)
+					v=new Vect(0,0,0);
+				else
+					v=coord1[i].deepCopy();
+						for(int j=0;j<3;j++){
+							pwBun.print(formatter.format(v.el[j]*scaleFactor)+" ,");
+						}
+					pwBun.println();	
+
+				}
+
+				for(int ir=1;ir<=nRegions;ir++)
+					pwBun.println(regEnd[ir][0]+","+regEnd[ir][1]+","+"region"+ir);
+				
+				pwBun.close();
+				br.close();
+				fr.close();
+				
+				System.out.println();
+				System.out.println(" Bun data was written to:");
+				System.out.println("    "+fout);
+			}
+			catch(IOException e){ System.err.println("error");e.printStackTrace(); }
+
+		
+		
+		}
+		
+		
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	}
+		
+	
+	
+	public void getEMSolFlux(String bbf,int dim, int numb){
+
+		String regex="[ ,\\t]+";
+		try{
+
+			File f=new File(bbf);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+		
 			Mat BB=new Mat(100*1000,dim);
 			
-			int[] nx=new int[dim];;
-			
-	while(!br.readLine().startsWith("BMAG")){
-	
+			for(int tt=0;tt<numb;tt++){
+
+				line="";
+				while(!line.startsWith("STEP")){
+					line=br.readLine();
+					
+					}
+				int[] nx=new int[dim];;
+
+				String fout=System.getProperty("user.dir")+"\\EMSol\\flux"+tt+".txt";
+				
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));	
+				
+	while(!line.startsWith("BMAG")){
+	line=br.readLine();
 			}
+	
 	for(int k=0;k<6;k++)
 		line=br.readLine();
 	
 	int k=0;
 
 	
-			for(int i=1;i<18000;i++){
+			for(int i=1;i<180000;i++){
 				
 	
 		if(line.startsWith("-1")){
@@ -9655,7 +10453,7 @@ for(int j=0;j<bb.length;j++){
 
 		}
 		else
-		
+
 		sp=line.split(regex);
 			
 
@@ -9663,10 +10461,7 @@ for(int j=0;j<bb.length;j++){
 		BB.el[nx[k]][k]=Bu;
 
 				line=br.readLine();
-			//	util.pr(nx[0]+" - "+Bu);
-
-			//	if(nx[k]<5) BB.el[nx[k]][k]=nx[k];
-				
+	
 				nx[k]++;
 				
 			
@@ -9693,12 +10488,15 @@ for(int j=0;j<bb.length;j++){
 		pwBun.println();
 	}
 	
+	System.out.println("Flux was written to "+fout);
+	pwBun.close();
+	
+			}
 		
 	br.close();
 	fr.close();
-	pwBun.close();
+
 	
-	System.out.println("Flux was written to "+fout);
 	
 		}
 
@@ -9711,6 +10509,168 @@ for(int j=0;j<bb.length;j++){
 	
 	
 	}
+	
+	public void extractFlux(String bbf,int dim, int numb, int nelem){
+
+		Vect[] B=new Vect[numb];
+		
+		for(int i=0;i<numb;i++)
+		B[i]=new Vect(dim);
+		
+		String regex="[ ,\\t]+";
+		try{
+
+			File f=new File(bbf);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+	
+			for(int i=0;i<numb;i++){
+						
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+					}
+		
+			String ss="";
+			while(!ss.equals(Integer.toString(nelem))){
+				line=br.readLine();
+				sp=line.split(regex);
+
+				ss=sp[1];
+				
+						}
+			sp=line.split(regex);
+			for(int j=0;j<dim;j++)
+				B[i].el[j]=Double.parseDouble(sp[2+j]);
+		
+			}
+
+			for(int i=0;i<numb;i++)
+				B[i].hshow();
+
+		
+	br.close();
+	fr.close();
+
+	
+	
+		}
+
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		
+
+	
+	
+	
+	}
+	
+	
+	public Mat getBHcurve(String bhfolder,int dim, int numb, int nelem,double angdeg){
+
+		
+		String fileB=bhfolder+"\\magnetic";
+		String fileH=bhfolder+"\\magnetization";
+		
+		Mat BH=new Mat(numb,2);
+		
+		Vect B=new Vect(dim);
+		Vect H=new Vect(dim);
+		Vect er=new Vect(dim);
+		er.el[0]=Math.cos(angdeg*Math.PI/180);
+		er.el[1]=Math.sin(angdeg*Math.PI/180);
+		
+			String regex="[ ,\\t]+";
+		try{
+
+			
+			
+			File f=new File(fileB);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+	
+			for(int i=0;i<numb;i++){
+						
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+					}
+		
+			String ss="";
+			while(!ss.equals(Integer.toString(nelem))){
+				line=br.readLine();
+				sp=line.split(regex);
+
+				ss=sp[1];
+				
+						}
+			sp=line.split(regex);
+			for(int j=0;j<dim;j++)
+				B.el[j]=Double.parseDouble(sp[2+j]);
+		
+	
+
+			BH.el[i][1]=B.dot(er);
+			//BH.el[i][1]=B.el[1];
+		
+		
+			}
+			
+			 f=new File(fileH);
+			 fr=new FileReader(f);
+			 br = new BufferedReader(fr);
+			 line="";
+			 sp=new String[15];
+	
+			for(int i=0;i<numb;i++){
+						
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+					}
+		
+			String ss="";
+			while(!ss.equals(Integer.toString(nelem))){
+				line=br.readLine();
+				sp=line.split(regex);
+
+				ss=sp[1];
+				
+						}
+			sp=line.split(regex);
+			for(int j=0;j<dim;j++)
+				H.el[j]=Double.parseDouble(sp[2+j]);
+		
+	
+
+			BH.el[i][0]=H.dot(er);
+			//BH.el[i][0]=H.el[0];
+		
+		
+			}
+			
+			
+			
+
+	
+			br.close();
+			fr.close();
+
+	
+	
+		}
+
+
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+
+return BH;
+	
+	
+	}
+	
+	
 	
 	public void modifyEMSolFlux(int dim){
 
@@ -9957,7 +10917,7 @@ for(int j=0;j<bb.length;j++){
 			try{
 
 
-				String fout=System.getProperty("user.dir")+"\\triangleExtracted.txt";
+				String fout=System.getProperty("user.dir")+"\\\\EMSol\\tri.txt";
 				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
 
 				pwBun.println("triangle");
@@ -10128,6 +11088,190 @@ public void pileHelic(int K,double dtt, double pitch){
 
 }
 
+
+public void makeFullFlux()	{
+	//mf.rotExtendNfoldW(3);
+	String ff1=System.getProperty("user.dir") + "\\flux-0-1800CalfineOK\\bun.txt";
+	Model model4=new Model(ff1);
+	String ff2=System.getProperty("user.dir") + "\\flux-0-1800CalfineFull\\bun.txt";
+	Model modelFull=new Model(ff2);
+	//int[] indx=new int[modelFull.numberOfElements+1];
+/*	for(int ir=1;ir<=model4.numberOfRegions;ir++){
+		for(int k=0;k<4;k++)
+		for(int ie=model4.region[ir].getFirstEl();ie<=model4.region[ir].getLastEl();ie++)
+			indx[ie+k*model4.region[ir].getNumbElements()]=ie;
+	}*/
+
+	
+	Mat[] RR=new Mat[4];
+	for(int k=0;k<4;k++)
+		RR[k]=util.rotMat2D(k*Math.PI/2);
+
+	for(int i=0;i<=1800;i++){
+		String ff3=System.getProperty("user.dir") + "\\flux-0-1800CalfineFull\\flux"+i+".txt";
+		model4.loadFlux(ff3);
+		for(int ir=1;ir<=modelFull.numberOfRegions;ir++){
+		int ix=0;
+		
+		for(int ie=modelFull.region[ir].getFirstEl();ie<=modelFull.region[ir].getLastEl();ie++){
+
+			int k=ix/model4.region[ir].getNumbElements();
+
+		
+			int kx=ix%model4.region[ir].getNumbElements();
+			
+			int v=model4.region[ir].getFirstEl()+kx;
+			
+			ix++;
+		
+			modelFull.element[ie].setB(RR[k].mul(model4.element[v].getB()));
+		}
+		}
+		String ff4=System.getProperty("user.dir") + "\\flux-0-1800CalfineFull\\flux"+i+".txt";
+	modelFull.writeB(ff4);
+	}
+	
+	
+	}
+
+
+public void makeFullForce()	{
+	//mf.rotExtendNfoldW(3);
+	String ff1="\\C:\\Works\\proj8\\forcesMotMSz3\\bun.txt";
+	Model model4=new Model(ff1);
+	String ff2="\\C:\\Works\\proj8\\flux-0-1800CalfineFull\\bun.txt";
+	Model modelFull=new Model(ff2);
+	//int[] indx=new int[modelFull.numberOfElements+1];
+/*	for(int ir=1;ir<=model4.numberOfRegions;ir++){
+		for(int k=0;k<4;k++)
+		for(int ie=model4.region[ir].getFirstEl();ie<=model4.region[ir].getLastEl();ie++)
+			indx[ie+k*model4.region[ir].getNumbElements()]=ie;
+	}*/
+
+	
+	Mat[] RR=new Mat[4];
+	for(int k=0;k<4;k++)
+		RR[k]=util.rotMat2D(k*Math.PI/2);
+
+	for(int i=0;i<=1800;i++){
+		String ff3= "\\C:\\Works\\proj8\\forcesMotMSz3\\force"+i+".txt";
+		model4.loadNodalField(ff3, 1);
+		
+	
+
+		for(int ir=1;ir<=modelFull.numberOfRegions;ir++){
+		int ix=0;
+		
+		for(int ie=modelFull.region[ir].getFirstEl();ie<=modelFull.region[ir].getLastEl();ie++){
+
+			int k=ix/model4.region[ir].getNumbElements();
+
+		
+			int kx=ix%model4.region[ir].getNumbElements();
+			
+			int v=model4.region[ir].getFirstEl()+kx;
+			
+			ix++;
+	
+			int[] vn=model4.element[v].getVertNumb();
+	
+				
+			int[] vnf=modelFull.element[ie].getVertNumb();
+			for(int p=0;p<vn.length;p++){
+				/*if(modelFull.node[vnf[p]].F==null)*/{
+	
+					if(model4.node[vn[p]].F!=null){
+			
+							modelFull.node[vnf[p]].F=RR[k].mul(model4.node[vn[p]].F);
+					}
+				}
+			}
+		}
+		}
+		String ff4="\\C:\\Works\\proj8\\forcesMotMSz3Full\\force"+i+".txt";
+	modelFull.writeNodalField(ff4,1);
+	}
+	
+	
+	}
+
+
+public void onlyIronFlux()	{
+
+	
+	 String ff2=System.getProperty("user.dir") + "\\flux-0-1800CalfineFull\\bun.txt";
+	 Model modelFull=new Model(ff2);
+	 
+	String ff5=System.getProperty("user.dir") + "\\flux0-1800-Stilled\\bun.txt";
+	Model models=new Model(ff5);
+	 
+	for(int i=0;i<=-1800;i++){
+		String ff3=System.getProperty("user.dir") + "\\flux-0-1800CalfineFull\\flux"+i+".txt";
+		modelFull.loadFlux(ff3);
+		int ix=0;
+		int iy=0;
+		for(int ir=1;ir<=modelFull.numberOfRegions;ir++){
+	
+		for(int ie=modelFull.region[ir].getFirstEl();ie<=modelFull.region[ir].getLastEl();ie++){
+			if(ir==6||ir==7||ir>8){iy++; continue;}	
+			iy++;
+			ix++;
+		
+			models.element[ix].setB(modelFull.element[iy].getB());
+		}
+		}
+		String ff4=System.getProperty("user.dir") + "\\flux0-1800-Stilled\\flux"+i+".txt";
+	models.writeB(ff4);
+	}
+	
+	}
+
+
+public void onlyIronForce()	{
+
+	
+	 String ff2="\\C:\\Works\\proj8\\forces2DMotorMagFull\\bun.txt";
+	 Model modelFull=new Model(ff2);
+	 
+	String ff5="\\C:\\Works\\proj8\\forces2DMSz3Distilled\\bun.txt";
+	Model models=new Model(ff5);
+	 
+	for(int i=0;i<=1800;i++){
+		String ff3="\\C:\\Works\\proj8\\forcesMotMSz3Full\\force"+i+".txt";
+		modelFull.loadNodalField(ff3,1);
+		int ix=0;
+		int iy=0;
+		for(int ir=1;ir<=modelFull.numberOfRegions;ir++){
+			if(ir!=8){ continue;}	
+		for(int ie=modelFull.region[ir].getFirstEl();ie<=modelFull.region[ir].getLastEl();ie++){
+		//	if(ir!=8){iy++; continue;}	
+			//iy++;
+	
+			int ies=ix+models.region[6].getFirstEl();
+		
+		int[] vn=models.element[ies].getVertNumb();
+			
+			int[] vnf=modelFull.element[ie].getVertNumb();
+			
+			for(int p=0;p<vn.length;p++){
+				{
+	
+					if(modelFull.node[vnf[p]].F!=null){
+			
+							models.node[vn[p]].F=modelFull.node[vnf[p]].F.deepCopy();
+					}
+				}
+			}
+			
+			ix++;
+			
+		}
+		}
+		String ff4="\\C:\\Works\\proj8\\forces2DMSz3Distilled\\force"+i+".txt";
+	models.writeNodalField(ff4,1);
+	}
+	
+	}
 	
 	
 	
