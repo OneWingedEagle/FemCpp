@@ -32,6 +32,7 @@ public class EMSolOutputReader {
 
 		Vect  NRError=x.loadOutput();
 		
+	//	Vect  NRError=x.loadCheck();
 	}
 
 	public Vect loadOutput(){
@@ -40,7 +41,8 @@ public class EMSolOutputReader {
 	if(file==null || file.equals("") )return false;*/
 		//	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
 
-		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso\\output";
+		//String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso\\output";
+		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs\\output";
 	//	String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\output";
 		//String file="C:\\Works\\HVID\\hys_data";
 	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
@@ -62,13 +64,16 @@ public class EMSolOutputReader {
 			sp=line.split(regex);
 			tempICCGEr.el[ix]=Double.parseDouble(sp[sp.length-1]);
 			line=br.readLine();
-					line=br.readLine();
-			
 			line=br.readLine();
-		//	line=br.readLine();
+			line=br.readLine();
 			sp=line.split(regex);
 			tempNREr.el[ix]=Double.parseDouble(sp[sp.length-1]);
-		
+			
+			line=br.readLine();
+
+			sp=line.split(regex);
+			tempdB.el[ix]=Double.parseDouble(sp[4]);
+			
 			ix++;
 			
 			continue;
@@ -79,13 +84,15 @@ public class EMSolOutputReader {
 	
 	Vect errs=new Vect(ix);
 	Vect NRerr=new Vect(ix);
+	Vect dBs=new Vect(ix);
 	for(int i=0;i<ix;i++){
 		errs.el[i]=tempICCGEr.el[i];
 		NRerr.el[i]=tempNREr.el[i];
+		dBs.el[i]=tempdB.el[i];
 	}
 	
-	//util.plot(dBs);
-	util.plot(NRerr);
+	util.plot(dBs);
+	//util.plot(NRerr);
 	//errs.show();
 	return errs;
 		}
@@ -97,6 +104,71 @@ public class EMSolOutputReader {
 		
 	}	
 	
+	public Vect loadCheck(){
 
+
+		/*String file=util.getFile();
+	if(file==null || file.equals("") )return false;*/
+		//	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
+
+		//String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso\\output";
+		//String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs\\output";
+		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\check";
+		//String file="C:\\Works\\HVID\\hys_data";
+	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
+		
+		Vect tempICCGEr=new Vect(100000);
+	
+		try{
+			FileReader fr=new FileReader(file);
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			String s;
+			String[] sp;
+			int ix=0;
+			while((line=br.readLine())!=null){
+			while((line=br.readLine())!=null && !line.startsWith("*** ICCG iteration")){}
+			if(line==null) break;
+			line=br.readLine();
+		
+			while(!(line=br.readLine()).startsWith("*")){
+		
+				sp=line.split(regex);
+				//util.show(sp);
+				tempICCGEr.el[ix]=Double.parseDouble(sp[1]);
+				ix++;
+			}
+			
+			
+		
+			
+			continue;
+			
+			}
+	br.close();
+	fr.close();
+	
+	Vect errs=new Vect(ix);
+	//Vect NRerr=new Vect(ix);
+	//Vect dBs=new Vect(ix);
+	for(int i=0;i<ix;i++){
+		errs.el[i]=tempICCGEr.el[i];
+		//NRerr.el[i]=tempNREr.el[i];
+		//dBs.el[i]=tempdB.el[i];
+	}
+	
+	util.plot(errs);
+	//util.plot(NRerr);
+	//errs.show();
+	return errs;
+		}
+
+		catch(IOException e){System.err.println("Error in loading output file.");
+		return null;
+		}
+
+		
+	
+	}
 
 }

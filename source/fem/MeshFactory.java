@@ -58,9 +58,9 @@ public class MeshFactory {
 		String bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\magnetic";
 		//bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDisk\\Small model\\magnetization";
 	
-	//	String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
-		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
-		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso";
+		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
+		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
+	//	String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso";
 		
 	//	mf.extractFlux( bbf,3,nf,  6780);
 	Mat BH=	mf.getBHcurve( bhfolder,3,nf, 6780,0);
@@ -10574,8 +10574,8 @@ for(int j=0;j<bb.length;j++){
 		String fileB=bhfolder+"\\magnetic";
 		String fileH=bhfolder+"\\magnetization";
 		
-		Mat BH=new Mat(numb,2);
-		
+		Mat BH1=new Mat(numb,2);
+		Mat BH=null;
 		Vect B=new Vect(dim);
 		Vect H=new Vect(dim);
 		Vect er=new Vect(dim);
@@ -10593,14 +10593,22 @@ for(int j=0;j<bb.length;j++){
 			String line="";
 			String[] sp=new String[15];
 	
+			int ix=0;
+			
 			for(int i=0;i<numb;i++){
-						
-			while(!line.startsWith("STEP")){
-			line=br.readLine();
+					
+			while(!line.startsWith("STEP") ){
+				line=br.readLine();
+		
+
+				if(line==null) break;
+			
 					}
+			if(line==null) break;
 		
 			String ss="";
 			while(!ss.equals(Integer.toString(nelem))){
+
 				line=br.readLine();
 				sp=line.split(regex);
 
@@ -10611,9 +10619,9 @@ for(int j=0;j<bb.length;j++){
 			for(int j=0;j<dim;j++)
 				B.el[j]=Double.parseDouble(sp[2+j]);
 		
-	
+	ix++;
 
-			BH.el[i][1]=B.dot(er);
+			BH1.el[i][1]=B.dot(er);
 			//BH.el[i][1]=B.el[1];
 		
 		
@@ -10625,14 +10633,20 @@ for(int j=0;j<bb.length;j++){
 			 line="";
 			 sp=new String[15];
 	
-			for(int i=0;i<numb;i++){
-						
-			while(!line.startsWith("STEP")){
-			line=br.readLine();
-					}
-		
-			String ss="";
-			while(!ss.equals(Integer.toString(nelem))){
+				for(int i=0;i<numb;i++){
+					
+					while(!line.startsWith("STEP") ){
+						line=br.readLine();
+				
+
+						if(line==null) break;
+					
+							}
+					if(line==null) break;
+				
+					String ss="";
+					while(!ss.equals(Integer.toString(nelem))){
+
 				line=br.readLine();
 				sp=line.split(regex);
 
@@ -10645,16 +10659,21 @@ for(int j=0;j<bb.length;j++){
 		
 	
 
-			BH.el[i][0]=H.dot(er);
+			BH1.el[i][0]=H.dot(er);
 			//BH.el[i][0]=H.el[0];
 		
 		
 			}
 			
+		
+				BH=new Mat(ix,2);
+				for(int i=0;i<ix;i++)
+					BH.el[i]=BH1.el[i];
 			
-			
+			util.plot(BH.getColVect(1));
 
-	
+			BH.getColVect(1).show();
+			
 			br.close();
 			fr.close();
 
