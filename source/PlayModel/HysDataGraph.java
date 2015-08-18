@@ -36,9 +36,9 @@ public class HysDataGraph {
 
 		HysDataGraph pg=new HysDataGraph();
 
-		//pg.loadHysData();
+		pg.loadHysData();
 		
-		pg.loadRotHysData();
+		//pg.loadRotHysData();
 	//	pg.loadAngData();
 		//pg.loadAngSymData();
 		
@@ -50,7 +50,7 @@ public class HysDataGraph {
 	if(file==null || file.equals("") )return false;*/
 		//	String file="C:\\Works\\HVID\\folder1\\data\\A_B入力対称ループhts_data\\hys_data";
 
-		String file="C:\\Works\\HVID\\KitaoData\\symmetricData\\hys_dataAllWithRotLoss";
+		String file="C:\\Works\\HVID\\KitaoData\\symmetricData\\hys_dataAvWithRotLoss";
 		//String file="C:\\Works\\HVID\\hys_data";
 	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
 		
@@ -242,10 +242,18 @@ public class HysDataGraph {
 
 			}
 			
-			util.pr(88);
-			String filex="C:\\Works\\HVID\\hys_dataNewFormat";
-			this.writeHystDataColumns(BH, filex);
+		
+			String filex="C:\\Works\\PlayModel\\hys_dataNewFormat";
+		//	this.writeHystDataColumns(BH, filex);
 			
+			Mat[][] BHs=new Mat[7][BH[0].length];
+			
+			for(int i=0;i<7;i++)
+				for(int j=0;j<BH[0].length;j++)
+					BHs[i][j]=BH[0][j].deepCopy();
+			
+			this.writeHystData(BHs, filex);
+		//	util.plotBunch(BHs[2]);
 	
 			boolean distill=false;
 			if(distill){
@@ -259,7 +267,7 @@ public class HysDataGraph {
 						
 			//util.plotBunch(BHdist[0]);
 			
-		boolean	average=true;
+		boolean	average=false;
 	
 			if(average){
 
@@ -687,7 +695,7 @@ public class HysDataGraph {
 	public void writeHystData(Mat[][] BHs, String file){
 		
 		int nSet=BHs.length;
-		
+
 		double Bseff= BHs[0][0].el[BHs[0][0].nRow-1][1];
 		
 		Mat[] BHani=new Mat[1];
@@ -708,23 +716,32 @@ public class HysDataGraph {
 
 			try{
 				PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+				
+				double Hsefft=BHs[0][0].el[BHs[0][0].nRow-1][0];
+				double Bsefft=BHs[0][0].el[BHs[0][0].nRow-1][1];
+						pw.println(1+"\t"+1+"\t"+nSet+"\t"+1);
+						pw.println("*Bs*Hs*");
+						pw.println(Bsefft+"\t"+Hsefft);
 
-	for(int ia=0;ia<nSet;ia++){
+						pw.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
+						pw.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+						pw.println("*angles:");
+						pw.println();
 
-		double Hsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][0];
-		double Bsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][1];
-				pw.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
-				pw.println("*Bs*Hs*");
-				pw.println(Bsefft+"\t"+Hsefft);
 
-				pw.println("* 初磁化曲線数 * メジャーループ数 * 対称ループ数 * 下降曲線数 * 上昇曲線数 *");
-				pw.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
+
+	
 				for(int i=0;i<nTot;i++){
 					pw.println("*xxx");
-					pw.println(BHs[ia][i].nRow);
-					for(int j=0;j<BHs[ia][i].nRow;j++)
-						pw.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
+					pw.println(BHs[0][i].nRow);
+			
+					for(int j=0;j<BHs[0][i].nRow;j++){
+						for(int ia=0;ia<nSet;ia++){
+						pw.print(BHs[ia][i].el[j][0]+"\t");
+						}
+						pw.println(BHs[0][i].el[j][1]);
+				}
 				}
 
 				pw.println("* ----- 回転ヒステリシス損");
@@ -754,7 +771,7 @@ public class HysDataGraph {
 	/*			pw.println();
 				pw.println("End of hysteresis data set "+ia);
 				pw.println();*/
-	}
+	
 					
 
 				util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");

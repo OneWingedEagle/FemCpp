@@ -30,9 +30,10 @@ public class EMSolOutputReader {
 
 		EMSolOutputReader x=new EMSolOutputReader();
 
-		Vect  NRError=x.loadOutput();
+	//	Vect  NRError=x.loadOutput();
 		
-	//	Vect  NRError=x.loadCheck();
+
+		Vect  NRError=x.loadEnergy();
 	}
 
 	public Vect loadOutput(){
@@ -75,8 +76,7 @@ public class EMSolOutputReader {
 			tempdB.el[ix]=Double.parseDouble(sp[4]);
 			
 			ix++;
-			
-			continue;
+
 			
 			}
 	br.close();
@@ -170,5 +170,57 @@ public class EMSolOutputReader {
 		
 	
 	}
+	
+	public Vect loadEnergy(){
+
+	
+		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model-isot\\output";
+
+		
+		Vect tempEnrgy=new Vect(10000);
+
+		try{
+			FileReader fr=new FileReader(file);
+			BufferedReader br = new BufferedReader(fr);
+			String line;
+			String s;
+			String[] sp;
+			int ix=0;
+			while((line=br.readLine())!=null){
+			while((line=br.readLine())!=null && !line.startsWith("*** Total magnetic energy ")){}
+			if(line==null) break;
+			line=br.readLine();
+			line=br.readLine();
+		
+			sp=line.split(regex);
+			tempEnrgy.el[ix]=Double.parseDouble(sp[2]);
+			
+			ix++;
+
+			
+			}
+			
+	br.close();
+	fr.close();
+	
+	Vect energy=new Vect(ix);
+
+	for(int i=0;i<ix;i++){
+		energy.el[i]=tempEnrgy.el[i];
+
+	}
+	
+	util.plot(energy);
+	//util.plot(NRerr);
+	energy.times(1e6).show();
+	return energy;
+		}
+
+		catch(IOException e){System.err.println("Error in loading output file.");
+		return null;
+		}
+
+		
+	}	
 
 }

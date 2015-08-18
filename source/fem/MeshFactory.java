@@ -55,11 +55,11 @@ public class MeshFactory {
 		int nf=121;
 		//mf.getEMSolFlux(3, 121);
 		Vect T=new Vect(nf);
-		String bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\magnetic";
+	//	String bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\magnetic";
 		//bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDisk\\Small model\\magnetization";
 	
-		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
-		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
+		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model-angsButIso";
+		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
 	//	String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso";
 		
 	//	mf.extractFlux( bbf,3,nf,  6780);
@@ -68,8 +68,7 @@ public class MeshFactory {
 	Mat HB=new Mat(BH.size());
 	HB.setCol(BH.getColVect(1), 0);
 	HB.setCol(BH.getColVect(0), 1);
-	HB.show();
-	
+	//HB.show();
 	util.plot(BH);
 	//util.plot(BH.getColVect(0));
 	//util.plot(BH.getColVect(1));
@@ -10670,9 +10669,9 @@ for(int j=0;j<bb.length;j++){
 				for(int i=0;i<ix;i++)
 					BH.el[i]=BH1.el[i];
 			
-			util.plot(BH.getColVect(1));
+			//util.plot(BH.getColVect(1));
 
-			BH.getColVect(1).show();
+		//	BH.getColVect(1).show();
 			
 			br.close();
 			fr.close();
