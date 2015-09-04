@@ -673,7 +673,7 @@ public static void plot(double[][] XY){
 		//plot.setFont( new Font("Times New Roman", 1, 120));
 	//	 util.pr(plot.getFont().toString());
 		  JFrame frame = new JFrame("a plot panel");
-		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
@@ -703,7 +703,7 @@ public static void plot(double[][] XY){
 		plot.addLegend("EAST");
 		
 		  JFrame frame = new JFrame("plot panel");
-		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
@@ -711,6 +711,16 @@ public static void plot(double[][] XY){
 	}
 	
 	public static void plotBunch(double[][]... data){
+		
+		int n=data.length;
+		String[] name=new String[n];
+		for(int j=0;j<n;j++)
+			name[j]="curve "+j;
+		
+		plotBunch(name,data);
+	}
+	
+	public static void plotBunch(String[] name, double[][]... data){
 	//	DecimalFormat df=new DecimalFormat("00.0");
 
 		Plot2DPanel plot = new Plot2DPanel();
@@ -726,7 +736,7 @@ public static void plot(double[][] XY){
 			}
 		
 		
-			plot.addLinePlot(" curve  "+j, x, y);
+			plot.addLinePlot(name[j], x, y);
 		
 				}
 		
@@ -735,11 +745,16 @@ public static void plot(double[][] XY){
 		plot.addLegend("EAST");
 		
 		  JFrame frame = new JFrame("plot panel");
-		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		  frame.setSize(500,400);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);
 
+	}
+	
+	public static void plotBunch(String[] name, Mat[] data){
+		plotBunch(name, data, data.length);
+		
 	}
 	
 	public static void plotBunch(Mat[] data){
@@ -747,7 +762,7 @@ public static void plot(double[][] XY){
 		
 	}
 	
-	public static void plotBunch(Mat[] data, int n){
+	public static void plotBunch(String[] name,Mat[] data, int n){
 		//	DecimalFormat df=new DecimalFormat("00.0");
 
 			Plot2DPanel plot = new Plot2DPanel();
@@ -763,7 +778,7 @@ public static void plot(double[][] XY){
 				}
 			
 			
-				plot.addLinePlot(" curve  "+j, x, y);
+				plot.addLinePlot(name[j], x, y);
 			
 					}
 			
@@ -772,12 +787,68 @@ public static void plot(double[][] XY){
 			plot.addLegend("EAST");
 			
 			  JFrame frame = new JFrame("plot panel");
-			   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			  frame.setSize(500,400);
 			  frame.setContentPane(plot);
 			  frame.setVisible(true);
 
 		}
+	
+	public static void plotBunch(String[] name,Mat[] data, int n1, int n2){
+		//	DecimalFormat df=new DecimalFormat("00.0");
+
+			Plot2DPanel plot = new Plot2DPanel();
+			double[] x,y;
+			
+			for(int j=n1;j<=n2;j++){
+			
+				x=new double[data[j].nRow];
+				y=new double[data[j].nRow];
+				for(int i=0;i<x.length;i++){
+					x[i]=data[j].el[i][0];
+					y[i]=data[j].el[i][1];
+				}
+			
+			
+				plot.addLinePlot(name[j-n1], x, y);
+			
+					}
+			
+			plot.setAxisLabel(0,"x");
+			plot.setAxisLabel(1,"y");
+			plot.addLegend("EAST");
+			
+			  JFrame frame = new JFrame("plot panel");
+			   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			  frame.setSize(500,400);
+			  frame.setContentPane(plot);
+			  frame.setVisible(true);
+
+		}
+	
+	
+	public static void plotBunch(Mat[] data, int n){
+		
+		
+		String[] name=new String[n];
+		for(int j=0;j<n;j++)
+			name[j]="curve "+j;
+		
+		plotBunch(name,data,n);
+		
+				}
+	
+	public static void plotBunch(Mat[] data, int n1, int n2){
+		
+		int n=n2-n1+1;
+	
+		String[] name=new String[n];
+		for(int j=0;j<n;j++)
+			name[j]="curve "+j;
+		
+		plotBunch(name,data,n1,n2);
+		
+				}
 	
 	public static void plot(SpMat A){
 		
@@ -804,7 +875,7 @@ public static void plot(double[][] XY){
 		 }
 
 		  JFrame frame = new JFrame("a plot panel");
-		   frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		   frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		  frame.setSize(800,800);
 		  frame.setContentPane(plot);
 		  frame.setVisible(true);

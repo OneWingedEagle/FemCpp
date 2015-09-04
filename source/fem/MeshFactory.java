@@ -46,32 +46,38 @@ public class MeshFactory {
 		double[][] ani=wr.loadArrays(38, 14, fani);
 		util.show(ani);
 		*/
-
+		
+		//int[] nrx={1,3,4,5};mf.extractReg(nrx); mf.dropUnusedNodes();
+	//	mf.connectivity(2e-4);
+		//mf.dropUnusedNodes();
 		//mf.getNeuMeshQ(0);
 		//mf.getPostMeshQ();
 	//mf.getNeuMeshHexa(1);
-	//	mf.getPostMeshHex();
+		//mf.getPostMeshHex();
 		
+		int elNumb=6780;
+	//elNumb=2190;
+//	elNumb=390;
 		int nf=121;
 		//mf.getEMSolFlux(3, 121);
 		Vect T=new Vect(nf);
 	//	String bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\magnetic";
 		//bbf="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDisk\\Small model\\magnetization";
 	
-		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model-angsButIso";
+		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ringCompositAngDep";
 		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
-	//	String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso";
-		
+		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDiscF2\\AngleDependent\\0deg";
+		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
 	//	mf.extractFlux( bbf,3,nf,  6780);
-	Mat BH=	mf.getBHcurve( bhfolder,3,nf, 6780,0);
+	Mat BH=	mf.getBHcurve( bhfolder,3,nf, elNumb,0);
 //	BH.show(); 
 	Mat HB=new Mat(BH.size());
 	HB.setCol(BH.getColVect(1), 0);
 	HB.setCol(BH.getColVect(0), 1);
-	//HB.show();
+	HB.show();
 	util.plot(BH);
-	//util.plot(BH.getColVect(0));
-	//util.plot(BH.getColVect(1));
+////	util.plot(BH.getColVect(0));
+	util.plot(BH.getColVect(1));
 		//mf.getEMSolFlux(bbf,3, nf);
 		
 		try {
@@ -10192,6 +10198,7 @@ for(int j=0;j<bb.length;j++){
 			String linep="";
 			String[] sp=new String[15];
 
+			int numbAddedNodes=0;
 	//if(mode==0)
 	//while(!br.readLine().startsWith("<<< End Solid Transmit <<<")){		}
 
@@ -10217,9 +10224,11 @@ for(int j=0;j<bb.length;j++){
 
 			
 				nn=Integer.parseInt(sp[0]);
-				nx++;
+			//	nx++;
+			nx=nn;
+				
+			map[nn]=nx;
 			
-				map[nn]=nx;
 		
 
 				coord1[nx]=new Vect(Double.parseDouble(sp[11]),Double.parseDouble(sp[12]),Double.parseDouble(sp[13]));
@@ -10227,17 +10236,21 @@ for(int j=0;j<bb.length;j++){
 
 			}
 			
-			nnMax=nx;
+			
+			nnMax=0;
+			for(int k=0;k<map.length;k++)
+				if(map[k]>nnMax) nnMax=map[k];
 
 
 			int[][] vernumb=new int[10*nnMax+1][8];
 			int[] nReg=new int[1000000+1];
+			int firstElement=0;
 			
 			for(int i=0;i<nReg.length;i++)
 				nReg[i]=-1;
 				
 			int ix=0;
-		
+		int nEl=0;
 	for(int i=0;i<2;i++)
 		line=br.readLine();
 
@@ -10246,8 +10259,9 @@ for(int j=0;j<bb.length;j++){
 			{
 				
 				linep=br.readLine();
+
 				line=br.readLine();
-				
+				if(line==null) break;
 					
 				sp=line.split(regex);
 	
@@ -10262,9 +10276,13 @@ for(int j=0;j<bb.length;j++){
 
 				
 				sp=linep.split(regex);
-				ix++;
+		
+				ix=Integer.parseInt(sp[0]);
+				if(firstElement==0) firstElement=ix;
+				
+				if(ix>nEl) nEl=ix;
+
 				nReg[ix]=Integer.parseInt(sp[2]);
-			
 			
 				sp=line.split(regex);
 
@@ -10278,29 +10296,60 @@ for(int j=0;j<bb.length;j++){
 
 				for(int j=0;j<8;j++){
 					if(vernumb[ix][j]==0) {
-						if(j>0) vernumb[ix][j]=1;//vernumb[ix][j-1];
+
+						numbAddedNodes++;
+				
+						 vernumb[ix][j]=nnMax+numbAddedNodes;//vernumb[ix][j-1];
+							if(j>=0){
+						 coord1[numbAddedNodes]=coord1[vernumb[ix][j-1]].deepCopy().times(0);
+							}
 						//ix--;
 						//break;
 					}
 				}
 				
-	
+				// change order
+				
+				int[] tmp=new int[8];
+				for(int j=0;j<8;j++){
+					tmp[j]=vernumb[ix][j];
+				
+				}
+				vernumb[ix][0]=tmp[0];
+				vernumb[ix][1]=tmp[3];
+				vernumb[ix][2]=tmp[2];
+				vernumb[ix][3]=tmp[1];
+				
+				vernumb[ix][4]=tmp[4];
+				vernumb[ix][5]=tmp[7];
+				vernumb[ix][6]=tmp[6];
+				vernumb[ix][7]=tmp[5];
+
+				//======
 				
 				for(int j=0;j<5;j++)
 					line=br.readLine();
 
 			}
 			
-			int nEl=ix;
+		
 
 		
 			
 			List<Integer> list1=new ArrayList<Integer>();
-			for(int i=1;i<nReg.length;i++){
-				if(nReg[i]!=-1)
+			for(int i=1;i<=nEl;i++){
+				if(nReg[i]==-1){
+					nReg[i]=1;
+					for(int j=0;j<8;j++)
+						vernumb[i][j]=vernumb[firstElement][j];
+				}
+				else
+					nReg[i]+=1;
+				
 					list1.add(nReg[i]);
+
 			}
-		
+
 				Set<Integer> set = new HashSet<Integer>(list1);
 				
 				ArrayList<Integer> regNumbs = new ArrayList<Integer>(set);
@@ -10313,7 +10362,6 @@ for(int j=0;j<bb.length;j++){
 				int[] regNumber=new int[nRegions+1];
 				for(int ir=1;ir<=nRegions;ir++)
 					regNumber[ir]=regNumbs.get(ir-1);
-				
 
 					
 			int[] elOrd=new int[nEl+1];
@@ -10322,16 +10370,21 @@ for(int j=0;j<bb.length;j++){
 			 nx=0;
 			for(int ir=1;ir<=nRegions;ir++)
 			{
+	
 				regEnd[ir][0]=nx+1;
 				for(int i=1;i<=nEl;i++)
-					if(nReg[i]==regNumber[ir])
-						elOrd[++nx]=i;
+					if(nReg[i]==regNumber[ir]){
+						elOrd[i]=i;
+						//elOrd[++nx]=i;
+			
+				nx++;
+					}
 				regEnd[ir][1]=nx;
 				
+				util.hshow(regEnd[ir]);
 			}
 
-
-			int nNodes=nnMax;
+			int nNodes=nnMax+numbAddedNodes;
 			double scaleFactor=1;
 			double scx=1;
 			DecimalFormat formatter;
@@ -10370,7 +10423,7 @@ for(int j=0;j<bb.length;j++){
 					}
 
 			Vect v;
-			for(int i=1;i<=nnMax;i++){ 
+			for(int i=1;i<=nnMax+numbAddedNodes;i++){ 
 				if(coord1[i]==null)
 					v=new Vect(0,0,0);
 				else
@@ -10598,17 +10651,18 @@ for(int j=0;j<bb.length;j++){
 					
 			while(!line.startsWith("STEP") ){
 				line=br.readLine();
-		
+	
 
 				if(line==null) break;
 			
 					}
 			if(line==null) break;
-		
+
 			String ss="";
 			while(!ss.equals(Integer.toString(nelem))){
-
+	
 				line=br.readLine();
+
 				sp=line.split(regex);
 
 				ss=sp[1];
@@ -10663,7 +10717,7 @@ for(int j=0;j<bb.length;j++){
 		
 		
 			}
-			
+	
 		
 				BH=new Mat(ix,2);
 				for(int i=0;i<ix;i++)

@@ -45,7 +45,7 @@ public class PlayModel2D {
 
 	}
 
-	public static void main(String[] args)
+	public static void main2(String[] args)
 	{
 
 		PlayModel2D pm=new PlayModel2D();
@@ -319,78 +319,199 @@ public void createData(String file){
 
 }
 
-public void writeHystData(Mat[][] BHs, String file){
+public void writeHystData(Mat[][] BHs, String file)
+{
+	 writeHystData(BHs, file,1);
+}
+
+public void writeHystData(Mat[][] BHs, String file,int nInit){
 	
 	int nSet=BHs.length;
-	
-	double Bseff= BHs[0][0].el[BHs[0][0].nRow-1][1];
+
 	
 	Mat[] BHani=new Mat[1];
 	int nAni=0;
-	int Lani=0;
-	int nInit=1;
+
 	int nMajor=1;
 	int nTot=BHs[0].length;
-	int nSymLoops=nTot-2;
+	int nSymLoops=nTot-nMajor-nInit;
 	int nDescending=0;
 	int nAscending=0;
 	
 
 
-	DecimalFormat dfB=new DecimalFormat("#.00");
+	DecimalFormat dfB=new DecimalFormat("#.000");
 	DecimalFormat dfH=new DecimalFormat("#.0");
 
 
 		try{
 			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+			
+	
+			double Hsefft=1000;
+			double Bsefft=1;
+			if(nInit==1)
+				Bsefft=BHs[0][0].el[BHs[0][0].nRow-1][1];
+			else
+				Bsefft=BHs[0][0].el[0][1];
 
-for(int ia=0;ia<nSet;ia++){
-
-	double Hsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][0];
-	double Bsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][1];
-			pwBun.println(1+"\t"+1+"\t"+nSet+"\t"+ia*10);
+			
+			int ioVariable=1;
+			int identificationMethod=1;
+			
+			pwBun.println(ioVariable+"\t"+identificationMethod+"\t"+nSet);
 			pwBun.println("*Bs*Hs*");
-			pwBun.println(Bsefft+"\t"+Hsefft);
+			pwBun.print(Bsefft+"\t");
+			for(int ia=0;ia<nSet;ia++){
 
-			pwBun.println("* �������Ȑ� * ���W���[���[�v�� * �Ώ̃��[�v�� * ���~�Ȑ� * �㏸�Ȑ� *");
+				if(nInit==1)
+					Hsefft=BHs[ia][0].el[BHs[ia][0].nRow-1][0];
+				else
+					Hsefft=BHs[0][0].el[0][0];
+
+				pwBun.print(dfH.format(Hsefft)+"\t");
+			}
+			pwBun.println();
+
+			pwBun.println("* ---- Number of initial, major, symmetric, descending and asending currves, respectively:");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+			pwBun.println("* angles:");
+			for(int ia=0;ia<nSet;ia++){
+				pwBun.print(dfH.format(ia*10)+"\t");
+			}
+		
+			pwBun.println();
+			String str="";
+			for(int i=0;i<nTot;i++){
+				
+				if(i==nInit-1){
+					str="* ----Initial curve";
+					//pwBun.println(str);
+				}
+				else if(i==nInit+nMajor-1) 
+					{
+					str="* ----Major loop";
+					pwBun.println(str);
+					}
+				else if(i==nInit+nMajor) {
+					str="* ----Symmetrical loops";
+					pwBun.println(str);
+				}
+				else if(i==nInit+nMajor+nSymLoops) {
+					str="* ----Descending loops";
+					pwBun.println(str);
+				}
+				else if(i==nInit+nMajor+nSymLoops) {
+					str="* ----Ascending loops";
+					pwBun.println(str);
+				}
 
+				pwBun.println(BHs[0][i].nRow);
+			
+				for(int j=0;j<BHs[0][i].nRow;j++){
+					for(int ia=0;ia<nSet;ia++){
+						pwBun.print(dfH.format(BHs[ia][i].el[j][0])+"\t");
+					}
+					pwBun.println(dfB.format(BHs[0][i].el[j][1]));
+				}
+			}
+
+			pwBun.println("* ----- Rotational hysteresis loss");
+			pwBun.println("* Number of data *");
+			pwBun.println("0");
+			pwBun.println("* B * loss");
+			pwBun.println("* ----- Anisotropy");
+			pwBun.println("* Number B magnitude * Number of angles *");
+			pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
+			pwBun.println("* B * H ····· * easy axis of magnetization*");
+			pwBun.println("* B * H ····· * hard axis of magnetization*");
+			
+
+
+			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
+
+			pwBun.close();
+		}
+		catch(IOException e){}
+		
+
+}
+
+public void writeHystDataXY(Mat[][] BHsx,Mat[][] BHsy, String file,int nInit){
+	
+	int nSet=BHsx.length;
+
+	
+	Mat[] BHani=new Mat[1];
+	int nAni=0;
+
+	int nMajor=1;
+	int nTot=BHsx[0].length;
+	int nSymLoops=nTot-nMajor-nInit;
+	int nDescending=0;
+	int nAscending=0;
+	
+
+
+	DecimalFormat dfB=new DecimalFormat("#.000");
+	DecimalFormat dfH=new DecimalFormat("#.0");
+
+
+		try{
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(file)));		
+			
+			double Hsefft=1000;
+			double Bsefft=1;
+			if(nInit==1)
+				Bsefft=BHsx[0][0].el[BHsx[0][0].nRow-1][1];
+			else
+				Bsefft=BHsx[0][0].el[0][1];
+
+	
+			pwBun.println(1+"\t"+1+"\t"+nSet);
+			pwBun.println("*Bs*Hs*");
+			pwBun.print(Bsefft+"\t");
+			for(int ia=0;ia<nSet;ia++){
+
+				if(nInit==1)
+					Hsefft=BHsx[ia][0].el[BHsx[ia][0].nRow-1][0];
+				else
+					Hsefft=BHsx[0][0].el[0][0];
+
+				pwBun.print(dfH.format(Hsefft)+"\t");
+			}
+			pwBun.println();
+
+			pwBun.println("*xxx *");
+			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
+			pwBun.println("*angles *");
+			for(int ia=0;ia<nSet;ia++){
+				pwBun.print(dfH.format(ia*15)+"\t");
+			}
+			pwBun.println();
 			for(int i=0;i<nTot;i++){
 				pwBun.println("*xxx");
-				pwBun.println(BHs[ia][i].nRow);
-				for(int j=0;j<BHs[ia][i].nRow;j++)
-					pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
+				pwBun.println(BHsx[0][i].nRow);
+				for(int j=0;j<BHsx[0][i].nRow;j++){
+					for(int ia=0;ia<nSet;ia++){
+						pwBun.print(dfH.format(BHsx[ia][i].el[j][0])+"\t");
+						pwBun.print(dfH.format(BHsy[ia][i].el[j][0])+"\t");
+		
+					}
+					pwBun.println(dfB.format(BHsx[0][i].el[j][1]));
+				}
 			}
 
-			pwBun.println("* ----- ��]�q�X�e���V�X��");
-			pwBun.println("* B�� *");
+			pwBun.println("*----- xxx");
+			pwBun.println("*xx");
 			pwBun.println("0");
-			pwBun.println("* B * ����");
-			pwBun.println("* ----- �ٕ�");
-			pwBun.println("* B�� * �p�x�� *");
+			pwBun.println("*xx");
+			pwBun.println("*xx");
+			pwBun.println("*xx *");
 			pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ����� *�@�����e�Վ�");
+			pwBun.println("*xx*");
 			
-			for(int i=0;i<0*Lani;i++){
-				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][0])+"\t");
-				}
-				pwBun.println();
-			}
-			pwBun.println("* B * H ����� *�@�������");
-			for(int i=0;i<0*Lani;i++){
-				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
-				for(int j=0;j<nAni;j++){
-					pwBun.print(dfH.format(BHani[j].el[i][1])+"\t");
-				}
-				pwBun.println();
-			}
-/*			pwBun.println();
-			pwBun.println("End of hysteresis data set "+ia);
-			pwBun.println();*/
-}
-				
+
 
 			util.pr("Simulated angle-dependent hysteresis data was written to "+file+".");
 
@@ -631,7 +752,7 @@ public void createDataMath(String file){
 				pwBun.println("*Bs*Hs*");
 				pwBun.println(Bseff+"\t"+Hseff);
 
-				pwBun.println("* �������Ȑ� * ���W���[���[�v�� * �Ώ̃��[�v�� * ���~�Ȑ� * �㏸�Ȑ� *");
+				pwBun.println("* �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈ撰ｿｽ * �ｿｽ�ｿｽ�ｿｽW�ｿｽ�ｿｽ�ｿｽ[�ｿｽ�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽﾎ称�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽ�ｿｽ�ｿｽ~�ｿｽﾈ撰ｿｽ * �ｿｽ繽ｸ�ｿｽﾈ撰ｿｽ *");
 				pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 				for(int i=0;i<nTot;i++){
@@ -641,14 +762,14 @@ public void createDataMath(String file){
 						pwBun.println(BHs[ia][i].el[j][0]+"\t"+BHs[ia][i].el[j][1]);
 				}
 
-				pwBun.println("* ----- ��]�q�X�e���V�X��");
-				pwBun.println("* B�� *");
+				pwBun.println("* ----- �ｿｽ�ｿｽ]�ｿｽq�ｿｽX�ｿｽe�ｿｽ�ｿｽ�ｿｽV�ｿｽX�ｿｽ�ｿｽ");
+				pwBun.println("* B�ｿｽ�ｿｽ *");
 				pwBun.println("0");
-				pwBun.println("* B * ����");
-				pwBun.println("* ----- �ٕ�");
-				pwBun.println("* B�� * �p�x�� *");
+				pwBun.println("* B * �ｿｽ�ｿｽ�ｿｽ�ｿｽ");
+				pwBun.println("* ----- �ｿｽﾙ包ｿｽ");
+				pwBun.println("* B�ｿｽ�ｿｽ * �ｿｽp�ｿｽx�ｿｽ�ｿｽ *");
 				pwBun.println(0+"\t"+0); 		//	pwBun.println(Lani+"\t"+nAni);
-				pwBun.println("* B * H ����� *�@�����e�Վ�");
+				pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽe�ｿｽﾕ趣ｿｽ");
 
 				for(int i=0;i<0*Lani;i++){
 					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
@@ -657,7 +778,7 @@ public void createDataMath(String file){
 					}
 					pwBun.println();
 				}
-				pwBun.println("* B * H ����� *�@�������");
+				pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�軸");
 				for(int i=0;i<0*Lani;i++){
 					pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
 					for(int j=0;j<nAni;j++){
@@ -688,7 +809,7 @@ public void createDataMath(String file){
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bseff+"\t"+Hseff);
 
-			pwBun.println("* �������Ȑ� * ���W���[���[�v�� * �Ώ̃��[�v�� * ���~�Ȑ� * �㏸�Ȑ� *");
+			pwBun.println("* �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈ撰ｿｽ * �ｿｽ�ｿｽ�ｿｽW�ｿｽ�ｿｽ�ｿｽ[�ｿｽ�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽﾎ称�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽ�ｿｽ�ｿｽ~�ｿｽﾈ撰ｿｽ * �ｿｽ繽ｸ�ｿｽﾈ撰ｿｽ *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 			for(int i=0;i<nTot;i++){
@@ -698,14 +819,14 @@ public void createDataMath(String file){
 					pwBun.println(BHsAv[i].el[j][0]+"\t"+BHsAv[i].el[j][1]);
 			}
 
-			pwBun.println("* ----- ��]�q�X�e���V�X��");
-			pwBun.println("* B�� *");
+			pwBun.println("* ----- �ｿｽ�ｿｽ]�ｿｽq�ｿｽX�ｿｽe�ｿｽ�ｿｽ�ｿｽV�ｿｽX�ｿｽ�ｿｽ");
+			pwBun.println("* B�ｿｽ�ｿｽ *");
 			pwBun.println("0");
-			pwBun.println("* B * ����");
-			pwBun.println("* ----- �ٕ�");
-			pwBun.println("* B�� * �p�x�� *");
+			pwBun.println("* B * �ｿｽ�ｿｽ�ｿｽ�ｿｽ");
+			pwBun.println("* ----- �ｿｽﾙ包ｿｽ");
+			pwBun.println("* B�ｿｽ�ｿｽ * �ｿｽp�ｿｽx�ｿｽ�ｿｽ *");
 			pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ����� *�@�����e�Վ�");
+			pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽe�ｿｽﾕ趣ｿｽ");
 
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(Bani.el[i])+"\t");
@@ -714,7 +835,7 @@ public void createDataMath(String file){
 				}
 				pwBun.println();
 			}
-			pwBun.println("* B * H ����� *�@�������");
+			pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�軸");
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(Bani.el[i])+"\t");
 				for(int j=0;j<nAni;j++){
@@ -905,7 +1026,7 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 			pwBun.println("*Bs*Hs*");
 			pwBun.println(Bseff+"\t"+Hseff);
 
-			pwBun.println("* �������Ȑ� * ���W���[���[�v�� * �Ώ̃��[�v�� * ���~�Ȑ� * �㏸�Ȑ� *");
+			pwBun.println("* �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽﾈ撰ｿｽ * �ｿｽ�ｿｽ�ｿｽW�ｿｽ�ｿｽ�ｿｽ[�ｿｽ�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽﾎ称�ｿｽ�ｿｽ[�ｿｽv�ｿｽ�ｿｽ * �ｿｽ�ｿｽ�ｿｽ~�ｿｽﾈ撰ｿｽ * �ｿｽ繽ｸ�ｿｽﾈ撰ｿｽ *");
 			pwBun.println(nInit+"\t"+nMajor+"\t"+nSymLoops+"\t"+nDescending+"\t"+nAscending);
 
 			for(int i=0;i<nTot;i++){
@@ -915,14 +1036,14 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 					pwBun.println(BHs[i].el[j][0]+"\t"+BHs[i].el[j][1]);
 			}
 
-			pwBun.println("* ----- ��]�q�X�e���V�X��");
-			pwBun.println("* B�� *");
+			pwBun.println("* ----- �ｿｽ�ｿｽ]�ｿｽq�ｿｽX�ｿｽe�ｿｽ�ｿｽ�ｿｽV�ｿｽX�ｿｽ�ｿｽ");
+			pwBun.println("* B�ｿｽ�ｿｽ *");
 			pwBun.println("0");
-			pwBun.println("* B * ����");
-			pwBun.println("* ----- �ٕ�");
-			pwBun.println("* B�� * �p�x�� *");
+			pwBun.println("* B * �ｿｽ�ｿｽ�ｿｽ�ｿｽ");
+			pwBun.println("* ----- �ｿｽﾙ包ｿｽ");
+			pwBun.println("* B�ｿｽ�ｿｽ * �ｿｽp�ｿｽx�ｿｽ�ｿｽ *");
 			pwBun.println(Lani+"\t"+nAni);
-			pwBun.println("* B * H ����� *�@�����e�Վ�");
+			pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽe�ｿｽﾕ趣ｿｽ");
 			
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
@@ -931,7 +1052,7 @@ public void writeHystDataAv(Mat[] BHs,Mat[] BHani, String file){
 				}
 				pwBun.println();
 			}
-			pwBun.println("* B * H ����� *�@�������");
+			pwBun.println("* B * H �ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ *�ｿｽ@�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�ｿｽ�軸");
 			for(int i=0;i<Lani;i++){
 				pwBun.print(dfB.format(BHani[0].el[i][0])+"\t");
 				for(int j=0;j<nAni;j++){
@@ -981,7 +1102,6 @@ public  double getH(Mat BH,double B, int mode){
 	int im=BH.nRow-1;
 
 	if (BH.el[im][ih]<BH.el[0][ih]) ascending=false;
-
 	 
 	int i1=0;
 	int i2=BH.nRow-1;

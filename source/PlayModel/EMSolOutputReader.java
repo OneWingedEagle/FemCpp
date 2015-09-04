@@ -30,10 +30,10 @@ public class EMSolOutputReader {
 
 		EMSolOutputReader x=new EMSolOutputReader();
 
-	//	Vect  NRError=x.loadOutput();
+		Vect  NRError=x.loadOutput();
 		
 
-		Vect  NRError=x.loadEnergy();
+		//Vect  NRError=x.loadEnergy();
 	}
 
 	public Vect loadOutput(){
@@ -43,7 +43,7 @@ public class EMSolOutputReader {
 		//	String file="C:\\Works\\HVID\\folder1\\data\\A_Bì¸óÕëŒèÃÉãÅ[Évhts_data\\hys_data";
 
 		//String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_iso\\output";
-		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs\\output";
+		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\output";
 	//	String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model\\output";
 		//String file="C:\\Works\\HVID\\hys_data";
 	//	String file=System.getProperty("user.dir") + "\\hys_dataH.txt";
@@ -174,7 +174,7 @@ public class EMSolOutputReader {
 	public Vect loadEnergy(){
 
 	
-		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model-isot\\output";
+		String file="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ringCompositAngDep\\output";
 
 		
 		Vect tempEnrgy=new Vect(10000);
@@ -191,7 +191,7 @@ public class EMSolOutputReader {
 			if(line==null) break;
 			line=br.readLine();
 			line=br.readLine();
-		
+		//	line=br.readLine();
 			sp=line.split(regex);
 			tempEnrgy.el[ix]=Double.parseDouble(sp[2]);
 			
