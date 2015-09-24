@@ -38,7 +38,7 @@ public  HysEnergyPlot(){}
 public void loadData(){
 
 
-	String file="C:\\Works\\HVID\\energy";
+	String file="C:\\Works\\PlayModel\\energy";
 	
 	
 
@@ -60,14 +60,17 @@ for(int i=0;i<Nmax;i++){
 		line=br.readLine();
 		
 		if(line==null) break;
+		
+		sp=line.split(regex);
 
-int L=Integer.parseInt(line);
+int nRow=Integer.parseInt(sp[0]);
+int nCol=Integer.parseInt(sp[1]);
 
 numbCurves++;
 
-Mat be=new Mat(L,2);
+Mat be=new Mat(nRow,nCol);
 	
-	for( int p=0;p<L;p++)
+	for( int p=0;p<nRow;p++)
 	{
 		line=br.readLine();
 		double[] ar=this.getCSV(line);
@@ -76,11 +79,11 @@ Mat be=new Mat(L,2);
 		
 
 			
-			BE[i]=new Mat(L,2);
+			BE[i]=new Mat(nRow,2);
 			
 		
 		BE[i].setCol(be.getColVect(0).times(1), 0);
-		BE[i].setCol(be.getColVect(1).times(1), 1);
+		BE[i].setCol(be.getColVect(nCol-1).times(1), 1);
 
 
 		
@@ -91,6 +94,8 @@ Mat be=new Mat(L,2);
 			fr.close();
 	
 			util.plotBunch(BE,1);
+			
+			util.plot(BE[0].getColVect(1));
 
 		}
 		

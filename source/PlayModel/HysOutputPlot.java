@@ -50,7 +50,7 @@ public void loadData(){
 	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
 	//String file="C:\\Works\\HVID\\output";
 	String file="C:\\Works\\PlayModel\\output";
-	//String file="C:\\Works\\HVIDConv\\output";
+		   file="C:\\Works\\HVIDConv\\output";
 	
 
 		try{
@@ -60,7 +60,7 @@ public void loadData(){
 			String s;
 			String[] sp;
 
-			boolean generateData=true;
+			boolean generateData=false;
 			Mat[][] BHforData=null;
 			if(generateData){
 				BHforData=new Mat[18][17];
@@ -119,7 +119,7 @@ Mat bbhh=new Mat(L,4);
 			BHs1[i]=new Mat(L,2);
 			
 		
-		//	HH.show();
+	//	HH[0].show();
 			
 				Vect Hr=new Vect(HH[i].nRow);
 			Vect Br=new Vect(BB[i].nRow);
@@ -143,7 +143,7 @@ Mat bbhh=new Mat(L,4);
 		BHs1[i].setCol(Hr,0);
 		BHs1[i].setCol(Br,1);
 		
-
+		//BHs1[i].show();
 		
 		line=br.readLine();
 		if(line==null) break;
@@ -167,7 +167,6 @@ Mat bbhh=new Mat(L,4);
 			}
 			ia=(numbCurves-1)/17;
 			j=(numbCurves-1)%17;
-			util.pr(numbCurves+"     "+ia+" "+i+" "+Lds+" "+j);
 			 BHforData[ia][j]=new Mat(Lds,2);
 
 			 for(int k=0;k<Lds;k++){
@@ -183,8 +182,8 @@ Mat bbhh=new Mat(L,4);
 if(generateData){
 	file="C:\\Works\\PlayModel\\hys_data_generated";
 	util.plotBunch(BHforData[14]);
-util.pr(BHforData.length);
-util.pr(BHforData[0].length);
+//util.pr(BHforData.length);
+//util.pr(BHforData[0].length);
 	new PlayModel2D().writeHystData(BHforData, file,0);	
 }
 
@@ -210,7 +209,8 @@ HB.setCol(BH.getColVect(0), 1);
 			fr.close();
 			
 		util.plotBunch(HH,1);
-	
+		
+	//	HH[0].show();
 
 			int L=HH[0].nRow/2;
 			Mat M=new Mat(L,2);
@@ -255,7 +255,7 @@ public void loadOutputRT(){
 
 	//String file="C:\\Users\\Hassan Ebrahimi\\JavaWorks\\MagFem\\hys_data";
 	//String file="C:\\Works\\HVID\\output";
-	String file="C:\\Works\\PlayModel\\outputr";
+	String file="C:\\Works\\PlayModel\\output";
 	//String file="C:\\Works\\HVIDConv\\output";
 
 	int Nmax=20;

@@ -50,7 +50,7 @@ public class MeshFactory {
 		//int[] nrx={1,3,4,5};mf.extractReg(nrx); mf.dropUnusedNodes();
 	//	mf.connectivity(2e-4);
 		//mf.dropUnusedNodes();
-		//mf.getNeuMeshQ(0);
+		//mf.getNeuMeshQ(1);
 		//mf.getPostMeshQ();
 	//mf.getNeuMeshHexa(1);
 		//mf.getPostMeshHex();
@@ -67,17 +67,9 @@ public class MeshFactory {
 		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ringCompositAngDep";
 		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Large model_Angs";
 		//String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\ThinDiscF2\\AngleDependent\\0deg";
-		String bhfolder="C:\\Works\\EMSolBuild_C\\EMSolBatch\\Small model";
+		
 	//	mf.extractFlux( bbf,3,nf,  6780);
-	Mat BH=	mf.getBHcurve( bhfolder,3,nf, elNumb,0);
-//	BH.show(); 
-	Mat HB=new Mat(BH.size());
-	HB.setCol(BH.getColVect(1), 0);
-	HB.setCol(BH.getColVect(0), 1);
-	HB.show();
-	util.plot(BH);
-////	util.plot(BH.getColVect(0));
-	util.plot(BH.getColVect(1));
+
 		//mf.getEMSolFlux(bbf,3, nf);
 		
 		try {
@@ -10562,185 +10554,7 @@ for(int j=0;j<bb.length;j++){
 	
 	}
 	
-	public void extractFlux(String bbf,int dim, int numb, int nelem){
-
-		Vect[] B=new Vect[numb];
-		
-		for(int i=0;i<numb;i++)
-		B[i]=new Vect(dim);
-		
-		String regex="[ ,\\t]+";
-		try{
-
-			File f=new File(bbf);
-			FileReader fr=new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			String line="";
-			String[] sp=new String[15];
 	
-			for(int i=0;i<numb;i++){
-						
-			while(!line.startsWith("STEP")){
-			line=br.readLine();
-					}
-		
-			String ss="";
-			while(!ss.equals(Integer.toString(nelem))){
-				line=br.readLine();
-				sp=line.split(regex);
-
-				ss=sp[1];
-				
-						}
-			sp=line.split(regex);
-			for(int j=0;j<dim;j++)
-				B[i].el[j]=Double.parseDouble(sp[2+j]);
-		
-			}
-
-			for(int i=0;i<numb;i++)
-				B[i].hshow();
-
-		
-	br.close();
-	fr.close();
-
-	
-	
-		}
-
-
-		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
-		
-		
-
-	
-	
-	
-	}
-	
-	
-	public Mat getBHcurve(String bhfolder,int dim, int numb, int nelem,double angdeg){
-
-		
-		String fileB=bhfolder+"\\magnetic";
-		String fileH=bhfolder+"\\magnetization";
-		
-		Mat BH1=new Mat(numb,2);
-		Mat BH=null;
-		Vect B=new Vect(dim);
-		Vect H=new Vect(dim);
-		Vect er=new Vect(dim);
-		er.el[0]=Math.cos(angdeg*Math.PI/180);
-		er.el[1]=Math.sin(angdeg*Math.PI/180);
-		
-			String regex="[ ,\\t]+";
-		try{
-
-			
-			
-			File f=new File(fileB);
-			FileReader fr=new FileReader(f);
-			BufferedReader br = new BufferedReader(fr);
-			String line="";
-			String[] sp=new String[15];
-	
-			int ix=0;
-			
-			for(int i=0;i<numb;i++){
-					
-			while(!line.startsWith("STEP") ){
-				line=br.readLine();
-	
-
-				if(line==null) break;
-			
-					}
-			if(line==null) break;
-
-			String ss="";
-			while(!ss.equals(Integer.toString(nelem))){
-	
-				line=br.readLine();
-
-				sp=line.split(regex);
-
-				ss=sp[1];
-				
-						}
-			sp=line.split(regex);
-			for(int j=0;j<dim;j++)
-				B.el[j]=Double.parseDouble(sp[2+j]);
-		
-	ix++;
-
-			BH1.el[i][1]=B.dot(er);
-			//BH.el[i][1]=B.el[1];
-		
-		
-			}
-			
-			 f=new File(fileH);
-			 fr=new FileReader(f);
-			 br = new BufferedReader(fr);
-			 line="";
-			 sp=new String[15];
-	
-				for(int i=0;i<numb;i++){
-					
-					while(!line.startsWith("STEP") ){
-						line=br.readLine();
-				
-
-						if(line==null) break;
-					
-							}
-					if(line==null) break;
-				
-					String ss="";
-					while(!ss.equals(Integer.toString(nelem))){
-
-				line=br.readLine();
-				sp=line.split(regex);
-
-				ss=sp[1];
-				
-						}
-			sp=line.split(regex);
-			for(int j=0;j<dim;j++)
-				H.el[j]=Double.parseDouble(sp[2+j]);
-		
-	
-
-			BH1.el[i][0]=H.dot(er);
-			//BH.el[i][0]=H.el[0];
-		
-		
-			}
-	
-		
-				BH=new Mat(ix,2);
-				for(int i=0;i<ix;i++)
-					BH.el[i]=BH1.el[i];
-			
-			//util.plot(BH.getColVect(1));
-
-		//	BH.getColVect(1).show();
-			
-			br.close();
-			fr.close();
-
-	
-	
-		}
-
-
-		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
-
-return BH;
-	
-	
-	}
 	
 	
 	
