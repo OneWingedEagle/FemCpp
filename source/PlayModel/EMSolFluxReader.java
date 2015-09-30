@@ -1,19 +1,14 @@
 package PlayModel;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.acos;
-import static java.lang.Math.cos;
-import static java.lang.Math.sqrt;
+
+import io.Loader;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DecimalFormat;
-import java.util.Scanner;
 
 import math.Mat;
 import math.Vect;
@@ -32,7 +27,32 @@ public class EMSolFluxReader {
 		EMSolFluxReader x=new EMSolFluxReader();
 		
 		//x.fetchB();
-		x.fetchJQ();
+		//x.fetchJQelem(6513);
+		//x.fetchEQAll();
+	//	x.fetchMagAll();
+	//	x.fetchMagAllEls();
+		
+		//x.getFluxAtlasOrig(3,41514,1);
+		
+		
+		String modelFile=System.getProperty("user.dir")+"\\EMSol\\fluxes\\Hexa.txt";
+		String mapFile=System.getProperty("user.dir")+"\\EMSol\\map.txt";
+		
+		Model model=new Model(modelFile);
+		
+		String fluxFile=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux0.txt";
+		model.loadFlux(fluxFile);
+		double ss=0;
+for(int ir=3;ir<=4;ir++)
+		for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++)
+			ss+=model.element[i].getB().norm();
+
+util.pr(ss);
+		
+	//	x.getFluxAtlas(modelFile,mapFile,3,1);
+	//	x.getFluxNeu(modelFile,mapFile,3,1);
+		
+		
 	
 	}
 	
@@ -73,23 +93,269 @@ public class EMSolFluxReader {
 		util.plot(BH.getColVect(1));
 	}
 	
-	public void fetchJQ(){
+	public void fetchJQelem(int elNumb){
 		
-		int elNumb=6513;
+		double[] time=new double[10000];
+		int[] nStepsr=new int[1];
+		//int elNumb=6513;
+	
 
-			int nSteps=20;
 		
 			String fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\classic\\current";
-
-			Mat JJ=extractCurrent( fluxFile,3,nSteps,  elNumb);
-
-			JJ.show();
+		
 			
-			util.plot(JJ.getColVect(0));
+			int nD=1;
+			Mat[] JJD=new Mat[nD+1];
+			double[] dE=new double[nD+1];
+			double[] dQ=new double[nD+1];
+			int kd=1;
+			JJD[0]=extractJQ( fluxFile,3, elNumb,nStepsr, time);
+			Vect v=new Vect().ones(JJD[0].nCol);
+			double Eclassic=JJD[0].mul(v).norm();
 
+
+			int nSteps=nStepsr[0];
+			util.pr(nSteps);
+			Vect timex=new Vect(nSteps);
+			for(int i=0;i<nSteps;i++)
+				timex.el[i]=time[i];
+			
+			
+			for(int i=1;i<=nD;i++){
+				kd*=2;
+	
+			fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\domain"+kd+"\\current";
+			
+			
+			JJD[i]=extractJQ( fluxFile,3, elNumb,nStepsr, time);
+			
+		
+			dE[i]=Math.abs(JJD[i].mul(v).norm()-Eclassic)/Eclassic*100;
+			
+			
+			util.pr("Error (%): "+dE[i]);
+			}
+			
+		
 		
 		
 	}
+	
+	public void fetchEQAll(){
+		
+	
+
+			double[] time=new double[10000];
+			int[] nStepsr=new int[1];
+		
+			String fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\classic\\current";
+
+			
+			int nD=1;
+			double[][] JJD=new double[nD+1][2];
+			double[] dE=new double[nD+1];
+			double[] dQ=new double[nD+1];
+			int kd=1;
+			JJD[0]=extractEQ( fluxFile,3,nStepsr,time);
+			
+			int nSteps=nStepsr[0];
+			util.pr(nSteps);
+			Vect timex=new Vect(nSteps);
+			for(int i=0;i<nSteps;i++)
+				timex.el[i]=time[i];
+			
+
+
+			for(int i=1;i<=nD;i++){
+				kd*=2;
+	
+			fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\domain"+kd+"\\current";
+			
+			
+			JJD[i]=extractEQ(fluxFile,3,nStepsr,time);
+			
+		
+			dE[i]=Math.abs(JJD[i][0]-JJD[0][0])/JJD[0][0]*100;
+			
+			dQ[i]=Math.abs(JJD[i][1]-JJD[0][1])/JJD[0][1]*100;
+			
+			
+			util.pr(" dEJ Error (%): "+dE[i]);
+			util.pr(" dQ Error (%): "+dQ[i]);
+			}
+		
+		
+	}
+	
+	public void fetchMagAll(){
+		
+		
+
+		double[] time=new double[10000];
+		int[] nStepsr=new int[1];
+		
+
+		String fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\classic\\magnetic";
+		
+		
+		int nD=1;
+		double[][] JJD=new double[nD+1][2];
+		double[] dE=new double[nD+1];
+		double[] dQ=new double[nD+1];
+		int kd=1;
+		JJD[0]=extractMag( fluxFile,3,nStepsr,time);
+		
+		int nSteps=nStepsr[0];
+
+		Vect timex=new Vect(nSteps);
+		for(int i=0;i<nSteps;i++)
+			timex.el[i]=time[i];
+		
+		util.pr(" EMagClassic : "+JJD[0][0]);
+		util.pr(" EMagClassicBm2 : "+JJD[0][1]);
+
+		for(int i=1;i<=nD;i++){
+			kd*=2;
+
+		fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\domain"+kd+"\\magnetic";
+		
+		
+		JJD[i]=extractMag(fluxFile,3,nStepsr,time);
+		
+		util.pr(" EMagDomain"+kd+" : "+JJD[i][0]);
+		util.pr(" EMagDomain"+kd+"Bm2 : "+JJD[i][1]);
+	
+		dE[i]=Math.abs(JJD[i][0]-JJD[0][0])/JJD[0][0]*100;
+		
+		dQ[i]=Math.abs(JJD[i][1]-JJD[0][1])/JJD[0][1]*100;
+		
+		
+		util.pr(" dEm Error (%): "+dE[i]);
+		util.pr(" XX Error (%): "+dQ[i]);
+		}
+	
+	
+}
+	
+	public void fetchMagAllEls(){
+		
+		int dim=3;
+		
+
+		double[] time=new double[10000];
+		int[] nStepsr=new int[1];
+		
+
+		String fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\classic\\magnetic";
+		
+		Mat[] mag0=extractMagEls( fluxFile,dim,time);
+		
+
+			
+		
+		fluxFile="C:\\Works\\Problems and Models\\Large-scale Test\\domain2\\magnetic";
+		Mat[] mag1=extractMagEls( fluxFile,dim,time);
+
+		
+/*		for(int i=0;i<mag0[0].nRow;i++){
+			if(Math.abs(mag1[0].el[i][0]-mag0[0].el[i][0])>1e-3){
+			util.hshow(mag0[0].el[i]);
+			util.hshow(mag1[0].el[i]);
+			util.pr("");
+			}
+			
+		}*/
+		
+
+
+		
+		//util.plot(mag1[0].getColVect(0).sub(mag0[0].getColVect(0)));
+
+	//	mag0[0].show();
+		
+		Mat diff=mag1[0].sub(mag0[0]);
+		
+		util.pr(diff.getColVect(0).abs().sum());
+		
+		Mat diffExpanded=new Mat(35000,2);
+
+		double den=0;
+		double en=0;
+		Vect B1=new Vect(3);
+		Vect B2=new Vect(3);
+		Vect dB1=new Vect(3);
+		for(int i=0;i<diff.nRow;i++){
+			B1=new Vect(mag0[0].el[i][1],mag0[0].el[i][2],mag0[0].el[i][3]);
+			B2=new Vect(mag1[0].el[i][1],mag1[0].el[i][2],mag1[0].el[i][3]);
+			dB1=new Vect(diff.el[i][1],diff.el[i][2],diff.el[i][3]);
+			//dB1=new Vect(mag1[0].el[i][1],mag0[0].el[i][2],mag0[0].el[i][3]);
+			
+			diffExpanded.el[(int)mag0[0].el[i][0]][0]=B1.dot(B1);
+			diffExpanded.el[(int)mag1[0].el[i][0]][1]=B2.dot(B2);
+		//	diffExpanded.el[(int)mag0[0].el[i][0]][0]=mag0[0].el[i][4];
+		//	diffExpanded.el[(int)mag1[0].el[i][0]][1]=mag1[0].el[i][4];
+			
+		/*	if(diff.el[i][0]<.1){
+			en+=B1.dot(B1);
+			
+			den+=dB1.dot(dB1);
+			}
+			else{
+				
+				util.hshow(mag0[0].el[i]);
+				util.hshow(mag1[0].el[i]);
+				util.pr("");
+			}*/
+		}
+		
+		util.plot(diffExpanded.getColVect(0));
+		util.plot(diffExpanded.getColVect(1));
+		//util.plot(diffExpanded.getColVect(1).sub(diffExpanded.getColVect(0)));
+		for(int i=0;i<diffExpanded.nRow;i++){
+			den+=Math.abs(diffExpanded.el[i][1]-diffExpanded.el[i][0]);
+		}
+			
+		
+		util.pr(en+" <<<<<<<<<<<<<<< "+den);
+		
+		util.pr(" <<<<end %  "+den/en*100);
+		
+	/*	String fout="C:\\Works\\Problems and Models\\Large-scale Test\\classic\\magneticDiff";
+
+		try{
+			DecimalFormat formatter= new DecimalFormat("0.000000000E000");
+			DecimalFormat intFormatter= new DecimalFormat("00000000");
+			
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));	
+			
+			pwBun.println("STEP    (2I5,E18.0)");
+			pwBun.println("    1    1  1.-003");
+			pwBun.println("EVAL   1(I8,6E17.0)");
+			for(int i=0;i<diff.nRow;i++){
+				
+				pwBun.print((int)mag0[0].el[i][0]+"\t");
+				for(int k=1;k<diff.nCol;k++)
+				pwBun.print(formatter.format(diff.el[i][k])+"\t");
+				
+				pwBun.println();
+				
+			}
+			pwBun.println("\t"+(-1));
+			
+			pwBun.close();
+
+
+	System.out.println("Flux was written to "+fout);
+
+		}
+	catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		*/
+		
+
+}
+	
+
+	
 
 	public Mat extractFlux(String bbf,int dim, int nSteps, int nelem){
 
@@ -273,8 +539,9 @@ return BH;
 	
 	}
 	
-	public Mat extractCurrent(String bbf,int dim, int nSteps, int nelem){
+	public Mat extractJQ(String bbf,int dim,int nelem,int[] nStepsr,double[] time){
 
+		int nSteps=10000;
 		Vect[] B=new Vect[nSteps];
 		
 		double[] Q=new double[nSteps];
@@ -292,36 +559,74 @@ return BH;
 			String[] sp=new String[15];
 		
 			
-			for(int i=0;i<nSteps;i++){
-						
-			while(!line.startsWith("STEP")){
-			line=br.readLine();
-	
-					}
+			int stepCount=0;
+
 		
-			String ss="";
-			while(!ss.equals(Integer.toString(nelem))){
+		
+			while(line!=null){
+				
+				while(!line.startsWith("STEP")){
 				line=br.readLine();
+				if(line==null) break;
+				}
+		
+				line=br.readLine();
+				if(line==null) break;
+				
 				sp=line.split(regex);
 
-				ss=sp[1];
-				
-						}
-			sp=line.split(regex);
-			for(int j=0;j<dim;j++)
-				B[i].el[j]=Double.parseDouble(sp[2+j]);
+				time[stepCount]=Double.parseDouble(sp[3]);
 			
-			Q[i]=Double.parseDouble(sp[2+dim]);
+	
+					while(!line.startsWith("EVAL")){
+					line=br.readLine();
+			
+							}
+					
+				
+		
+
+			int ne=0;
+			boolean elFound=false;
+			boolean isInt=true;
+			while(!elFound){
+				
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+				
+			try{
+			ne=Integer.parseInt(sp[1]);
+			}
+			catch(Exception e){
+			isInt=false;
+			}
+			
+			if(isInt && ne==nelem)
+				elFound=true;
+			else continue;
+
+			
+		
+			for(int j=0;j<dim;j++)
+				B[stepCount].el[j]=Double.parseDouble(sp[2+j]);
+			
+			Q[stepCount]=Double.parseDouble(sp[2+dim]);
 
 		
+			stepCount++;
+			}
 			}
 
 		
 	br.close();
 	fr.close();
 	
-	Mat result=new Mat(nSteps,dim+1);
-	for(int i=0;i<nSteps;i++){
+	nStepsr[0]=stepCount;
+	
+	Mat result=new Mat(nStepsr[0],dim+1);
+	for(int i=0;i<nStepsr[0];i++){
 		for(int j=0;j<dim;j++)
 		result.el[i][j]=B[i].el[j];
 		
@@ -341,4 +646,940 @@ return result;
 
 	
 	}
+	
+	public double[] extractEQ(String bbf,int dim,int[] nStepsr,double[] time){
+
+	
+		
+		double[] EQ=new double[2];
+
+		
+		String regex="[ ,\\t]+";
+		try{
+
+			File f=new File(bbf);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+		
+			
+			int stepCount=0;
+			int nelCount=0;
+
+		
+		
+			while(line!=null){
+				
+				while(!line.startsWith("STEP")){
+				line=br.readLine();
+				if(line==null) break;
+	
+				}
+		
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+
+				time[stepCount]=Double.parseDouble(sp[3]);
+				stepCount++;
+	
+					while(!line.startsWith("EVAL")){
+					line=br.readLine();
+			
+							}
+					
+					if(stepCount!=1) continue;
+		
+
+			int ne=0;
+			boolean elNum=true;
+			
+			nelCount=0;
+			
+			while(elNum){
+				
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+				
+			try{
+			ne=Integer.parseInt(sp[1]);
+			}
+			catch(Exception e){
+				elNum=false;
+			}
+			
+			if(ne<1)
+				elNum=false;
+			
+
+
+		
+			if(!elNum) continue;
+			
+			
+			nelCount++;
+
+			
+		//	if(Math.abs(ne)>00000) elNum=false;
+			
+	
+			Vect B=new Vect(dim);
+			for(int j=0;j<dim;j++)
+				B.el[j]=Double.parseDouble(sp[2+j]);
+			
+			EQ[0]+=B.norm2();
+		//	util.pr(sp[2+dim]);
+			double Q=Double.parseDouble(sp[2+dim]);
+
+			EQ[1]+=Q;
+			
+			
+			line=br.readLine();
+			
+			sp=line.split(regex);
+				
+			
+			}
+			
+			}
+
+			nStepsr[0]=stepCount;
+		
+	br.close();
+	fr.close();
+
+
+		
+return EQ;
+	
+		}
+
+
+		catch(Exception e){
+			System.err.println("error");	e.printStackTrace(); 
+			return null;
+		}
+		
+
+	
+	}
+	
+	public double[] extractMag(String bbf,int dim,int[] nStepsr,double[] time){
+
+	
+		
+		double[] EQ=new double[2];
+
+		
+		String regex="[ ,\\t]+";
+		try{
+
+			File f=new File(bbf);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+		
+			
+			int stepCount=0;
+			int nelCount=0;
+
+		
+		
+			while(line!=null){
+				
+				while(!line.startsWith("STEP")){
+				line=br.readLine();
+				if(line==null) break;
+	
+				}
+		
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+
+				time[stepCount]=Double.parseDouble(sp[3]);
+	
+					while(!line.startsWith("EVAL")){
+					line=br.readLine();
+			
+							}
+					
+					//if(stepCount!=0) continue;
+
+		
+
+			int ne=0;
+			boolean elNum=true;
+			
+			nelCount=0;
+			
+			while(elNum){
+				
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+				
+			try{
+			ne=Integer.parseInt(sp[1]);
+			}
+			catch(Exception e){
+				elNum=false;
+			}
+			
+			if(ne<1)
+				elNum=false;
+			
+
+
+		
+			if(!elNum) continue;
+			
+			
+			nelCount++;
+			
+		
+		//	if(Math.abs(ne)>00000) elNum=false;
+			
+	
+			Vect B=new Vect(dim);
+			for(int j=0;j<dim;j++)
+				B.el[j]=Double.parseDouble(sp[2+j]);
+			
+			EQ[0]+=B.norm2();
+		//	util.pr(sp[2+dim]);
+			double Q=Double.parseDouble(sp[2+dim]);
+
+			EQ[1]+=Q*Q;
+
+			
+			line=br.readLine();
+			
+			sp=line.split(regex);
+				
+			
+			}
+			
+			//util.pr(nelCount);
+			//util.pr(EQ[1]);
+			
+			
+			stepCount++;
+			}
+
+			nStepsr[0]=stepCount;
+		
+	br.close();
+	fr.close();
+
+
+		
+return EQ;
+	
+		}
+
+
+		catch(Exception e){
+			System.err.println("error");	e.printStackTrace(); 
+			return null;
+		}
+		
+
+	
+	}
+	
+	
+public Mat[] extractMagEls(String bbf,int dim,double[] time){
+
+	
+		
+		double[] EQ=new double[2];
+		Mat[] results1=new Mat[1000];
+
+		
+		String regex="[ ,\\t]+";
+		try{
+
+			File f=new File(bbf);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+			String line="";
+			String[] sp=new String[15];
+		
+			
+			int stepCount=0;
+			int nelCount=0;
+
+		
+		
+			while(line!=null){
+				
+				while(!line.startsWith("STEP")){
+				line=br.readLine();
+				if(line==null) break;
+	
+				}
+		
+				line=br.readLine();
+				if(line==null) break;
+				
+				sp=line.split(regex);
+
+				time[stepCount]=Double.parseDouble(sp[3]);
+				
+	
+					while(!line.startsWith("EVAL")){
+					line=br.readLine();
+			
+							}
+					
+					
+
+					if(stepCount>0) break;
+
+			int ne=0;
+			boolean elNum=true;
+			
+			nelCount=0;
+			
+			int NeMax=50000;
+			
+			Mat data=new Mat(NeMax,dim+2);
+			
+			while(elNum){
+				
+				line=br.readLine();
+
+				if(line==null) break;
+				
+				sp=line.split(regex);
+				
+			try{
+			ne=Integer.parseInt(sp[1]);
+			}
+			catch(Exception e){
+				elNum=false;
+			}
+			
+			if(ne<1)
+				elNum=false;
+			
+
+
+		
+			if(!elNum) continue;
+	
+			
+		
+		//	if(Math.abs(ne)>00000) elNum=false;
+			data.el[nelCount][0]=ne;
+	
+			Vect B=new Vect(dim);
+			for(int j=0;j<dim;j++){
+				B.el[j]=Double.parseDouble(sp[2+j]);
+				data.el[nelCount][j+1]=B.el[j];
+			}
+			
+			EQ[0]+=B.norm2();
+		//	util.pr(sp[2+dim]);
+			double Q=Double.parseDouble(sp[2+dim]);
+			data.el[nelCount][dim+1]=Q;
+
+			EQ[1]+=Q;
+
+			
+			line=br.readLine();
+			
+			sp=line.split(regex);
+			
+			
+			
+			nelCount++;
+			
+			}
+
+
+
+			Vect numbs=data.getColVect(0);
+
+			int[] index=numbs.bubble();
+		
+			results1[stepCount]=new  Mat(nelCount,dim+2);
+			for(int i=0;i<nelCount;i++){
+				results1[stepCount].el[nelCount-1-i]=data.el[index[NeMax-1-i]];
+				//results1[stepCount].el[i]=data.el[i];
+			}
+			
+	
+			//numbs.hshow();
+			//util.pr(numbs.sum());
+
+			
+			stepCount++;
+		
+			}
+
+				
+	br.close();
+	fr.close();
+	
+	Mat[] results=new Mat[stepCount];
+	for(int i=0;i<stepCount;i++)
+		results[i]=results1[i];
+
+
+		
+return results;
+	
+		}
+
+
+		catch(Exception e){
+			System.err.println("error");	e.printStackTrace(); 
+			return null;
+		}
+		
+
+	
+	}
+
+public void getFluxAtlasOrig(String bbf,int dim, int nEmax, int nStepMax){
+
+
+
+
+	Model model;
+	if(dim==3)
+		model=new Model(1,nEmax,1,"hexahedron");
+	else
+		model=new Model(1,nEmax,1,"quadrangle");
+	
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int nelCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+	
+
+				while(!line.startsWith("EVAL")){
+				line=br.readLine();
+						}
+				
+				
+
+				//if(stepCount>0) break;
+
+		int ne=0;
+		boolean elNum=true;
+		
+		nelCount=0;
+		
+		
+	
+		while(elNum){
+			
+			line=br.readLine();
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+		try{
+		ne=Integer.parseInt(sp[1]);
+		}
+		catch(Exception e){
+			elNum=false;
+		}
+		
+		if(ne<1)
+			elNum=false;
+		
+
+
+	
+		if(!elNum) continue;
+
+		
+	
+	//	if(Math.abs(ne)>00000) elNum=false;
+
+		Vect B=new Vect(dim);
+		for(int j=0;j<dim;j++){
+			B.el[j]=Double.parseDouble(sp[2+j]);
+		}
+		
+		model.element[ne].setB(B);
+		
+	
+
+		
+		line=br.readLine();
+		
+		sp=line.split(regex);
+		
+		
+		
+		nelCount++;
+		
+		
+		}
+
+
+		String fout=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux"+stepCount+".txt";
+		
+		model.writeB(fout);
+
+
+		stepCount++;
+		
+		if(stepCount==nStepMax) break;
+	
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+
+}
+
+public void getFluxAtlas(String modelFile,String mapFile,int dim, int nStepMax){
+
+
+	String bbf=util.getFile();
+	
+		
+		Model model=new Model(modelFile);
+		
+		
+		double[][] map=new Loader().loadArrays(model.numberOfElements,2,mapFile);
+		
+		int maxel=100000;
+		int[] map2=new int[maxel];
+		
+		for(int i=0;i<map.length;i++){
+			map2[(int)map[i][0]]=(int)map[i][1];
+		//	util.pr((int)map[i][0]+"   "+(int)map[i][1]);
+		}
+		//util.show(map2);
+			
+/*	Model model;
+	if(dim==3)
+		model=new Model(1,nEmax,1,"hexahedron");
+	else
+		model=new Model(1,nEmax,1,"quadrangle");
+	*/
+
+
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int nelCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+	
+
+				while(!line.startsWith("EVAL")){
+				line=br.readLine();
+						}
+				
+				
+
+				//if(stepCount>0) break;
+
+		int ne=0;
+		boolean elNum=true;
+		
+		nelCount=0;
+		
+		
+	
+		while(elNum){
+			
+			line=br.readLine();
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+		try{
+		ne=Integer.parseInt(sp[1]);
+		}
+		catch(Exception e){
+			elNum=false;
+		}
+		
+		if(ne<1)
+			elNum=false;
+		
+
+
+	
+		if(!elNum) continue;
+
+		
+	
+	//	if(Math.abs(ne)>00000) elNum=false;
+
+		Vect B=new Vect(dim);
+		for(int j=0;j<dim;j++){
+			B.el[j]=Double.parseDouble(sp[2+j]);
+		}
+		
+		
+		nelCount++;
+
+		int nemap=map2[ne];
+		util.pr(ne+" "+nemap);
+		//if(nemap<=model.numberOfElements)
+		model.element[nemap].setB(B);
+		
+	
+
+		
+	//	line=br.readLine();
+		
+	//	sp=line.split(regex);
+		
+		
+		
+
+		
+		
+		}
+
+
+		String fout=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux"+stepCount+".txt";
+		
+		model.writeB(fout);
+
+
+		stepCount++;
+	
+		if(stepCount==nStepMax) break;
+		
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+	
+
+
+}
+
+
+public void getFluxNeu(String bbf,int dim, int numb){
+
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		Mat BB=new Mat(100*1000,dim);
+		
+		for(int tt=0;tt<numb;tt++){
+
+			line="";
+			while(!line.startsWith("STEP")){
+				line=br.readLine();
+				
+				}
+			int[] nx=new int[dim];;
+
+			String fout=System.getProperty("user.dir")+"\\EMSol\\flux"+tt+".txt";
+			
+			PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));	
+			
+while(!line.startsWith("BMAG")){
+line=br.readLine();
+		}
+
+for(int k=0;k<6;k++)
+	line=br.readLine();
+
+int k=0;
+
+
+		for(int i=1;i<180000;i++){
+			
+
+	if(line.startsWith("-1")){
+		k++;
+		for(int j=0;j<8;j++)
+			line=br.readLine();
+
+	}
+	else
+
+	sp=line.split(regex);
+		
+
+	double Bu=Double.parseDouble(sp[1]);
+	BB.el[nx[k]][k]=Bu;
+
+			line=br.readLine();
+
+			nx[k]++;
+			
+		
+
+			if(k==dim-1 && nx[k]==nx[k-1]){
+				break;
+			}
+			
+			
+
+}
+
+
+
+int Ne=nx[0];
+pwBun.println("flux");
+pwBun.println(dim);
+pwBun.println(Ne);
+
+for(int j=0;j<Ne;j++){
+	for(int p=0;p<dim;p++)
+	pwBun.print(BB.el[j][p]+"\t");
+	
+	pwBun.println();
+}
+
+System.out.println("Flux was written to "+fout);
+pwBun.close();
+
+		}
+	
+br.close();
+fr.close();
+
+
+
+	}
+
+
+	catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	
+
+}
+
+
+public void getFluxNeu(String modelFile,String mapFile,int dim, int nStepMax){
+
+
+	String bbf=util.getFile();
+	
+		
+		Model model=new Model(modelFile);
+		
+		
+		double[][] map=new Loader().loadArrays(model.numberOfElements,2,mapFile);
+		
+		int maxEl=1000000;
+		int[] map2=new int[maxEl];
+		
+		for(int i=0;i<map.length;i++){
+			map2[(int)map[i][0]]=(int)map[i][1];
+		}
+
+
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int nelCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+
+
+			
+		for(int k=0;k<dim;k++){
+
+			nelCount=0;
+			
+				while(!line.startsWith("BMAG")){
+				line=br.readLine();
+						}
+
+
+		int ne=0;
+		boolean elNum=true;
+		
+		nelCount=0;
+		
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+	
+		while(elNum){
+			
+			line=br.readLine();
+	
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+
+		try{
+		ne=Integer.parseInt(sp[0]);
+	
+		}
+		catch(Exception e){
+			elNum=false;
+		}
+		
+		if(ne<1)
+			elNum=false;
+
+	
+		if(!elNum) continue;
+
+		
+		double Bu=Double.parseDouble(sp[1]);
+		
+		int nemap=map2[ne];
+
+	
+		model.element[nemap].setB(k,Bu);
+
+	}
+		
+		
+		}
+
+
+
+		String fout=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux"+stepCount+".txt";
+		
+		model.writeB(fout);
+
+
+		stepCount++;
+	
+		if(stepCount==nStepMax) break;
+		
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+	
+
+
+}
+
+
+
 }

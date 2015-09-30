@@ -1,4 +1,4 @@
-package fem;
+package meshFactory;
 import math.*;
 
 import static java.lang.Math.*;
@@ -16,7 +16,7 @@ public class Discretizer {
 	public int nBlocks,decimal,numberOfRegions,numberOfElements,numberOfNodes;
 	private int maxMeshInOneDirection;
 
-	public Discretizer(ModelGeo mg){
+	public Discretizer(Geometry mg){
 		
 		int nB=mg.blockBoundary[0].length;
 		factor=1.0/mg.scaleFactor;

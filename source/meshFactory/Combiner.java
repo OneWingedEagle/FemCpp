@@ -1,8 +1,7 @@
-package fem;
+package meshFactory;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
-
 import io.Writer;
 
 import java.io.BufferedWriter;
@@ -12,7 +11,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 
+import fem.BoundarySet;
+import fem.Calculator;
+import fem.Element;
+import fem.Force;
 import fem.Main;
+import fem.Model;
 import math.Mat;
 import math.Vect;
 import math.util;

@@ -98,6 +98,12 @@ public class Element {
 
 	}
 	
+	public void setB(int k,double Bk){
+
+		this.B.el[k]=Bk;
+
+	}
+	
 
 	public Vect getB(){
 		return this.B.deepCopy();

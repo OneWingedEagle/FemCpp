@@ -21,6 +21,7 @@ import math.Mat;
 import math.MatSolver;
 import math.Vect;
 import math.util;
+import meshFactory.MeshFactory;
 
 public class RunMagIPM {
 

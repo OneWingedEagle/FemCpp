@@ -1,4 +1,4 @@
-package fem;
+package meshFactory;
 
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
@@ -20,6 +20,16 @@ import java.util.Set;
 
 
 
+
+
+
+
+
+import fem.BoundarySet;
+import fem.Element;
+import fem.Model;
+import fem.Node;
+import fem.Region;
 import io.Loader;
 import io.Writer;
 import math.Mat;
@@ -53,7 +63,11 @@ public class MeshFactory {
 		//mf.getNeuMeshQ(1);
 		//mf.getPostMeshQ();
 	//mf.getNeuMeshHexa(1);
-		//mf.getPostMeshHex();
+	//	mf.getPostMeshHex();
+	//	mf.getPostMeshHexAtlas();
+		mf.getPostMeshHexAtlas();
+		
+	//	mf.fetFluxAtlas(3, 1);
 		
 		int elNumb=6780;
 	//elNumb=2190;
@@ -2716,7 +2730,7 @@ for(int i=0; i<dh.length; i++){
 
 	}
 
-	private void reRegionGroupEls(Model model){
+	public int[] reRegionGroupEls(Model model){
 
 		for(int ir=1;ir<=model.numberOfRegions;ir++){
 			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++)
@@ -2749,6 +2763,8 @@ for(int i=0; i<dh.length; i++){
 		for(int i=1;i<=model.numberOfElements;i++){
 			model.element[i].setVertNumb(vn[i]);
 		}
+		
+		return mape;
 	}
 
 
@@ -7427,7 +7443,7 @@ for(int i=0; i<dh.length; i++){
 						if(k==2&& bb[j][k]==0) 	bb[j][k]=.2;
 					}
 
-				ModelGeo mg=new ModelGeo(bb);
+				Geometry mg=new Geometry(bb);
 
 
 				mg.blockName[0]="air";
@@ -7523,7 +7539,7 @@ for(int i=0; i<dh.length; i++){
 						if(k==0&& bb[j][k]==0) 	bb[j][k]=.2;
 					}
 
-				ModelGeo mg=new ModelGeo(bb);
+				Geometry mg=new Geometry(bb);
 
 
 				mg.blockName[0]="xair";
@@ -7604,7 +7620,7 @@ for(int i=0; i<dh.length; i++){
 						if(k==2&& bb[j][k]==0) 	bb[j][k]=1;
 					}
 
-				ModelGeo mg=new ModelGeo(bb);
+				Geometry mg=new Geometry(bb);
 
 
 				mg.blockName[0]="iron";
@@ -7761,7 +7777,7 @@ for(int i=0; i<dh.length; i++){
 					if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 				}
 
-			ModelGeo mg=new ModelGeo(bb);
+			Geometry mg=new Geometry(bb);
 
 
 			mg.blockName[0]="air";
@@ -7871,7 +7887,7 @@ for(int i=0; i<dh.length; i++){
 					if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 				}
 
-			ModelGeo mg=new ModelGeo(bb);
+			Geometry mg=new Geometry(bb);
 /*			mg.blockName[0]="air";
 			mg.blockName[2]="air";
 
@@ -7923,7 +7939,7 @@ for(int i=0; i<dh.length; i++){
 
 
 
-	public Model getOrthogMesh2D( ModelGeo mg, String file, boolean b){
+	public Model getOrthogMesh2D( Geometry mg, String file, boolean b){
 
 		Model model=new Model();
 		util.show(mg.blockBoundary);
@@ -8238,13 +8254,13 @@ for(int i=0; i<dh.length; i++){
 
 
 
-	public void getOrthogMesh( ModelGeo mg){
+	public void getOrthogMesh( Geometry mg){
 
 		String bun = System.getProperty("user.dir") + "\\orBun.txt";
 		getOrthogMesh(mg,bun,false);
 	}
 
-	public Model getOrthogMesh( ModelGeo mg, String file, boolean b){
+	public Model getOrthogMesh( Geometry mg, String file, boolean b){
 
 
 
@@ -9182,7 +9198,7 @@ return Rs;
 				//if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 			}
 
-		ModelGeo mg=new ModelGeo(bb);
+		Geometry mg=new Geometry(bb);
 /*			mg.blockName[0]="air";
 		mg.blockName[2]="air";
 
@@ -9301,7 +9317,7 @@ return Rs;
 					//if(k==2&& bb[j][k]==0) 	bb[j][k]=.4;
 				}
 
-			ModelGeo mg=new ModelGeo(bb);
+			Geometry mg=new Geometry(bb);
 	/*			mg.blockName[0]="air";
 			mg.blockName[2]="air";
 
@@ -9409,7 +9425,7 @@ for(int j=0;j<bb.length;j++){
 			
 			}
 
-		ModelGeo mg=new ModelGeo(bb);
+		Geometry mg=new Geometry(bb);
 
 		mg.blockName[0]="outPM";
 		//mg.blockName[1]="inAir2";
@@ -10448,7 +10464,516 @@ for(int j=0;j<bb.length;j++){
 
 		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
 	}
+	
+	public void getPostMeshHexAtlas(){
+
+		String s=util.getFile();
 		
+		String line;
+		int max=1000000;
+		Vect[] coord1=new Vect[max];
+		int[][] vertNumb=new int[max][8];
+		int[] nodeMap=new int[max];
+
+		int[] elMap=new int[max];
+		int[] regNumb=new int[max];
+		
+		int[] nRegEls=new int[15];
+
+
+
+		int nnx=1;
+		int nex=1;
+		
+		try{
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+
+	
+			while(true){
+				line=br.readLine();
+				
+				if(line==null) break;
+				if(line.startsWith("GRID")){
+					nnx=readAtlasNodes(br,nodeMap,coord1,nnx);
+
+
+				}
+				
+				
+				if(line.startsWith("CONC")){	
+		
+					nex=readAtlasElements(br,elMap,regNumb,nRegEls,vertNumb,nex);
+				}
+
+			}
+		
+		}
+			catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+
+			int nNodes=0;
+			for(int i=0;i<nodeMap.length;i++)
+				if(nodeMap[i]>0) nNodes++;
+
+
+			int nEls=0;
+		
+			int nRegions=0;
+			
+			for(int i=0;i<nRegEls.length;i++)
+				if(nRegEls[i]>0) {
+					nRegions++;
+					nEls+=nRegEls[i];
+				}
+			
+		
+			
+			int[] regMap=new int[nRegEls.length];
+			int nr=0;
+			int[][]regEnd=new int[nRegions+1][2];
+			regEnd[0][0]=1;
+					
+			for(int i=0;i<nRegEls.length;i++){
+				
+				if(nRegEls[i]>0) {
+					nr++;
+					regMap[i]=nr;
+					regEnd[nr][0]=regEnd[nr-1][1]+1;
+				
+					regEnd[nr][1]=regEnd[nr][0]+nRegEls[i]-1;
+				}
+			}
+			
+			
+			Model model=new Model(nRegions,nEls,nNodes,"hexahedron");
+				
+			for(int ir=1;ir<=nRegions;ir++)
+			{
+				model.region[ir].setFirstEl(regEnd[ir][0]);;
+				model.region[ir].setLastEl(regEnd[ir][1]);;
+				model.region[ir].setName("region"+regMap[ir]);
+			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+				for(int j=0;j<8;j++){
+					int mpn=nodeMap[vertNumb[i][j]];
+					model.element[i].setVertNumb(j,mpn);
+					
+				}
+
+			}
+			
+		
+			}
+			
+			for(int i=1;i<=nNodes;i++){
+				model.node[i].setCoord(coord1[i]);
+				}
+		
+			model.scaleFactor=1;
+			
+			for(int i=1;i<=nEls;i++)
+			model.element[i].setRegion(regMap[regNumb[i]]);
+			
+			reRegionGroupEls(model);
+			
+			String fout=System.getProperty("user.dir")+"\\EMSol\\Hexa.txt";
+			
+			model.writeMesh(fout);
+
+
+
+	}
+	
+	public void getPostMeshHexAtlasOrig(){
+
+		String s=util.getFile();
+		
+		String line;
+		int max=1000000;
+		Vect[] coord1=new Vect[max];
+		int[][] vertNumb=new int[max][8];
+		int[] nodeNumb=new int[max];
+		int[] elNumb=new int[max];
+		int[] regNumb=new int[max];
+
+
+		int nNodes=0,nEls=0;
+
+	
+		for(int i=0;i<regNumb.length;i++)
+			regNumb[i]=-1;
+
+
+		try{
+			File f=new File(s);
+			FileReader fr=new FileReader(f);
+			BufferedReader br = new BufferedReader(fr);
+
+	
+			while(true){
+				line=br.readLine();
+				
+				if(line==null) break;
+				if(line.startsWith("GRID")){
+					nNodes=readAtlasNodesOrig(br,nodeNumb,coord1,nNodes);
+
+
+				}
+				
+
+				
+				if(line.startsWith("CONC")){	
+		
+					nEls=readAtlasElementsOrig(br,elNumb,regNumb,vertNumb,nEls);
+				}
+
+			}
+		
+		}
+			catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+
+			int nNodeMax=0;
+			for(int i=0;i<nNodes;i++)
+				if(nodeNumb[i]>nNodeMax) nNodeMax=nodeNumb[i];
+			
+			int[] vertNumb0=new int[8];
+			int jx=0;
+			for(int i=0;i<nNodes;i++){
+				if(nodeNumb[i]>0) vertNumb0[jx++]=nodeNumb[i];
+				if(jx==8) break;
+			}
+
+			int nElMax=0;
+			for(int i=0;i<nEls;i++)
+				if(elNumb[i]>nElMax) nElMax=elNumb[i];
+			
+			int nRegMax=0;
+			for(int i=0;i<regNumb.length;i++)
+				if(regNumb[i]>nRegMax) nRegMax=regNumb[i];
+			
+			
+			int[] nRegEls=new int[nRegMax+1];
+			for(int i=0;i<regNumb.length;i++)
+				if(regNumb[i]>0) nRegEls[regNumb[i]]++;
+						
+			int[][]regEnd=new int[nRegMax+1][2];
+			regEnd[0][0]=1;
+
+					
+			for(int i=0;i<nRegEls.length;i++){
+		
+				if(i>0)
+				regEnd[i][0]=regEnd[i-1][1]+1;
+				
+					regEnd[i][1]=regEnd[i][0]+nRegEls[i]-1;
+				}		
+			
+
+			
+			Model model=new Model(nRegMax,nElMax,nNodeMax,"hexahedron");
+			
+			for(int i=1;i<=nElMax;i++){
+				if(vertNumb[i][0]>0){
+					model.element[i].setVertNumb(vertNumb[i]);
+				}
+				else{
+					model.element[i].setVertNumb(vertNumb0);
+				}
+			}
+				
+				
+			for(int ir=1;ir<=nRegMax;ir++)
+			{
+				model.region[ir].setFirstEl(regEnd[ir][0]);;
+				model.region[ir].setLastEl(regEnd[ir][1]);;
+				model.region[ir].setName("region"+ir);
+			for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+	/*			for(int j=0;j<8;j++){
+					int mpn=vertNumb[i][j];
+
+					model.element[i].setVertNumb(j,mpn);
+					
+				}*/
+				model.element[i].setRegion(ir);
+
+			}
+			
+		
+			}
+		
+			util.pr(nRegMax);
+			
+			for(int i=1;i<=nNodeMax;i++){
+				if(coord1[i]==null)
+					model.node[i].setCoord(new Vect(3));
+				else
+				model.node[i].setCoord(coord1[i]);
+				}
+		
+			model.scaleFactor=1;
+			
+			reRegionGroupEls(model);
+			
+
+			
+			String fout=System.getProperty("user.dir")+"\\EMSol\\HexaOrig.txt";
+			
+			model.writeMesh(fout);
+
+
+
+	}
+	
+	public int readAtlasNodes(BufferedReader br,int[] nodeMap,Vect[] coord1,int nNode){
+		String line;
+		String[] sp;
+		try{
+		line=br.readLine();
+		int nn;
+		int nIdent=1;
+	
+		while(true){
+			if(line==null) break;
+
+			sp=line.split(regex);
+		
+			if(sp.length<3) return nNode;
+			
+
+			nn=Integer.parseInt(sp[nIdent]);
+
+			if(nn==-1) break;
+			
+			nodeMap[nn]=nNode;
+		
+
+			coord1[nNode]=new Vect(Double.parseDouble(sp[nIdent+1]),Double.parseDouble(sp[nIdent+2]),Double.parseDouble(sp[nIdent+3]));
+	
+			line=br.readLine();
+			
+			nNode++;
+
+		}
+		}
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		return nNode;
+		
+	}
+	
+	public int readAtlasElements(BufferedReader br,int[] elMap,int[]regNumb,int[] nRegEls,int[][] vertNumb,int nEl){
+		
+		String line1,line2;
+		String[] sp1,sp2;
+		try{
+	//	line=br.readLine();
+		int nIdent=1;
+
+		int ne;
+		while(true){
+			
+			line1=br.readLine();
+		
+			sp1=line1.split(regex);
+			if(sp1.length<3) {return nEl;}
+
+			line2=br.readLine();
+			if(line2==null) return nEl;
+			
+			sp2=line2.split(regex);
+
+
+			ne=Integer.parseInt(sp1[nIdent]);
+			elMap[ne]=nEl;
+			
+			regNumb[nEl]=Integer.parseInt(sp1[nIdent+2]);
+
+			nRegEls[regNumb[nEl]]++;
+
+			for(int j=0;j<5;j++){
+
+				vertNumb[nEl][j]=Integer.parseInt(sp1[nIdent+j+3]);
+			}
+			
+	
+		
+			for(int j=0;j<3;j++){
+
+				vertNumb[nEl][j+5]=Integer.parseInt(sp2[nIdent+j]);
+			}
+			
+/*
+			for(int j=0;j<8;j++)
+			{
+
+
+
+					numbAddedNodes++;
+			
+					 vernumb[ix][j]=nnMax+numbAddedNodes;//vernumb[ix][j-1];
+						if(j>=0){
+					 coord1[numbAddedNodes]=coord1[vernumb[ix][j-1]].deepCopy().times(0);
+						}
+					//ix--;
+					//break;
+				}
+			}*/
+	
+			
+			// change order
+			
+			int[] tmp=new int[8];
+			for(int j=0;j<8;j++){
+				tmp[j]=vertNumb[nEl][j];
+			
+			}
+			vertNumb[nEl][0]=tmp[0];
+			vertNumb[nEl][1]=tmp[3];
+			vertNumb[nEl][2]=tmp[2];
+			vertNumb[nEl][3]=tmp[1];
+			
+			vertNumb[nEl][4]=tmp[4];
+			vertNumb[nEl][5]=tmp[7];
+			vertNumb[nEl][6]=tmp[6];
+			vertNumb[nEl][7]=tmp[5];
+			
+			nEl++;
+
+		}
+
+		}
+		
+	
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		return nEl;
+	}
+	
+	public int readAtlasNodesOrig(BufferedReader br,int[] nodeNumb,Vect[] coord1, int nNode){
+		String line;
+		String[] sp;
+		try{
+		line=br.readLine();
+		int nn;
+		int nIdent=1;
+	
+		while(true){
+			if(line==null) return nNode;
+
+			sp=line.split(regex);
+
+			
+
+			nn=Integer.parseInt(sp[nIdent]);
+
+			if(nn==-1) return nNode;
+			
+			nNode++;
+			
+			nodeNumb[nNode]=nn;
+
+			coord1[nn]=new Vect(Double.parseDouble(sp[nIdent+1]),Double.parseDouble(sp[nIdent+2]),Double.parseDouble(sp[nIdent+3]));
+	
+			line=br.readLine();
+			
+		
+		}
+		}
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+		
+		return nNode;
+		
+	}
+	
+	public int readAtlasElementsOrig(BufferedReader br,int[] elNumb,int[]regNumb,int[][] vertNumb, int nEl){
+		
+		String line1,line2;
+		String[] sp1,sp2;
+		try{
+	//	line=br.readLine();
+		int nIdent=1;
+
+		int ne;
+		while(true){
+			
+			line1=br.readLine();
+		
+			sp1=line1.split(regex);
+			if(sp1.length<3) return nEl;
+
+			line2=br.readLine();
+			if(line2==null) return nEl;
+			
+			sp2=line2.split(regex);
+
+
+			ne=Integer.parseInt(sp1[nIdent]);
+			
+			nEl++;
+			
+			elNumb[nEl]=ne;
+			
+
+			
+			regNumb[ne]=Integer.parseInt(sp1[nIdent+2]);
+
+
+			for(int j=0;j<5;j++){
+
+				vertNumb[ne][j]=Integer.parseInt(sp1[nIdent+j+3]);
+			}
+			
+	
+		
+			for(int j=0;j<3;j++){
+
+				vertNumb[ne][j+5]=Integer.parseInt(sp2[nIdent+j]);
+			}
+			
+/*
+			for(int j=0;j<8;j++)
+			{
+
+
+
+					numbAddedNodes++;
+			
+					 vernumb[ix][j]=nnMax+numbAddedNodes;//vernumb[ix][j-1];
+						if(j>=0){
+					 coord1[numbAddedNodes]=coord1[vernumb[ix][j-1]].deepCopy().times(0);
+						}
+					//ix--;
+					//break;
+				}
+			}*/
+	
+			
+			// change order
+			
+			int[] tmp=new int[8];
+			for(int j=0;j<8;j++){
+				tmp[j]=vertNumb[ne][j];
+			
+			}
+			vertNumb[ne][0]=tmp[0];
+			vertNumb[ne][1]=tmp[3];
+			vertNumb[ne][2]=tmp[2];
+			vertNumb[ne][3]=tmp[1];
+			
+			vertNumb[ne][4]=tmp[4];
+			vertNumb[ne][5]=tmp[7];
+			vertNumb[ne][6]=tmp[6];
+			vertNumb[ne][7]=tmp[5];
+				
+		}
+
+		}
+		
+	
+		catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	
+		return nEl;
+	}
 	
 	
 	public void getEMSolFlux(String bbf,int dim, int numb){
@@ -11158,6 +11683,100 @@ public void onlyIronForce()	{
 	}
 	
 	}
+
+public void getFluxAtlas(int dim){
+
+	String regex="[ ,\\t]+";
+	String s=util.getFile();
+	try{
+		
+		String fout=System.getProperty("user.dir")+"\\EMSolFlux.txt";
+		PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(fout)));		
+
+		File f=new File(s);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+		
+		
+		Mat BB=new Mat(100*1000,dim);
+		
+		int[] nx=new int[dim];;
+		
+		
+while(!line.startsWith("STEP")){
+	line=br.readLine();
+	pwBun.println(line);
+		}
+for(int k=0;k<6;k++){
+	line=br.readLine();
+	pwBun.println(line);
+}
+
+int k=0;
+
+
+		for(int i=1;i<100000;i++){
+			
+
+/*		if(line.startsWith("-1")){
+		k++;
+		for(int j=0;j<8;j++){
+			line=br.readLine();
+			pwBun.println(line);
+		}
+
+	}
+	else*/
+	
+	sp=line.split(regex);
+		
+
+	double Bu=Double.parseDouble(sp[1]);
+	String line2=sp[0]+",\t"+sp[1]+",";
+//	BB.el[nx[k]][k]=Bu;*/
+	pwBun.println(line);
+			line=br.readLine();
+		
+		//	util.pr(nx[0]+" - "+Bu);
+
+		//	if(nx[k]<5) BB.el[nx[k]][k]=nx[k];
+			
+		//	nx[k]++;
+			
+		
+/*				if(line.startsWith("-1")){
+				pwBun.println(line);
+				
+				pwBun.println("  -1");
+				break;
+			}
+			*/
+			if(line==null || line.length()==0) break;
+			
+
+}
+
+
+	
+br.close();
+fr.close();
+pwBun.close();
+
+System.out.println("Flux was written to "+fout);
+
+	}
+
+
+	catch(Exception e){System.err.println("error");	e.printStackTrace(); }
+	
+	
+
+
+
+
+}
 	
 	
 	
