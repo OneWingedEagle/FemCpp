@@ -53,7 +53,7 @@ public class MeshFormatConverter {
 		
 		//mfc.getPostHexAtlasOrig();
 		
-	//	mfc.getPostHexAtlas();
+		//mfc.getPostHexAtlas();
 		mfc.getPostHexaNeu();
 		
 		
@@ -1123,7 +1123,7 @@ public class MeshFormatConverter {
 		String s=util.getFile();
 		
 		String line;
-		int max=100000;
+		int max=1000000;
 		Vect[] coord1=new Vect[max];
 		int[][] vertNumb=new int[max][8];
 		int[] nodeMap=new int[max];
