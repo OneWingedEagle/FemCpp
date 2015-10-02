@@ -81,6 +81,7 @@ public class Node {
 		
 	}
 
+
 	
 	public void setDeformable(boolean b){
 		this.deformable=b;
@@ -247,6 +248,12 @@ public class Node {
 	
 	public void setF(Vect F){
 		this.F=F.deepCopy();
+		
+	}
+	
+	public void setF(int k, double Fu){
+		if(F==null) F=new Vect(dim);
+		this.F.el[k]=Fu;
 		
 	}
 	

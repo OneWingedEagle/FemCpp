@@ -1003,7 +1003,7 @@ public class MeshFormatConverter {
 		String s=util.getFile();
 		
 		String line;
-		int max=1000000;
+		int max=2000000;
 		Vect[] coord1=new Vect[max];
 		int[][] vertNumb=new int[max][8];
 		int[] nodeMap=new int[max];
@@ -1102,7 +1102,7 @@ public class MeshFormatConverter {
 				model.node[i].setCoord(coord1[i]);
 				}
 		
-			model.scaleFactor=1;
+			model.scaleFactor=1000;
 			
 			for(int i=1;i<=nEls;i++)
 			model.element[i].setRegion(regMap[regNumb[i]]);
@@ -1275,7 +1275,7 @@ public class MeshFormatConverter {
 		String file=util.getFile();
 		
 		String line;
-		int max=300000;
+		int max=1000000;
 
 		Vect[] coord1=new Vect[max];
 		int[][] vertNumb=new int[max][8];
@@ -1283,7 +1283,6 @@ public class MeshFormatConverter {
 
 		int[] elMap=new int[max];
 		int[] regNumb=new int[max];
-		
 		
 		int[] nRegEls=new int[1000];
 
@@ -1307,14 +1306,14 @@ public class MeshFormatConverter {
 			
 				if(line==null) break;
 		
-				if(first(line).equals("403")){
+				if(util.first(line).equals("403")){
 		
 					nnx=readNeuNodes(br,nodeMap,coord1,nnx);
 
 				}
 
 				
-				if(first(line).equals("404")){
+				if(util.first(line).equals("404")){
 
 					nex=readNeuElements(br,elMap,regNumb,nRegEls,vertNumb,nex);
 
@@ -1395,9 +1394,10 @@ public class MeshFormatConverter {
 			
 			for(int i=1;i<=model.numberOfNodes;i++){
 
-				model.node[i].setCoord(coord1[i]);
+				model.node[i].setCoord(coord1[i].times(1e-3));
 				}
-		
+			
+			
 			model.scaleFactor=1;
 						
 			for(int i=1;i<=nEls;i++){
@@ -1411,14 +1411,26 @@ public class MeshFormatConverter {
 				elMapReorderdRev[elMapReorderd[i]]=i;
 
 			}
+			
+			
+			int[] nodeMapRev=new int[nodeMap.length];
+			
+			for(int i=1;i<=model.numberOfElements;i++){
+				int[] vn=model.element[i].getVertNumb();
+				for(int j=0;j<8;j++)
+					nodeMapRev[nodeMap[i]]=vn[j];
+		
+			}
+
 	
 	
 			
 			String fout=System.getProperty("user.dir")+"\\EMSol\\Hexa.txt";
 
 			model.writeMesh(fout);
+
 			
-			String map=System.getProperty("user.dir")+"\\EMSol\\map.txt";
+			String map=System.getProperty("user.dir")+"\\EMSol\\elMap.txt";
 			
 			try {
 				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(map)));
@@ -1427,12 +1439,29 @@ public class MeshFormatConverter {
 					if(elMap[i]>0)
 						pwBun.println(i+"\t"+elMapReorderdRev[elMap[i]]);
 				
+						
 				pwBun.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}	
 			
+			map=System.getProperty("user.dir")+"\\EMSol\\nodeMap.txt";
+			
+
+			
+			try {
+				PrintWriter pwBun = new PrintWriter(new BufferedWriter(new FileWriter(map)));
+				
+				for(int i=1;i<nodeMap.length;i++)
+					if(nodeMap[i]>0)
+						pwBun.println(i+"\t"+nodeMap[i]);
+				
+				pwBun.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}	
 
 
 
@@ -1557,7 +1586,6 @@ public class MeshFormatConverter {
 		
 			}
 		
-			util.pr(nRegMax);
 			
 			for(int i=1;i<=nNodeMax;i++){
 				if(coord1[i]==null)
@@ -1775,11 +1803,15 @@ public class MeshFormatConverter {
 		int nn;
 		int nIdent=0;
 		
-		while(!first(line).equals("-1")){
+		while(!util.first(line).equals("-1")){
 		
 			nn=Integer.parseInt(sp[nIdent]);
 			
-			if(nn>nmax1) nn=nmax1+nn%nmax2;
+			if(nn>nmax1) {
+	
+				nn=nmax1+nn%nmax2;
+
+			}
 			
 			nodeMap[nn]=nNode;
 		
@@ -1819,7 +1851,7 @@ public int readNeuElements(BufferedReader br,int[] elMap,int[]regNumb,int[] nReg
 		line1=br.readLine();
 		line2=br.readLine();
 		
-		while(!first(line1).equals("-1")){
+		while(!util.first(line1).equals("-1")){
 		
 			sp1=line1.split(regex);
 			sp2=line2.split(regex);
@@ -1838,7 +1870,10 @@ public int readNeuElements(BufferedReader br,int[] elMap,int[]regNumb,int[] nReg
 					break;
 				}
 				
-				if(vertNumb1[j]>nmax1) vertNumb1[j]=nmax1+vertNumb1[j]%nmax2;
+				if(vertNumb1[j]>nmax1){
+
+					vertNumb1[j]=nmax1+vertNumb1[j]%nmax2;
+				}
 			
 			}
 			
@@ -2540,15 +2575,7 @@ public int[] reRegionGroupEls(Model model){
 	return mf.reRegionGroupEls(model);
 }
 
-public String first(String line){
-	
-	String[] sp=line.split(regex);
-	int b=0;
-	while(b<sp.length-1 &&sp[b].equals("")){b++;}
-	
-	return sp[b];
-}
-	
+
 	
 	
 }

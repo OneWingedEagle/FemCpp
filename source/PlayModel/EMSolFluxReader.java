@@ -35,23 +35,25 @@ public class EMSolFluxReader {
 		//x.getFluxAtlasOrig(3,41514,1);
 		
 		
-		String modelFile=System.getProperty("user.dir")+"\\EMSol\\fluxes\\Hexa.txt";
-		String mapFile=System.getProperty("user.dir")+"\\EMSol\\map.txt";
+		String modelFile=System.getProperty("user.dir")+"\\EMSol\\Hexa.txt";
+		String elMapFile=System.getProperty("user.dir")+"\\EMSol\\elMap.txt";
+		String nodeMapFile=System.getProperty("user.dir")+"\\EMSol\\nodeMap.txt";
 		
-		Model model=new Model(modelFile);
+		//Model model=new Model(modelFile);
 		
-		String fluxFile=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux0.txt";
+/*		String fluxFile=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux0.txt";
 		model.loadFlux(fluxFile);
 		double ss=0;
 for(int ir=3;ir<=4;ir++)
 		for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++)
 			ss+=model.element[i].getB().norm();
 
-util.pr(ss);
+util.pr(ss);*/
 		
-	//	x.getFluxAtlas(modelFile,mapFile,3,1);
-	//	x.getFluxNeu(modelFile,mapFile,3,1);
-		
+		//x.getFluxAtlas(modelFile,mapFile,3,1);
+		x.getFluxNeu(modelFile,elMapFile,3,1);
+		//x.getElemForceNeu(modelFile,elMapFile,3,1);
+	//	x.getNodalForceNeu(modelFile,nodeMapFile,3,1);
 		
 	
 	}
@@ -920,7 +922,7 @@ public Mat[] extractMagEls(String bbf,int dim,double[] time){
 		
 			while(line!=null){
 				
-				while(!line.startsWith("STEP")){
+				while(!util.first(line).startsWith("STEP")){
 				line=br.readLine();
 				if(line==null) break;
 	
@@ -934,7 +936,7 @@ public Mat[] extractMagEls(String bbf,int dim,double[] time){
 				time[stepCount]=Double.parseDouble(sp[3]);
 				
 	
-					while(!line.startsWith("EVAL")){
+				while(!util.first(line).startsWith("EVAL")){
 					line=br.readLine();
 			
 							}
@@ -1078,7 +1080,7 @@ public void getFluxAtlasOrig(String bbf,int dim, int nEmax, int nStepMax){
 	
 		while(line!=null){
 			
-			while(!line.startsWith("STEP")){
+			while(!util.first(line).startsWith("STEP")){
 			line=br.readLine();
 			if(line==null) break;
 
@@ -1091,7 +1093,7 @@ public void getFluxAtlasOrig(String bbf,int dim, int nEmax, int nStepMax){
 
 	
 
-				while(!line.startsWith("EVAL")){
+			while(!util.first(line).startsWith("EVAL")){
 				line=br.readLine();
 						}
 				
@@ -1228,7 +1230,7 @@ public void getFluxAtlas(String modelFile,String mapFile,int dim, int nStepMax){
 	
 		while(line!=null){
 			
-			while(!line.startsWith("STEP")){
+			while(!util.first(line).startsWith("STEP")){
 			line=br.readLine();
 			if(line==null) break;
 
@@ -1241,7 +1243,7 @@ public void getFluxAtlas(String modelFile,String mapFile,int dim, int nStepMax){
 
 	
 
-				while(!line.startsWith("EVAL")){
+			while(!util.first(line).startsWith("EVAL")){
 				line=br.readLine();
 						}
 				
@@ -1357,7 +1359,7 @@ public void getFluxNeu(String bbf,int dim, int numb){
 		for(int tt=0;tt<numb;tt++){
 
 			line="";
-			while(!line.startsWith("STEP")){
+			while(!util.first(line).startsWith("STEP")){
 				line=br.readLine();
 				
 				}
@@ -1478,7 +1480,7 @@ public void getFluxNeu(String modelFile,String mapFile,int dim, int nStepMax){
 	
 		while(line!=null){
 			
-			while(!line.startsWith("STEP")){
+			while(!util.first(line).startsWith("STEP")){
 			line=br.readLine();
 			if(line==null) break;
 
@@ -1495,8 +1497,8 @@ public void getFluxNeu(String modelFile,String mapFile,int dim, int nStepMax){
 		for(int k=0;k<dim;k++){
 
 			nelCount=0;
-			
-				while(!line.startsWith("BMAG")){
+		
+			while(!util.first(line).startsWith("BMAG")){
 				line=br.readLine();
 						}
 
@@ -1541,8 +1543,149 @@ public void getFluxNeu(String modelFile,String mapFile,int dim, int nStepMax){
 		
 		int nemap=map2[ne];
 
-	
 		model.element[nemap].setB(k,Bu);
+		
+	}
+		
+		
+		}
+
+
+
+		String fout=System.getProperty("user.dir")+"\\EMSol\\flux"+stepCount+".txt";
+		
+		model.writeB(fout);
+
+
+		stepCount++;
+	
+		if(stepCount==nStepMax) break;
+		
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+	
+
+
+}
+
+
+public void getElemForceNeu(String modelFile,String mapFile,int dim, int nStepMax){
+
+
+	String bbf=util.getFile();
+	
+		
+		Model model=new Model(modelFile);
+		
+		
+		double[][] map=new Loader().loadArrays(model.numberOfNodes,2,mapFile);
+		
+		int maxEl=1000000;
+		int[] map2=new int[maxEl];
+		
+		for(int i=0;i<map.length;i++){
+			map2[(int)map[i][0]]=(int)map[i][1];
+		}
+
+
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int neCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+
+
+			
+		for(int k=0;k<dim;k++){
+
+			neCount=0;
+				while(line!=null && !util.first(line).startsWith("NFOR")){
+				line=br.readLine();
+				if(line==null) break;
+						}
+			
+
+
+		int ne=0;
+		boolean elemNum=true;
+		
+		neCount=0;
+		
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+	
+		while(elemNum){
+			
+			line=br.readLine();
+	
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+
+		try{
+		ne=Integer.parseInt(sp[0]);
+
+		}
+		catch(Exception e){
+			elemNum=false;
+		}
+		
+		if(ne<1)
+			elemNum=false;
+
+	
+		if(!elemNum) continue;
+		
+		int nemap=map2[ne];
+		
+		
+		double Fu=Double.parseDouble(sp[1]);
+
+	
+		model.element[nemap].setB(k,Fu);
+		
 
 	}
 		
@@ -1551,9 +1694,157 @@ public void getFluxNeu(String modelFile,String mapFile,int dim, int nStepMax){
 
 
 
-		String fout=System.getProperty("user.dir")+"\\EMSol\\fluxes\\flux"+stepCount+".txt";
+		String fout=System.getProperty("user.dir")+"\\EMSol\\elForce"+stepCount+".txt";
+		
 		
 		model.writeB(fout);
+
+
+		stepCount++;
+	
+		if(stepCount==nStepMax) break;
+		
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+	
+
+
+}
+
+
+
+public void getNodalForceNeu(String modelFile,String mapFile,int dim, int nStepMax){
+
+
+	String bbf=util.getFile();
+	
+		
+		Model model=new Model(modelFile);
+		
+		
+		double[][] map=new Loader().loadArrays(model.numberOfNodes,2,mapFile);
+		
+		int maxEl=1000000;
+		int[] map2=new int[maxEl];
+		
+		for(int i=0;i<map.length;i++){
+			map2[(int)map[i][0]]=(int)map[i][1];
+		}
+
+
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int nnCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!line.startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+
+
+			
+		for(int k=0;k<dim;k++){
+
+
+				while(line!=null && !util.first(line).startsWith("NFOR")){
+				line=br.readLine();
+				if(line==null) break;
+						}
+			
+
+
+		int nn=0;
+		boolean nodeNum=true;
+		
+		nnCount=0;
+		
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+	
+		while(nodeNum){
+			
+			line=br.readLine();
+	
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+
+		try{
+		nn=Integer.parseInt(sp[0]);
+
+		}
+		catch(Exception e){
+			nodeNum=false;
+		}
+		
+		if(nn<1)
+			nodeNum=false;
+
+	
+		if(!nodeNum) continue;
+		
+		int nnmap=map2[nn];
+		
+		if(nnmap==0) continue;
+		
+		
+		double Fu=Double.parseDouble(sp[1]);
+
+		if(k==0) model.node[nnmap].setDeformable(true);
+	
+		model.node[nnmap].setF(k,Fu);
+		
+
+	}
+		
+		
+		}
+
+
+
+		String fout=System.getProperty("user.dir")+"\\EMSol\\nodeForce"+stepCount+".txt";
+		
+		
+		model.writeNodalField(fout,1);
 
 
 		stepCount++;

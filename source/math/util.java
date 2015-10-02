@@ -10,16 +10,15 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.Random;
 
-import javax.rmi.CORBA.Util;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
-import materialData.BHSCurve;
 
 import org.math.plot.Plot2DPanel;
 
 public class util {
 
+	static String regex="[ : ,=\\t]+";
 	
 	public util(){}
 	
@@ -969,6 +968,15 @@ public static void plot(double[][] XY){
 			return f;
 		}
 	 
+	 public static String first(String line){
+			
+			String[] sp=line.split(regex);
+			int b=0;
+			while(b<sp.length-1 &&sp[b].equals("")){b++;}
+			
+			return sp[b];
+		}
+			
 
 	
 	
