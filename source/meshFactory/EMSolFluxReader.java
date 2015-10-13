@@ -1,4 +1,4 @@
-package PlayModel;
+package meshFactory;
 
 
 import io.Loader;
@@ -51,16 +51,26 @@ for(int ir=3;ir<=4;ir++)
 util.pr(ss);*/
 		
 		//x.getFluxAtlas(modelFile,mapFile,3,1);
-		x.getFluxNeu(modelFile,elMapFile,3,1);
+	//	x.getFluxNeu(modelFile,elMapFile,3,1);
+		int ne=3326;
+		ne=25403;//full model made from 2d
+	//	ne=29120;
+	//	ne=16560;//half model made from 2d
+		
+		ne=4096;//reactor 2d
+		Vect time=new Vect(20);
+		Mat BB=x.getElemFluxNeu(3,ne,time.length,time);
+		
 		//x.getElemForceNeu(modelFile,elMapFile,3,1);
 	//	x.getNodalForceNeu(modelFile,nodeMapFile,3,1);
-		
+	//	BB.show();
+		util.plot(time,BB.getColVect(1));
 	
 	}
 	
 	public void fetchB(){
 		
-		int elNumb=26942;
+		int elNumb=3326;
 
 		
 			int nSteps=20;
@@ -1343,7 +1353,7 @@ fr.close();
 }
 
 
-public void getFluxNeu(String bbf,int dim, int numb){
+/*public void getFluxNeu(String bbf,int dim, int numb){
 
 	String regex="[ ,\\t]+";
 	try{
@@ -1439,6 +1449,136 @@ fr.close();
 
 	catch(Exception e){System.err.println("error");	e.printStackTrace(); }
 	
+
+}*/
+
+public Mat getElemFluxNeu(int dim, int elNumb,int nStepMax,Vect time){
+
+
+	
+	String bbf=util.getFile();
+	if(bbf==null || bbf.equals("") )  throw new NullPointerException("file not found.");
+/*	elNumb=25420;
+	String bbf="C:\\Works\\Problems and Models\\Large-scale Test\\classicTEAM24full\\magnetic";*/
+
+		Mat BB=new Mat(nStepMax,3);
+
+
+	
+	String regex="[ ,\\t]+";
+	try{
+
+		File f=new File(bbf);
+		FileReader fr=new FileReader(f);
+		BufferedReader br = new BufferedReader(fr);
+		String line="";
+		String[] sp=new String[15];
+	
+		
+		int stepCount=0;
+		int nelCount=0;
+
+	
+	
+		while(line!=null){
+			
+			while(!util.first(line).startsWith("STEP")){
+			line=br.readLine();
+			if(line==null) break;
+
+			}
+			sp=line.split(":");
+			time.el[stepCount]=Double.parseDouble(sp[sp.length-1]);
+	
+			line=br.readLine();
+			if(line==null) break;
+			
+			sp=line.split(regex);
+
+
+
+			
+		for(int k=0;k<dim;k++){
+
+			nelCount=0;
+		
+			while(!util.first(line).startsWith("BMAG")){
+				line=br.readLine();
+						}
+
+
+		int ne=0;
+		boolean elNum=true;
+		
+		nelCount=0;
+		
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+		line=br.readLine();
+	
+		while(elNum){
+			
+			line=br.readLine();
+	
+
+			if(line==null) break;
+			
+			sp=line.split(regex);
+			
+
+		try{
+		ne=Integer.parseInt(sp[0]);
+	
+		}
+		catch(Exception e){
+			elNum=false;
+		}
+		
+		if(ne<1)
+			elNum=false;
+
+	
+		if(!elNum) continue;
+
+		
+		double Bu=Double.parseDouble(sp[1]);
+
+		if(ne!=elNumb) continue;
+
+
+		BB.el[stepCount][k]=Bu;
+		
+	}
+		
+		
+		}
+
+
+
+		stepCount++;
+	
+		if(stepCount==nStepMax) break;
+		
+		}
+
+			
+br.close();
+fr.close();
+
+
+	
+
+	}
+
+
+	catch(Exception e){
+		System.err.println("error");	e.printStackTrace(); 
+	}
+	
+	return BB;
+
 
 }
 

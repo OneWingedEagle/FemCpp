@@ -49,6 +49,10 @@ public class MeshFactory {
 	public static void main(String[] args){
 
 		MeshFactory mf=new MeshFactory();
+		
+		mf.makeCoil4();
+
+	
 		//	mf.meshQx();
 
 /*		Loader wr=new Loader();
@@ -65,7 +69,7 @@ public class MeshFactory {
 	//mf.getNeuMeshHexa(1);
 	//	mf.getPostMeshHex();
 	//	mf.getPostMeshHexAtlas();
-		mf.getPostMeshHexAtlas();
+		//mf.getPostMeshHexAtlas();
 		
 	//	mf.fetFluxAtlas(3, 1);
 		
@@ -11770,14 +11774,533 @@ System.out.println("Flux was written to "+fout);
 
 
 	catch(Exception e){System.err.println("error");	e.printStackTrace(); }
-	
-	
-
-
-
 
 }
+
+
+private void makeCoil(){
 	
+	String coilData=System.getProperty("user.dir") + "\\unitCoil2.txt";
+//	double[][] data=new Loader().loadArrays(12,6,dat);
+	Loader loader=new Loader();
+	double[][][] dataSolid=new double[6][2][6];
+	int[][] intsSolid=new int[6][];
+	
+	double[][] dataArc=new double[5][6];
+	double[][] dataArc2=new double[5][6];
+
+	int[][] intsArc=new int[5][];
+	
+	double Wx=1;
+	double Wy=1;
+	double Wz=1;
+	double Lx=1;
+	double Ly=1;
+
+	//-------------------------
+	dataSolid[0][0][0]=Lx/2+Wx/2;
+	dataSolid[0][0][1]=Ly/2;
+	dataSolid[0][0][3]=Lx/2+Wx/2;
+	dataSolid[0][0][4]=Ly/2;
+	
+	dataSolid[0][1][0]=Wx/2;
+	dataSolid[0][1][3]=Wx/2;
+	//-------------------------
+	dataSolid[1][0][0]=Lx/2;
+	dataSolid[1][0][1]=Ly/2+Wy/2;
+	dataSolid[1][0][3]=-Lx/2;
+	dataSolid[1][0][4]=Ly/2+Wy/2;
+	
+	dataSolid[1][1][2]=Wz/2;
+	dataSolid[1][1][5]=Wz/2;
+	//-------------------------
+	dataSolid[2][0][0]=Lx/2;
+	dataSolid[2][0][1]=Ly/2+Wy/2;
+	dataSolid[2][0][3]=-Lx/2;
+	dataSolid[2][0][4]=Ly/2+Wy/2;
+	
+	dataSolid[2][1][2]=Wz/2;
+	dataSolid[2][1][5]=Wz/2;
+	//-------------------------
+	String line;
+	try {
+		BufferedReader br = new BufferedReader(new FileReader(coilData));
+		 br.readLine();
+		 br.readLine();
+		
+		 for(int i=0;i<6;i++){
+			 br.readLine();
+			 line= br.readLine();
+		dataSolid[i][0]=loader.getCSV(line);
+		 line= br.readLine();
+		dataSolid[i][1]=loader.getCSV(line);
+		if(i>3){
+			 line= br.readLine();
+			 String[] sp=line.split(regex);
+			 int indent=0;
+			 if(sp[0].equals("")) indent=1;
+				intsSolid[i]=new int[sp.length-indent];
+			 for(int k=0;k<intsSolid[i].length;k++)
+			intsSolid[i][k]=Integer.parseInt(sp[k+indent]);
+		}
+			 }
+		 
+		 br.readLine();
+		 br.readLine();
+		 br.readLine();
+		 for(int i=0;i<5;i++){
+			 line= br.readLine();
+			 line= br.readLine();
+			 dataArc[i]=loader.getCSV(line);
+		 line= br.readLine();
+		 dataArc2[i]=loader.getCSV(line);
+		if(i>3){
+	
+			 line= br.readLine();
+			 String[] sp=line.split(regex);
+			 
+			 int indent=0;
+			 if(sp[0].equals("")) indent=1;
+			 intsArc[i]=new int[sp.length-indent];
+			 for(int k=0;k<intsArc[i].length;k++)
+				 intsArc[i][k]=Integer.parseInt(sp[k+indent]);
+
+		}
+			 }
+		 
+		 br.close();
+
+	}
+	catch (Exception err) {
+		err.printStackTrace();
+	}
+	
+
+	 //double WZ=dataArc[0][4];
+	 //double r=new Vect(dataArc[0][0],dataArc[0][1],dataArc[0][2]).norm();
+		//double scalexy=.017, scalez=.017;
+		
+		double scalexy=.2, scalez=.2;
+		double[] scale=new double[3];
+		scale[0]=scalexy;
+		scale[1]=scalexy;
+		scale[2]=scalez;
+		
+		
+		 Vect translate=new Vect(0,.061,0);
+		 
+		 translate=new Vect(0,.0,.5);
+			
+		double phi=0;
+		
+		double rotAng=0;
+
+		for(int i=0;i<dataSolid.length;i++){
+				for(int j=0;j<2;j++)
+				for(int m=0;m<2;m++){
+				for(int k=0;k<3;k++){
+				
+					dataSolid[i][m][j*3+k]*=scale[k];
+					}
+
+				}
+
+		}
+		
+		for(int i=0;i<dataArc.length;i++){
+		
+				for(int k=0;k<3;k++){
+				 dataArc[i][k]*=scale[k];
+				}
+			
+				dataArc[i][3]*=scalexy;
+				
+				dataArc[i][4]*=scalez;
+				
+				dataArc[i][5]*=scalexy;
+			
+				dataArc2[i][0]=phi;
+				
+			//dataArc2[i][1]=90;
+		}
+		
+		
+	Vect coilCentre=new Vect(0,0,0);
+/*	 for(int i=0;i<dataSolid.length;i++)	
+				for(int j=0;j<0;j++)
+					for(int m=0;m<2;m++){
+					Vect v=new Vect(3);
+					for(int k=0;k<3;k++)
+						v.el[k]=dataSolid[i][m][j*3+k];
+					coilCentre=coilCentre.add(v);
+				}*/
+	 
+	// coilCentre=coilCentre.times(1.0/dataSolid.length/2) ;
+	// Vect translate=coilCentre.times(0);
+	
+
+	
+
+
+	// coilCentre.hshow();
+	 
+	double[][][] dataSolidX=new double[6][2][6];
+	double[][] dataArcX=new double[5][6];
+	double[][] dataArc2X=new double[5][6];
+	int[][] intsSolidX=new int[6][];
+	int[][] intsArcX=new int[5][];
+	
+	Mat Rx=util.rotEuler(new Vect(1,0,0),(rotAng)*PI/180);
+	Mat Ry=util.rotEuler(new Vect(0,1,0),phi*PI/180);
+	Mat Rz=util.rotEuler(new Vect(0,0,1),-0*PI/180);
+	Mat R=Rx.mul(Ry.mul(Rz));
+	
+	//double[][] data2=new double[data.length][data[0].length];
+	
+	for(int i=0;i<dataSolid.length;i++){
+		
+		for(int j=0;j<2;j++)
+			for(int m=0;m<2;m++){
+			Vect v=new Vect(3);
+			for(int k=0;k<3;k++)
+				v.el[k]=dataSolid[i][m][j*3+k];
+			Vect v2=new Vect();
+			if(j==0)
+			v2=R.mul(v.sub(coilCentre)).add(coilCentre);
+			else
+				v2=R.mul(v);
+			
+			for(int k=0;k<3;k++)
+				dataSolidX[i][m][j*3+k]=v2.el[k];
+		}
+	}
+	
+	for(int i=0;i<intsSolid.length;i++)
+		intsSolidX[i]=intsSolid[i];
+		
+	
+	
+	for(int i=0;i<dataArc.length;i++){
+		
+		for(int j=0;j<2;j++){
+			Vect v=new Vect(3);
+			for(int k=0;k<3;k++)
+				v.el[k]=dataArc[i][j*3+k];
+			Vect v2=new Vect();
+			if(j==0)
+			v2=R.mul(v);
+			else v2=v.deepCopy();
+			
+			
+			for(int k=0;k<3;k++)
+				dataArcX[i][j*3+k]=v2.el[k];
+			
+			
+		}
+		
+	
+	}
+	
+	for(int i=0;i<dataArc2.length;i++){
+		dataArc2X[i]=dataArc2[i];
+	}
+	
+	for(int i=0;i<intsArcX.length;i++){
+		intsArcX[i]=intsArc[i];
+	}
+
+	 
+	 for(int i=0;i<dataSolid.length;i++){
+			for(int j=0;j<2;j++)	
+			for(int k=0;k<3;k++)
+				 dataSolidX[i][0][j*3+k]+=translate.el[k];
+			
+
+	}
+	
+	for(int i=0;i<dataArcX.length;i++){
+	
+			
+				for(int k=0;k<3;k++)
+					dataArcX[i][k]+=translate.el[k];
+
+	}
+	
+
+	
+	//util.show(intsSolidX);
+	
+	util.pr("*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  *");
+	util.pr("*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *");
+	
+	for(int i=0;i<dataSolidX.length;i++)
+	{
+		if(i<4)
+			util.pr("GCE\t1.0");
+			else
+				util.pr("GCE-\t1.0");
+		util.hshow(dataSolidX[i][0]);
+		util.hshow(dataSolidX[i][1]);
+		if(i>3)
+			util.hshow(intsSolidX[i]);
+		
+		}
+	
+
+	
+	util.pr("*ARC    *  current(A)  *");
+	util.pr("*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*");
+	util.pr("*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *");
+	
+	for(int i=0;i<dataArc2X.length;i++)
+	{
+		if(i<4)
+			util.pr("ARC\t1.0");
+			else
+			util.pr("ARC-\t1.0");
+		util.hshow(dataArcX[i]);
+		util.hshow(dataArc2X[i]);
+		if(i>3)
+			util.hshow(intsArcX[i]);
+		
+		}
+
+}
+
+private void makeCoil4(){
+	
+	double[][][] dataSolid=new double[4][2][6];
+	int[][] intsSolid=new int[4][];
+	
+	double[][] dataArc=new double[4][6];
+	double[][] dataArc2=new double[4][4];
+
+	int[][] intsArc=new int[4][];
+	
+
+	double Lx=1;
+	double Ly=1;
+	double Wx=.1;
+	double Wy=.1;
+	double Wz=1;
+
+	//-------------------------
+	dataSolid[0][0][0]=Lx/2+Wx/2;
+	dataSolid[0][0][1]=-Ly/2;
+	dataSolid[0][0][3]=Lx/2+Wx/2;
+	dataSolid[0][0][4]=-dataSolid[0][0][1];
+	
+	dataSolid[0][1][0]=Wx/2;
+	dataSolid[0][1][5]=-Wz/2;
+	//-------------------------
+	dataSolid[1][0][0]=Lx/2;
+	dataSolid[1][0][1]=Ly/2+Wy/2;
+	dataSolid[1][0][3]=-Lx/2;
+	dataSolid[1][0][4]=Ly/2+Wy/2;
+	
+	dataSolid[1][1][1]=Wy/2;
+	dataSolid[1][1][5]=-Wz/2;
+	//-------------------------
+	dataSolid[2][0][0]=-Lx/2-Wx/2;
+	dataSolid[2][0][1]=Ly/2;
+	dataSolid[2][0][3]=	dataSolid[2][0][0];
+	dataSolid[2][0][4]=-dataSolid[2][0][1];
+	
+	dataSolid[2][1][0]=-Wx/2;
+	dataSolid[2][1][5]=-Wz/2;
+	//-------------------------
+	
+	dataSolid[3][0][0]=-Lx/2;
+	dataSolid[3][0][1]=-Ly/2-Wy/2;
+	dataSolid[3][0][3]=-dataSolid[3][0][0];
+	dataSolid[3][0][4]=dataSolid[3][0][1];
+	
+	dataSolid[3][1][1]=-Wy/2;
+	dataSolid[3][1][5]=-Wz/2;
+	//-------------------------
+	
+	//Arcs
+	//-------------------------
+	dataArc[0][0]=Lx/2;
+	dataArc[0][1]=-Ly/2;
+	dataArc[0][3]=Wx/2;
+	dataArc[0][4]=Wz;
+	dataArc[0][5]=Wx;
+	
+	dataArc2[0][0]=0;
+	dataArc2[0][1]=0;
+	dataArc2[0][2]=-90;
+	dataArc2[0][3]=0;
+	//-------------------------
+	dataArc[1][0]=Lx/2;
+	dataArc[1][1]=Ly/2;
+	dataArc[1][3]=Wx/2;
+	dataArc[1][4]=Wz;
+	dataArc[1][5]=Wx;
+	
+	dataArc2[1][0]=0;
+	dataArc2[1][1]=0;
+	dataArc2[1][2]=0;
+	dataArc2[1][3]=90;
+	//-------------------------
+	
+	dataArc[2][0]=-Lx/2;
+	dataArc[2][1]=Ly/2;
+	dataArc[2][3]=Wx/2;
+	dataArc[2][4]=Wz;
+	dataArc[2][5]=Wx;
+	
+	dataArc2[2][0]=0;
+	dataArc2[2][1]=0;
+	dataArc2[2][2]=90;
+	dataArc2[2][3]=180;
+	//-------------------------
+	
+	dataArc[3][0]=-Lx/2;
+	dataArc[3][1]=-Ly/2;
+	dataArc[3][3]=Wx/2;
+	dataArc[3][4]=Wz;
+	dataArc[3][5]=Wx;
+	
+	dataArc2[3][0]=0;
+	dataArc2[3][1]=0;
+	dataArc2[3][2]=180;
+	dataArc2[3][3]=270;
+	//-------------------------
+	
+	double rotAng=0;
+	double phi=0;
+
+	Vect translate=new Vect(0,0,0);
+
+
+		
+		
+	Vect coilCentre=new Vect(0,0,0);
+
+	 
+	double[][][] dataSolidX=new double[4][2][6];
+	double[][] dataArcX=new double[4][6];
+	double[][] dataArc2X=new double[4][4];
+	int[][] intsSolidX=new int[4][];
+	int[][] intsArcX=new int[4][];
+	
+	Mat Rx=util.rotEuler(new Vect(1,0,0),(rotAng)*PI/180);
+	Mat Ry=util.rotEuler(new Vect(0,1,0),phi*PI/180);
+	Mat Rz=util.rotEuler(new Vect(0,0,1),-0*PI/180);
+	Mat R=Rx.mul(Ry.mul(Rz));
+	
+	//double[][] data2=new double[data.length][data[0].length];
+	
+	for(int i=0;i<dataSolid.length;i++){
+		
+		for(int j=0;j<2;j++)
+			for(int m=0;m<2;m++){
+			Vect v=new Vect(3);
+			for(int k=0;k<3;k++)
+				v.el[k]=dataSolid[i][m][j*3+k];
+			Vect v2=new Vect();
+			if(j==0)
+			v2=R.mul(v.sub(coilCentre)).add(coilCentre);
+			else
+				v2=R.mul(v);
+			
+			for(int k=0;k<3;k++)
+				dataSolidX[i][m][j*3+k]=v2.el[k];
+		}
+	}
+	
+	for(int i=0;i<intsSolid.length;i++)
+		intsSolidX[i]=intsSolid[i];
+		
+	
+	
+	for(int i=0;i<dataArc.length;i++){
+		
+		for(int j=0;j<2;j++){
+			Vect v=new Vect(3);
+			for(int k=0;k<3;k++)
+				v.el[k]=dataArc[i][j*3+k];
+			Vect v2=new Vect();
+			if(j==0)
+			v2=R.mul(v);
+			else v2=v.deepCopy();
+			
+			
+			for(int k=0;k<3;k++)
+				dataArcX[i][j*3+k]=v2.el[k];
+			
+			
+		}
+		
+	
+	}
+	
+	for(int i=0;i<dataArc2.length;i++){
+		dataArc2X[i]=dataArc2[i];
+	}
+	
+	for(int i=0;i<intsArcX.length;i++){
+		intsArcX[i]=intsArc[i];
+	}
+
+	 
+	 for(int i=0;i<dataSolid.length;i++){
+			for(int j=0;j<2;j++)	
+			for(int k=0;k<3;k++)
+				 dataSolidX[i][0][j*3+k]+=translate.el[k];
+			
+
+	}
+	
+	for(int i=0;i<dataArcX.length;i++){
+	
+			
+				for(int k=0;k<3;k++)
+					dataArcX[i][k]+=translate.el[k];
+
+	}
+	
+
+	
+	//util.show(intsSolidX);
+	
+	util.pr("*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  *");
+	util.pr("*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *");
+	
+	for(int i=0;i<dataSolidX.length;i++)
+	{
+		if(i<4)
+			util.pr("GCE\t1.0");
+			else
+				util.pr("GCE-\t1.0");
+		util.hshow(dataSolidX[i][0]);
+		util.hshow(dataSolidX[i][1]);
+		if(i>3)
+			util.hshow(intsSolidX[i]);
+		
+		}
+	
+
+	
+	util.pr("*ARC    *  current(A)  *");
+	util.pr("*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*");
+	util.pr("*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *");
+	
+	for(int i=0;i<dataArc2X.length;i++)
+	{
+		if(i<4)
+			util.pr("ARC\t1.0");
+			else
+			util.pr("ARC-\t1.0");
+		util.hshow(dataArcX[i]);
+		util.hshow(dataArc2X[i]);
+		if(i>3)
+			util.hshow(intsArcX[i]);
+		
+		}
+
+}
 	
 	
 }

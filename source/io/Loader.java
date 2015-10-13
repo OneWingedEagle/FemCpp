@@ -2216,7 +2216,7 @@ public Complex[] loadFFT(String file){
 	return null;
 }	
 
-private double[] getCSV(String line){
+public double[] getCSV(String line){
 	
 	String[] sp=line.split(regex);	
 
@@ -2237,7 +2237,7 @@ private double[] getCSV(String line){
 	return v;
 }
 
-private int[] getCSInt(String line){
+public int[] getCSInt(String line){
 	String[] sp=line.split(regex);	
 	int L=sp.length;
 	int[] v=new int[L];
