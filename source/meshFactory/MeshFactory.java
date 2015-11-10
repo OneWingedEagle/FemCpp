@@ -51,7 +51,36 @@ public class MeshFactory {
 		MeshFactory mf=new MeshFactory();
 		
 		mf.makeCoil4();
-
+		
+	/*	Mat R11=util.rotMat2D(PI/8);
+		
+		Vect[] cent=new Vect[8];
+		Vect[] cv=new Vect[8];
+		
+		for(int i=0;i<8;i++){
+			 R11=util.rotMat2D(i*PI/4+PI/8);
+			cent[i]=R11.mul(new Vect(.2,0)).v3();
+			
+			cv[i]=R11.mul(new Vect(1,0)).v3();
+		}
+		
+		for(int i=0;i<8;i++){
+			cent[i].hshow();
+			cv[i].hshow();
+		}*/
+		
+		
+/*		Mat M=new Mat(4,4);
+		
+		for(int i=0;i<4;i++)
+			for(int j=0;j<=i;j++)
+				M.el[i][j]=1;
+		
+		M.show();
+		
+		Mat Mr=M.inv();
+		Mr.show();
+*/
 	
 		//	mf.meshQx();
 
@@ -12078,11 +12107,50 @@ private void makeCoil4(){
 	int[][] intsArc=new int[4][];
 	
 
-	double Lx=1;
-	double Ly=1;
-	double Wx=.1;
-	double Wy=.1;
-	double Wz=1;
+/*	double Lx=.034;
+	double Ly=.031;
+	double Wx=.024;
+	double Wy=.024;
+	double Wz=.017;*/
+	
+/*	double Lx=.035;
+	double Ly=.031;
+	double Wx=.023;
+	double Wy=.023;
+	double Wz=.016;*/
+	
+/*	double Lx=.18;
+	double Ly=.18;
+	double Wx=.05;
+	double Wy=.05;
+	double Wz=.08;*/
+	
+/*	double Lx=.018;
+	double Ly=.018;
+	double Wx=.01;
+	double Wy=.01;
+	double Wz=.01;
+	*/
+	double Lx=.024;
+	double Ly=.024;
+	double Wx=.01;
+	double Wy=.01;
+	double Wz=.01;
+	
+	
+	double current =350;
+	double rotAng=0;
+	double alpha=0;
+	double beta=00;
+
+	Vect translate=new Vect(0,-.062,0);
+
+	 translate=new Vect(.025,-.025,.058);
+
+		
+		
+	Vect coilCentre=new Vect(0,0,0);
+
 
 	//-------------------------
 	dataSolid[0][0][0]=Lx/2+Wx/2;
@@ -12127,8 +12195,8 @@ private void makeCoil4(){
 	dataArc[0][4]=Wz;
 	dataArc[0][5]=Wx;
 	
-	dataArc2[0][0]=0;
-	dataArc2[0][1]=0;
+	dataArc2[0][0]=alpha;
+	dataArc2[0][1]=beta;
 	dataArc2[0][2]=-90;
 	dataArc2[0][3]=0;
 	//-------------------------
@@ -12138,8 +12206,8 @@ private void makeCoil4(){
 	dataArc[1][4]=Wz;
 	dataArc[1][5]=Wx;
 	
-	dataArc2[1][0]=0;
-	dataArc2[1][1]=0;
+	dataArc2[1][0]=alpha;
+	dataArc2[1][1]=beta;
 	dataArc2[1][2]=0;
 	dataArc2[1][3]=90;
 	//-------------------------
@@ -12150,8 +12218,8 @@ private void makeCoil4(){
 	dataArc[2][4]=Wz;
 	dataArc[2][5]=Wx;
 	
-	dataArc2[2][0]=0;
-	dataArc2[2][1]=0;
+	dataArc2[2][0]=alpha;
+	dataArc2[2][1]=beta;
 	dataArc2[2][2]=90;
 	dataArc2[2][3]=180;
 	//-------------------------
@@ -12162,21 +12230,11 @@ private void makeCoil4(){
 	dataArc[3][4]=Wz;
 	dataArc[3][5]=Wx;
 	
-	dataArc2[3][0]=0;
-	dataArc2[3][1]=0;
+	dataArc2[3][0]=alpha;
+	dataArc2[3][1]=beta;
 	dataArc2[3][2]=180;
 	dataArc2[3][3]=270;
 	//-------------------------
-	
-	double rotAng=0;
-	double phi=0;
-
-	Vect translate=new Vect(0,0,0);
-
-
-		
-		
-	Vect coilCentre=new Vect(0,0,0);
 
 	 
 	double[][][] dataSolidX=new double[4][2][6];
@@ -12185,9 +12243,9 @@ private void makeCoil4(){
 	int[][] intsSolidX=new int[4][];
 	int[][] intsArcX=new int[4][];
 	
-	Mat Rx=util.rotEuler(new Vect(1,0,0),(rotAng)*PI/180);
-	Mat Ry=util.rotEuler(new Vect(0,1,0),phi*PI/180);
-	Mat Rz=util.rotEuler(new Vect(0,0,1),-0*PI/180);
+	Mat Rx=util.rotEuler(new Vect(1,0,0),(beta)*PI/180);
+	Mat Ry=util.rotEuler(new Vect(0,1,0),0*PI/180);
+	Mat Rz=util.rotEuler(new Vect(0,0,1),alpha*PI/180);
 	Mat R=Rx.mul(Ry.mul(Rz));
 	
 	//double[][] data2=new double[data.length][data[0].length];
@@ -12271,9 +12329,9 @@ private void makeCoil4(){
 	for(int i=0;i<dataSolidX.length;i++)
 	{
 		if(i<4)
-			util.pr("GCE\t1.0");
+			util.pr("GCE\t"+current);
 			else
-				util.pr("GCE-\t1.0");
+				util.pr("GCE-\t"+current);
 		util.hshow(dataSolidX[i][0]);
 		util.hshow(dataSolidX[i][1]);
 		if(i>3)
@@ -12290,9 +12348,9 @@ private void makeCoil4(){
 	for(int i=0;i<dataArc2X.length;i++)
 	{
 		if(i<4)
-			util.pr("ARC\t1.0");
+			util.pr("ARC\t"+current);
 			else
-			util.pr("ARC-\t1.0");
+				util.pr("ARC-\t"+current);
 		util.hshow(dataArcX[i]);
 		util.hshow(dataArc2X[i]);
 		if(i>3)

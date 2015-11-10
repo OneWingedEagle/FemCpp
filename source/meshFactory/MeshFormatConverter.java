@@ -9,11 +9,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1391,12 +1391,15 @@ public class MeshFormatConverter {
 			}
 			
 
+			double unit=1;
 			
 			for(int i=1;i<=model.numberOfNodes;i++){
 
-				model.node[i].setCoord(coord1[i].times(1e-3));
+				model.node[i].setCoord(coord1[i].times(unit));
 				}
 			
+			
+		
 			
 			model.scaleFactor=1;
 						

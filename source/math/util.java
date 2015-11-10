@@ -1,17 +1,26 @@
 package math;
 
 import static java.lang.Math.*;
-
 import java.awt.Color;
 import java.awt.FileDialog;
 import java.awt.Font;
 import java.awt.Frame;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.Random;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+
+
+
+
+
 
 
 import org.math.plot.Plot2DPanel;
@@ -976,7 +985,38 @@ public static void plot(double[][] XY){
 			
 			return sp[b];
 		}
-			
+		
+
+
+	   public static File copyFileFromWeb(String address, String filePath){
+	     byte[] buffer = new byte[1024];
+	     int bytesRead;
+	  try{
+	     URL url = new URL(address);
+	     util.pr(url.toString());
+	     BufferedInputStream inputStream = null;
+	     BufferedOutputStream outputStream = null;
+	     URLConnection connection = url.openConnection();
+	     // If you need to use a proxy for your connection, the URL class has another openConnection method.
+	     // For example, to connect to my local SOCKS proxy I can use:
+	     // url.openConnection(new Proxy(Proxy.Type.SOCKS, newInetSocketAddress("localhost", 5555)));
+	     inputStream = new BufferedInputStream(connection.getInputStream());
+	     File f = new File(filePath);
+	     util.pr(f.toString());
+	     outputStream = new BufferedOutputStream(new FileOutputStream(f));
+	     while ((bytesRead = inputStream.read(buffer)) != -1) {
+	       outputStream.write(buffer, 0, bytesRead);
+	     }
+	     inputStream.close();
+	     outputStream.close();
+	     return f;
+	  }catch(Exception e){
+		  e.printStackTrace();
+		  return null;
+	  }
+	  
+	   }
+	 
 
 	
 	
