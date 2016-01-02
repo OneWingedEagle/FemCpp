@@ -67,7 +67,7 @@ public class FEMsolver {
 			
 		}
 		if(model.analysisMode==1|| model.analysisMode==2){
-			TransientNonlinearMagSolver solver= new TransientNonlinearMagSolver();
+			TransientNolinearMagSolver solver= new TransientNolinearMagSolver();
 			x= solver.solve(model, x,true,step);
 		}
 	
