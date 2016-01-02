@@ -56,7 +56,7 @@ public class FEMsolver {
 		return x;
 	}
 	
-	public Vect solveMagNonlin(Model model, int step,Vect x){
+	public Vect solveMagNonlin(Model model,Vect x, boolean echo,int step){
 		
 	
 		
@@ -421,6 +421,9 @@ public class FEMsolver {
 
 	public void solveCoupled(Model model, Vect x){
 		double t1=System.currentTimeMillis();
+		
+		NolninearMagSolver solver =new NolninearMagSolver();
+		
 		boolean twoloops=false;
 		model.setStiffMat();
 		model.solver.terminate(false);
@@ -475,7 +478,7 @@ public class FEMsolver {
 			if(twoloops){
 
 				B1=model.getAllB();
-				x=solveNonLinear(model,x,true,cascadeIter);
+				x=solver.solve(model,x,true,cascadeIter);
 				B2=model.getAllB();
 				err=model.getDiffMax(B1,B2);
 			}

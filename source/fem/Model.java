@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import femSolver.FEMsolver;
 import io.Loader;
 import io.Writer;
 import materialData.BHCurve;
@@ -2107,7 +2108,7 @@ Je.hshow();
 
 	public Vect solveNonLinear(Vect x, boolean b,int step){
 
-		return femSolver.solveNonLinear(this,x, b,step);
+		return femSolver.solveMagNonlin(this,x, b,step);
 	}
 
 

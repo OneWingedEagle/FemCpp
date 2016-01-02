@@ -20,19 +20,19 @@ public class ACMagSolver {
 		Vect x=new Vect(model.numberOfUnknowns);
 
 		model.solver.terminate(false);
+		
+
+		model.magMat.setRHS(model);
+
+		
 
 		model.setMagMat();
 
+	
+
 		
-
-
-		//=== known values go to right hand side 
-
-
-		model.RHS=model.RHS.sub(model.HkAk);
-		
-		//time harmonic iccog
-
+		model.freq=50;
+	
 						double  w=2*Math.PI*model.freq;
 
 						SpMatComp Ks=new SpMatComp(model.Hs,model.Ss.timesNew(w));

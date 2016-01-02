@@ -9,10 +9,8 @@ import math.MatSolver;
 import math.SpMat;
 import math.SpMatComp;
 import math.SpVect;
-import math.SpVectComp;
 import math.Vect;
-import math.VectComp;
-import math.util;
+
 
 public class TransientNolinearMagSolver {
 

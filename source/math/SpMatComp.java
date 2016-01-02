@@ -71,7 +71,6 @@ public class SpMatComp  {
 	}
 	
 	public SpMatComp(SpMat Mr, SpMat Mm){
-		
 
 		nRow=Mr.nRow;
 		row=new SpVectComp[nRow];
@@ -84,7 +83,7 @@ public class SpMatComp  {
 					double um=0;
 					for(int k=0;k<Mm.row[i].nzLength;k++){
 						if(Mm.row[i].index[k]==Mr.row[i].index[j]){
-							um=Mm.row[i].el[j];
+							um=Mm.row[i].el[k];
 							break;
 						}
 					}
