@@ -163,6 +163,7 @@ public class Element {
 	}
 	
 	public double getSigmaZ(){
+		
 		if(isConductor)
 		return this.sigma.el[2];
 		else  return 0.0;
@@ -364,7 +365,7 @@ public class Element {
 	}
 	
 	public boolean isConductor(){
-		return (this.isConductor || this.hasJ);
+		return (this.isConductor);
 	}
 	
 	public void setConductor(boolean b){

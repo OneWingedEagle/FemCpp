@@ -15,9 +15,9 @@ import math.util;
 
 public class FEMsolver {
 
-
+	boolean relaxedNR=true;
+	int totalNonlinIter;
 	double coilInduct=0e-2;
-	boolean dg=false;
 	///  important  axisym has prob with nonlinear even noncoupled 
 	//   crank nonlinear problem
 
@@ -33,8 +33,11 @@ public class FEMsolver {
 
 
 	public Vect solveMagLin(Model model, int step){
+		LinearMagSolver ls=new LinearMagSolver();
+		
+		return ls.solve(model,  step);
 
-		this.stpNumb=step;
+/*		this.stpNumb=step;
 		
 		if(!usePrev)
 			step=0;
@@ -50,22 +53,23 @@ public class FEMsolver {
 		//=== known values go to right hand side 
 
 	
-		model.b=model.b.sub(model.HkAk);
+		model.RHS=model.RHS.sub(model.HkAk);
 
 		if(model.analysisMode==0) {
 
-			Vect Ci=model.Hs.scale(model.b);
+			Vect Ci=model.Hs.scale(model.RHS);
 
 			L=model.Hs.ichol(1.0);
 			
 
-			if(model.b.abs().max()>1e-8){
+			if(model.RHS.abs().max()>1e-8){
 
 				if(!usePrev || model.xp==null){
-					x=model.solver.ICCG(model.Hs,L, model.b,model.errMax,model.iterMax);
+					x=model.solver.ICCG(model.Hs,L, model.RHS,model.errCGmax,model.iterMax);
 				}
 				else{
-					x=model.solver.err0ICCG(model.Hs,L, model.b,1e-1*model.errMax,model.iterMax,model.xp);	
+					x=model.solver.ICCG(model.Hs,L, model.RHS,model.errCGmax,model.iterMax,model.xp);
+				//	x=model.solver.err0ICCG(model.Hs,L, model.RHS,1e-1*model.errCGmax,model.iterMax,model.xp);	
 
 				}
 			}
@@ -101,27 +105,27 @@ public class FEMsolver {
 				Vect v1=model.getUnknownAp();
 
 
-				model.b=model.b.add(model.Ss.smul(v1));
+				model.RHS=model.RHS.add(model.Ss.smul(v1));
 
 
 
 			}
 
 
-			Vect Ci=model.Hs.scale(model.b);
+			Vect Ci=model.Hs.scale(model.RHS);
 
 
 			L=model.Hs.ichol();
 
 
 
-			if(model.b.abs().max()>1e-8){
+			if(model.RHS.abs().max()>1e-8){
 
 				if(model.xp==null){
-					x=model.solver.ICCG(model.Hs,L, model.b,model.errMax,model.iterMax);
+					x=model.solver.ICCG(model.Hs,L, model.RHS,model.errCGmax,model.iterMax);
 				}
 				else{
-					x=model.solver.err0ICCG(model.Hs,L, model.b,1e-1*model.errMax,model.iterMax,model.xp);	
+					x=model.solver.err0ICCG(model.Hs,L, model.RHS,1e-1*model.errCGmax,model.iterMax,model.xp);	
 				}
 			}
 
@@ -156,7 +160,7 @@ public class FEMsolver {
 
 			Ks.addSmaller(model.Ss);
 
-			Vect bb1=model.b.deepCopy();
+			Vect bb1=model.RHS.deepCopy();
 
 			model.Ci=Ks.scale(bb1);
 
@@ -166,7 +170,7 @@ public class FEMsolver {
 
 
 				if(bb1.norm()>1e-8){
-					x=model.solver.ICCG(Ks,L, bb1,model.errMax,model.iterMax);
+					x=model.solver.ICCG(Ks,L, bb1,model.errCGmax,model.iterMax);
 				}
 				else
 					x=new Vect(bb1.length);
@@ -190,9 +194,9 @@ public class FEMsolver {
 
 			Vect bU1=new Vect();
 			if(model.bT==null)
-				bU1=model.b.add(bp);
+				bU1=model.RHS.add(bp);
 			else{
-				bU1=model.b.add(model.bT).times(.5).add(bp);
+				bU1=model.RHS.add(model.bT).times(.5).add(bp);
 
 			}
 
@@ -204,10 +208,10 @@ public class FEMsolver {
 			L=Ks.ichol();
 
 			if(model.xp==null){
-				x=model.solver.ICCG(Ks,L, bU1,model.errMax,model.iterMax);
+				x=model.solver.ICCG(Ks,L, bU1,model.errCGmax,model.iterMax);
 			}
 			else{
-				x=model.solver.err0ICCG(Ks,L,bU1,1e-1*model.errMax,model.iterMax,model.xp);	
+				x=model.solver.err0ICCG(Ks,L,bU1,1e-1*model.errCGmax,model.iterMax,model.xp);	
 
 			}
 
@@ -233,7 +237,7 @@ public class FEMsolver {
 
 			SpMat  Ks=model.Hs.deepCopy();
 
-			Vect bb1=model.b.deepCopy();
+			Vect bb1=model.RHS.deepCopy();
 
 			double beta=.25;
 			double gama=.5;
@@ -260,7 +264,7 @@ public class FEMsolver {
 
 
 				if(bb1.norm()>1e-8){
-					x=model.solver.ICCG(Ks,L, bb1,model.errMax,model.iterMax);
+					x=model.solver.ICCG(Ks,L, bb1,model.errCGmax,model.iterMax);
 				}
 				else
 					x=new Vect(bb1.length);
@@ -283,7 +287,7 @@ public class FEMsolver {
 
 			Vect bp=model.Ss.smul(model.up.times(b4).add(model.ud.times(-b5)).add(model.udd.times(-b6)));
 
-			Vect bU1=model.b.add(bp);
+			Vect bU1=model.RHS.add(bp);
 
 
 			model.Ci=Ks.scale(bU1);
@@ -291,10 +295,10 @@ public class FEMsolver {
 			L=Ks.ichol();
 
 			if(model.xp==null){
-				x=model.solver.ICCG(Ks,L, bU1,model.errMax,model.iterMax);
+				x=model.solver.ICCG(Ks,L, bU1,model.errCGmax,model.iterMax);
 			}
 			else{
-				x=model.solver.err0ICCG(Ks,L,bU1,1e-1*model.errMax,model.iterMax,model.xp);	
+				x=model.solver.err0ICCG(Ks,L,bU1,1e-1*model.errCGmax,model.iterMax,model.xp);	
 
 			}
 			model.xp=x.deepCopy();
@@ -333,7 +337,7 @@ public class FEMsolver {
 						Ks.setSymHerm(1);
 
 						
-						VectComp  v=new VectComp(model.b);
+						VectComp  v=new VectComp(model.RHS);
 						int m=v.length;
 							model.Ci=Ks.scale(v);
 
@@ -344,14 +348,14 @@ public class FEMsolver {
 						//	Ls.show();
 							//  problem with precond
 							
-						/*	Ls=Ls.timesNew(0);
-							Ls.addToDiag(new VectComp(new Vect().ones(m)));*/
+							Ls=Ls.timesNew(0);
+							Ls.addToDiag(new VectComp(new Vect().ones(m)));
 						
 							VectComp xc;
 
 							if(v.norm()>1e-8){
-								xc=model.solver.COICCG(Ks,Ls,v,model.errMax,model.iterMax,new VectComp(m),1,true);
-								//xc=model.solver.COCG(Ks,Ls,v,model.errMax,model.iterMax,new VectComp(m),1,true);
+								xc=model.solver.COICCG(Ks,Ls,v,model.errCGmax,model.iterMax,new VectComp(m),1,true);
+								//xc=model.solver.COCG(Ks,Ls,v,model.errCGmax,model.iterMax,new VectComp(m),1,true);
 							}
 							else
 								xc=new VectComp(m);
@@ -396,7 +400,7 @@ public class FEMsolver {
 				v2.el[j]=v1.el[j];
 
 			
-		model.b=model.b.add(model.Ss.smul(v2));
+		model.RHS=model.RHS.add(model.Ss.smul(v2));
 
 
 			for(int i=0;i<nUnCur;i++){
@@ -415,23 +419,23 @@ public class FEMsolver {
 	
 					
 								if(model.HpAp!=null){
-					model.b=model.b.sub(model.HpAp.times(1-cf));
+					model.RHS=model.RHS.sub(model.HpAp.times(1-cf));
 						}
 				
-			model.b.el[model.Hs.nRow-nUnCur+i-nNeut]=cf*(model.lastRows[i].dot(v2)
+			model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=cf*(model.lastRows[i].dot(v2)
 				+(((1-cf)*model.region[nr].getWireRes()*model.region[nr].current
 				+cf*model.vNeutral
 				-(cf*model.region[nr].terminalVoltage+(1-cf)*vp))*model.dt
 				-this.coilInduct*model.region[nr].current)/model.height);
 		
 				
-			model.b=model.b.sub(model.lastRows[i].times((1-cf)*model.region[nr].current).vectForm());
+			model.RHS=model.RHS.sub(model.lastRows[i].times((1-cf)*model.region[nr].current).vectForm());
 			
 				}
 				else{					
 		
 				
-					model.b.el[model.Hs.nRow-nUnCur+i-nNeut]=model.lastRows[i].dot(v2)
+					model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=model.lastRows[i].dot(v2)
 					-model.region[nr].terminalVoltage*model.dt/model.height
 					-this.coilInduct*model.region[nr].current/model.height;
 					
@@ -443,18 +447,18 @@ public class FEMsolver {
 			
 			
 
-			Vect Ci=Hs.scale(model.b);
+			Vect Ci=Hs.scale(model.RHS);
 
 			L=Hs.ichol();
 
 
-			if(model.b.abs().max()>1e-8){
+			if(model.RHS.abs().max()>1e-8){
 
 				if(!usePrev  || model.xp==null){
-					x=model.solver.ICCG(Hs,L, model.b,model.errMax,model.iterMax);
+					x=model.solver.ICCG(Hs,L, model.RHS,model.errCGmax,model.iterMax);
 				}
 				else{
-					x=model.solver.err0ICCG(Hs,L, model.b,1e-3*model.errMax,model.iterMax,model.xp);	
+					x=model.solver.err0ICCG(Hs,L, model.RHS,1e-3*model.errCGmax,model.iterMax,model.xp);	
 
 				}
 		
@@ -525,7 +529,7 @@ public class FEMsolver {
 			int Nun=Ks.nRow;
 			VectComp b=new VectComp(Nun);
 			for(int i=0;i<Nun;i++){
-				b.el[i]=new Complex(model.b.el[i],0);
+				b.el[i]=new Complex(model.RHS.el[i],0);
 			}
 			
 			
@@ -541,8 +545,8 @@ public class FEMsolver {
 		
 		
 
-				xc=model.solver.COICCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nun),1,true);
-				//xc=model.solver.COCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nn),1,true);
+				xc=model.solver.COICCG(Ks,Ls,b,model.errCGmax,model.iterMax,new VectComp(Nun),1,true);
+				//xc=model.solver.COCG(Ks,Ls,b,model.errCGmax,model.iterMax,new VectComp(Nn),1,true);
 	
 			
 			xc.timesVoid(model.Ci);	
@@ -565,81 +569,19 @@ public class FEMsolver {
 	
 		
 		}
-			
-			/*			
-						
-//time harmonic old
-			double  w=2*Math.PI*model.freq;
-
-			SpMat Ks=model.Hs.deepCopy();
-	
-
-			Ks.augh(new SpMat(Ks.nRow,Ks.nRow,0));
-
-			SpMat Rs=model.Ss.timesNew(-w).reflect(model.nEdEd);
-
-			Rs.augh(model.Hs.timesNew(-1));
-//Rs.plot();
-			Ks=Ks.augv(Rs);
 
 
-			int m=model.b.length;
-
-			Vect v=model.b.aug(new Vect(m));
-
-			boolean lu=false;
-
-			if(lu){
-
-				Mat A=Ks.matForm(true);
-
-				A.lu();
-				x=new MatSolver().solvelu(A,v);
-
-			}
-
-			else{
-
-				model.Ci=Ks.scale(v);
-
-				L=Ks.ichol();
-
-				if(v.norm()>1e-8){
-					x=model.solver.ICCG(Ks,L,v,model.errMax,model.iterMax);
-
-					//x=model.solver.gaussIter(Ks, v, model.errMax,2*model.iterMax);
-				}
-				else
-					x=new Vect(2*m);
-
-				x.timesVoid(model.Ci);	
-
-			}
-
-			Vect vr=new Vect(m);
-			Vect vm=new Vect(m);
-			for(int i=0;i<m;i++){
-				vr.el[i]=x.el[i];
-				vm.el[i]=x.el[i+m];
-			}
-
-			//vm.show();
-
-			
-			model.setSolution(vr);	
-
-			model.setB();
-
-			return vr;
-}
-*/
-
-		return null;
+		return null;*/
 
 	}
 
 	public Vect solveNonLinear(Model model,Vect x,boolean echo,int step){
-
+		
+		NolninearMagSolver nls=new NolninearMagSolver();
+		return nls.solve(model, x, echo, step);
+		/*
+		if(relaxedNR)
+		return solveNonLinearRelaxed( model, x, echo, step);
 
 		DecimalFormat dfB=new DecimalFormat("0.0000");
 		DecimalFormat dfe=new DecimalFormat("0.0E00");
@@ -647,7 +589,8 @@ public class FEMsolver {
 
 		int iterMax=model.iterMax;
 		int nonLinIterMax=model.nonLinIterMax;
-		double errMax=1e-2;
+		double errMax=model.errNRmax;
+		double res=0;
 		boolean fluxErr=true;
 		Vect Ci;
 		SpMat L;
@@ -664,17 +607,20 @@ public class FEMsolver {
 
 
 		for( nonLinIter=0; err>errMax && nonLinIter<nonLinIterMax;nonLinIter++)
-
 			
 		{
-			
+			totalNonlinIter++;
 
 			if(echo)
 			{
 				System.out.println();
+				System.out.println("-----------------------------------------------------");
+				System.out.println(" Nonlinear Iteration: "+nonLinIter+
+						"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(err));
+		//		System.out.println("Flux    error: "+dfe.format(err));
+				System.out.println("-----------------------------------------------------");
 				System.out.println();
-				System.out.println("    nonlinear Iteration: "+nonLinIter+"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(err));
-				System.out.println();
+
 			}
 
 			SpMat Ks=new SpMat();
@@ -691,7 +637,7 @@ public class FEMsolver {
 			{
 
 
-				if(model.eddyTimeIntegMode==0/* || step==0*/)
+				if(model.eddyTimeIntegMode==0 || step==0)
 				{
 
 
@@ -704,7 +650,7 @@ public class FEMsolver {
 					
 				
 
-					b=model.b.sub(model.HkAk).add(model.Ss.smul(dv));
+					b=model.RHS.sub(model.HkAk).add(model.Ss.smul(dv));
 				}
 
 				else if(model.eddyTimeIntegMode==1){
@@ -714,7 +660,7 @@ public class FEMsolver {
 					Vect vi=model.getUnknownA();
 			
 
-					b=model.b.add(model.bT).sub(model.HkAk.add(model.HpAp).times(0.5)).add(model.Ss.smul(vp.sub(vi)));
+					b=model.RHS.add(model.bT).sub(model.HkAk.add(model.HpAp).times(0.5)).add(model.Ss.smul(vp.sub(vi)));
 
 					Ks=model.Hs.timesNew(.5).addNew(model.Ss);
 
@@ -747,7 +693,7 @@ public class FEMsolver {
 
 					dv=vp2.sub(vk2);
 
-					model.b=model.b.add(model.Ss.smul(dv));
+					model.RHS=model.RHS.add(model.Ss.smul(dv));
 
 
 					
@@ -767,23 +713,23 @@ public class FEMsolver {
 							double cf=this.theta;
 							
 							if(model.HpAp!=null){
-								model.b=model.b.sub(model.HpAp.times(1-cf));
+								model.RHS=model.RHS.sub(model.HpAp.times(1-cf));
 									}
 			
 					
-						model.b.el[model.Hs.nRow-nUnCur+i-nNeut]=cf*(model.lastRows[i].dot(vp2)
+						model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=cf*(model.lastRows[i].dot(vp2)
 						+(((1-cf)*model.region[nr].getWireRes()*ip
 								+(1-cf)*model.vNeutral
 								-(cf*model.region[nr].terminalVoltage+(1-cf)*vprev)))*model.dt			
 						-this.coilInduct*ip)/model.height;
 											
 
-						model.b=model.b.sub(model.lastRows[i].times((1-cf)*model.region[nr].currentp).vectForm());
+						model.RHS=model.RHS.sub(model.lastRows[i].times((1-cf)*model.region[nr].currentp).vectForm());
 
 						}
 						else{
 				
-							model.b.el[model.Hs.nRow-nUnCur+i-nNeut]=model.lastRows[i].dot(vp2)
+							model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=model.lastRows[i].dot(vp2)
 							+((model.vNeutral-model.region[nr].terminalVoltage)*model.dt
 							-this.coilInduct*ip)/model.height;
 
@@ -791,8 +737,8 @@ public class FEMsolver {
 
 					}
 
-					SpMat Q=new SpMat(model.b.length,model.b.length);
-					for(int i=0;i<model.b.length;i++){
+					SpMat Q=new SpMat(model.RHS.length,model.RHS.length);
+					for(int i=0;i<model.RHS.length;i++){
 						if(i<vk.length)
 							Q.row[i]=null;
 						else
@@ -815,17 +761,17 @@ public class FEMsolver {
 					
 			
 			
-					model.b=model.b.sub(Q.smul(v3));
+					model.RHS=model.RHS.sub(Q.smul(v3));
 
 
 					if(model.eddyTimeIntegMode==-3){
 				
-						b=model.b.sub(model.HkAk.times((this.theta)));
+						b=model.RHS.sub(model.HkAk.times((this.theta)));
 
 					}
 					else{
 
-						b=model.b.sub(model.HkAk);
+						b=model.RHS.sub(model.HkAk);
 						
 					}
 			
@@ -838,17 +784,18 @@ public class FEMsolver {
 			{
 				Ks=model.Hs.deepCopy();
 
-				b=model.b.sub(model.HkAk);
+				b=model.RHS.sub(model.HkAk);
 			}
 
 
+			res=b.norm();
 
 
 			Ci=Ks.scale(b);
 			L=Ks.ichol();
 
 			if(b.abs().max()>1e-6)
-				dA=model.solver.err0ICCG(Ks,L,b,1e-3*model.errMax,iterMax);	
+				dA=model.solver.err0ICCG(Ks,L,b,model.errNRmax*model.errCGmax,iterMax);	
 
 			if(model.solver.terminate) break;
 
@@ -861,9 +808,9 @@ public class FEMsolver {
 			int nNeut=model.nNeutral;
 
 			// very important 
-		/*	for(int k=0;k<nUnCur+nNeut;k++){
+			for(int k=0;k<nUnCur+nNeut;k++){
 			dA.el[dA.length-1-k]=dA.el[dA.length-1-k];
-			}*/
+			}
 			
 		//	dA.show();
 
@@ -923,7 +870,7 @@ public class FEMsolver {
 			else{
 
 				if(nonLinIter==1){
-					err0=model.b.norm();
+					err0=model.RHS.norm();
 					if(err0<errMax) err0=1;
 				}
 				err=errMax/1e-6*dA.norm()/err0;
@@ -948,10 +895,368 @@ public class FEMsolver {
 		model.HpAp=model.HkAk.deepCopy();
 
 		System.out.println();
-
-		System.out.println("    nonlinear Iteration: "+nonLinIter+"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(err));
-
+		System.out.println("-----------------------------------------------------");
+		System.out.println(" Nonlinear Iteration: "+nonLinIter+
+				"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(err));
+	//	System.out.println("Flux    error: "+dfe.format(errFlux));
+		System.out.println("-----------------------------------------------------");
 		System.out.println();
+		
+		System.out.println();
+		System.out.println("=======================================================");
+		System.out.println("Total number of ICCG iterations: "+model.solver.totalIter);
+		System.out.println("Total number of Nonlinear iterations: "+totalNonlinIter);
+		
+		System.out.println();
+	
+		System.out.println(" Final NR residual: "+res);
+		
+		System.out.println("=======================================================");
+		System.out.println();
+
+
+		return x;
+
+	*/}
+	
+	public Vect solveNonLinearRelaxed(Model model,Vect x,boolean echo,int step){
+
+
+		DecimalFormat dfB=new DecimalFormat("0.0000");
+		DecimalFormat dfe=new DecimalFormat("0.0E00");
+
+
+		int iterMax=model.iterMax;
+		int nonLinIterMax=model.nonLinIterMax;
+
+		Vect Ci;
+		SpMat L;
+		Vect dA=new Vect(model.numberOfUnknowns);
+
+		Vect[] B1,B2;
+
+		model.solver.terminate(false);
+
+		double errNR=1,resNR=0,resNR0=1;
+		double errFlux=1;
+
+		int nonLinIter=0;
+		
+
+
+		for( nonLinIter=0; errNR>model.errNRmax && nonLinIter<nonLinIterMax;nonLinIter++)
+
+			
+		{
+			totalNonlinIter++;
+
+			if(echo)
+			{
+				System.out.println();
+				System.out.println();
+				System.out.println("    nonlinear Iteration: "+nonLinIter+
+						"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(errNR));
+				System.out.println(" Flux    error: "+dfe.format(errFlux));
+				System.out.println();
+			}
+
+			SpMat Ks=new SpMat();
+
+			Vect b=new Vect();
+
+
+			model.setMagMat();
+			
+	
+
+
+
+			Vect dv=new Vect();
+
+			if(model.analysisMode>0)
+			{
+
+
+				if(model.eddyTimeIntegMode==0/* || step==0*/)
+				{
+
+
+					Ks=model.Hs.addNew(model.Ss);
+					Vect vp=model.getUnknownAp();
+
+					Vect vi=model.getUnknownA();
+
+					dv=vp.sub(vi);
+					
+				
+
+					b=model.RHS.sub(model.HkAk).add(model.Ss.smul(dv));
+				}
+
+				else if(model.eddyTimeIntegMode==1){
+
+//crank
+					Vect vp=model.getUnknownAp();
+					Vect vi=model.getUnknownA();
+			
+
+					b=model.RHS.add(model.bT).sub(model.HkAk.add(model.HpAp).times(0.5)).add(model.Ss.smul(vp.sub(vi)));
+
+					Ks=model.Hs.timesNew(.5).addNew(model.Ss);
+
+				}
+
+				else  if(model.eddyTimeIntegMode<=-2){
+
+
+					 Ks=getCircuitHs(model,step);
+
+
+					int nNeut=model.nNeutral;
+					int nUnCur=model.numberOfUnknownCurrents;
+
+
+					Vect vk=model.getUnknownA();
+
+					Vect vk2=new Vect(model.numberOfUnknowns);
+
+					for(int j=0;j<vk.length;j++)
+						vk2.el[j]=vk.el[j];
+
+					
+					Vect vp=model.getUnknownAp();
+
+					Vect vp2=new Vect(model.numberOfUnknowns);
+
+					for(int j=0;j<vp.length;j++)
+						vp2.el[j]=vp.el[j];
+
+					dv=vp2.sub(vk2);
+
+					model.RHS=model.RHS.add(model.Ss.smul(dv));
+
+
+					
+					for(int i=0;i<nUnCur;i++){
+						int nr=model.unCurRegNumb[i];
+
+						double vprev=model.region[nr].terminalVoltagep;
+						if(	this.stpNumb==0)
+							vprev=model.region[nr].terminalVoltage;
+						
+				
+						double ip=model.region[nr].currentp;
+
+		
+						if(model.eddyTimeIntegMode==-3){
+														
+							double cf=this.theta;
+							
+							if(model.HpAp!=null){
+								model.RHS=model.RHS.sub(model.HpAp.times(1-cf));
+									}
+			
+					
+						model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=cf*(model.lastRows[i].dot(vp2)
+						+(((1-cf)*model.region[nr].getWireRes()*ip
+								+(1-cf)*model.vNeutral
+								-(cf*model.region[nr].terminalVoltage+(1-cf)*vprev)))*model.dt			
+						-this.coilInduct*ip)/model.height;
+											
+
+						model.RHS=model.RHS.sub(model.lastRows[i].times((1-cf)*model.region[nr].currentp).vectForm());
+
+						}
+						else{
+				
+							model.RHS.el[model.Hs.nRow-nUnCur+i-nNeut]=model.lastRows[i].dot(vp2)
+							+((model.vNeutral-model.region[nr].terminalVoltage)*model.dt
+							-this.coilInduct*ip)/model.height;
+
+						}
+
+					}
+
+					SpMat Q=new SpMat(model.RHS.length,model.RHS.length);
+					for(int i=0;i<model.RHS.length;i++){
+						if(i<vk.length)
+							Q.row[i]=null;
+						else
+							Q.row[i]=Ks.row[i].deepCopy();
+					}
+
+			
+					Vect v3=new Vect(model.numberOfUnknowns);
+					for(int j=0;j<vk.length;j++){
+						v3.el[j]=vk.el[j];
+					}
+
+					for(int i=0;i<nUnCur;i++){
+						int nr=model.unCurRegNumb[i];
+						v3.el[vk.length+i]=model.region[nr].current;
+
+					}
+					if(model.nNeutral>0)
+					v3.el[vk.length+nUnCur]=model.vNeutral;
+					
+			
+			
+					model.RHS=model.RHS.sub(Q.smul(v3));
+
+
+					if(model.eddyTimeIntegMode==-3){
+				
+						b=model.RHS.sub(model.HkAk.times((this.theta)));
+
+					}
+					else{
+
+						b=model.RHS.sub(model.HkAk);
+						
+					}
+			
+
+				}
+			}
+
+
+			else
+			{
+				Ks=model.Hs.deepCopy();
+
+				b=model.RHS.sub(model.HkAk);
+			}
+
+
+			if(nonLinIter==0){
+				resNR0=b.norm();
+				model.solver.resRef=resNR0;
+			}
+			
+			resNR=b.norm();
+			
+		
+			errNR=resNR/resNR0;
+
+
+
+			Ci=Ks.scale(b);
+			L=Ks.ichol();
+
+			//if(b.abs().max()>1e-6){
+				//dA=model.solver.err0ICCG(Ks,L,b,1e-3*model.errCGmax,iterMax);	
+				dA=model.solver.ICCG(Ks,L, b,model.errCGmax,iterMax);
+
+			//}
+
+			if(model.solver.terminate) break;
+
+
+			dA.timesVoid(Ci);
+			
+			
+
+			int nUnCur=model.numberOfUnknownCurrents;
+			int nNeut=model.nNeutral;
+
+			// very important 
+		/*	for(int k=0;k<nUnCur+nNeut;k++){
+			dA.el[dA.length-1-k]=dA.el[dA.length-1-k];
+			}*/
+			
+		//	dA.show();
+
+			x=x.add(dA);
+			
+		//x=x.times(.5).add(x.add(dA).times(.5));
+
+			model.up=x.deepCopy();
+
+
+			if(model.eddyTimeIntegMode<=-2){
+
+				
+				Vect vk=model.getUnknownA();
+
+				Vect vk2=new Vect(model.numberOfUnknowns);
+
+				for(int j=0;j<vk.length;j++)
+					vk2.el[j]=vk.el[j];
+
+				Vect vp=model.getUnknownAp();
+
+				Vect vp2=new Vect(model.numberOfUnknowns);
+
+				for(int j=0;j<vp.length;j++)
+					vp2.el[j]=vp.el[j];
+
+				dv=vp2.sub(vk2);
+
+				if(nNeut>0)
+					model.vNeutral=x.el[x.length-nNeut];
+
+				for(int k=0;k<nUnCur;k++){
+					int nr=model.unCurRegNumb[k];
+					model.region[nr].inducedVoltage=model.lastRows[k].dot(dv)/model.dt*model.height;
+
+					model.region[nr].current=x.el[x.length-nUnCur-nNeut+k];
+
+				}
+			}
+			
+			
+			
+			
+			B1=model.getAllB();
+
+			model.setSolution(x);	
+
+			model.setB();	
+			
+			B2=model.getAllB();
+			
+			errFlux=model.getDiffMax(B1,B2);
+
+			
+	
+
+		}
+		
+
+		int nUnCur=model.numberOfUnknownCurrents;
+
+
+		for(int k=0;k<nUnCur;k++){
+			int nr=model.unCurRegNumb[k];
+
+	 model.region[nr].currentp=model.region[nr].current;
+		}
+
+
+		model.HpAp=model.HkAk.deepCopy();
+		
+		System.out.println();
+		System.out.println("-----------------------------------------------------");
+		System.out.println(" Nonlinear Iteration: "+nonLinIter+
+				"     Bmax: "+dfB.format(model.Bmax)+ "     error: "+dfe.format(errNR));
+		System.out.println("Flux    error: "+dfe.format(errFlux));
+		System.out.println("-----------------------------------------------------");
+		System.out.println();
+		
+		System.out.println();
+		System.out.println("=======================================================");
+		System.out.println("Total number of ICCG iterations: "+model.solver.totalIter);
+		System.out.println("Total number of Nonlinear iterations: "+totalNonlinIter);
+		
+		
+		System.out.println();
+	
+		System.out.println(" Final NR residual: "+resNR);
+		
+		System.out.println("=======================================================");
+		System.out.println();
+		
+
 
 		return x;
 
@@ -984,16 +1289,16 @@ public class FEMsolver {
 
 			if(!twoloops){
 
-				model.setMagMat(cascadeIter);
+				model.setMagMat();
 
 
-				Ci=model.Hs.scale(model.b);
+				Ci=model.Hs.scale(model.RHS);
 
 				L=model.Hs.ichol();
 
 				double t3=System.currentTimeMillis();
 
-				dA=model.solver.err0ICCG(model.Hs,L,model.b,1e-8,model.iterMax);	
+				dA=model.solver.err0ICCG(model.Hs,L,model.RHS,1e-8,model.iterMax);	
 
 				double t4=System.currentTimeMillis();
 
@@ -1172,7 +1477,7 @@ public class FEMsolver {
 		System.out.println(" Calculating seepage....");
 
 
-		Vect bU1=model.b.deepCopy()/*.add(this.getbQt(model))*/;
+		Vect bU1=model.RHS.deepCopy()/*.add(this.getbQt(model))*/;
 
 		SpMat Hs=model.Hs.deepCopy();
 

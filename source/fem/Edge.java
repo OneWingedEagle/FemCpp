@@ -1,5 +1,7 @@
 package fem;
 
+import math.util;
+
 public class Edge {
 	public byte direction;
 	public double  length,A,Ap,T;
@@ -47,6 +49,7 @@ public class Edge {
 	}
 	
 	public double getDiffA(){
+
 		return A-Ap;
 	}
 

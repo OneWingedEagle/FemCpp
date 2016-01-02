@@ -1,0 +1,1138 @@
+A            101905080                   40 ffile     
+A            103053040                   10 ffile->name
+A            101904840                   40 ffile     
+A            102529096                    6 ffile->name
+A            101905368                   40 ffile     
+A            103053016                    9 ffile->name
+A            101904744                   40 ffile     
+A            103052920                   10 ffile->name
+A            101905464                   40 ffile     
+A            103152448                   19 ffile->name
+A            101904600                   40 ffile     
+A            103152736                   19 ffile->name
+A            101904936                   40 ffile     
+A            103152512                   19 ffile->name
+A            101904888                   40 ffile     
+A            103053064                   16 ffile->name
+A            101905128                   40 ffile     
+A            103053088                   16 ffile->name
+A            101905224                   40 ffile     
+A             95138624                   16 ffile->name
+A            101905272                   40 ffile     
+A             95138912                   14 ffile->name
+A            101904696                   40 ffile     
+A             95139080                   10 ffile->name
+A            101905320                   40 ffile     
+A             95138840                   14 ffile->name
+A            102347936                   40 ffile     
+A            102529048                    7 ffile->name
+A            102347840                   40 ffile     
+A             95138864                   10 ffile->name
+A            102346880                   40 ffile     
+A            102529240                    8 ffile->name
+A            102347024                   40 ffile     
+A             95138672                    9 ffile->name
+A            102347600                   40 ffile     
+A             95138792                   14 ffile->name
+A            102346928                   40 ffile     
+A             95138720                   10 ffile->name
+A            102347360                   40 ffile     
+A            102529208                    6 ffile->name
+A            102347264                   40 ffile     
+A             95138648                   16 ffile->name
+A            102347456                   40 ffile     
+A             95138984                   11 ffile->name
+A            102347168                   40 ffile     
+A             95138936                   12 ffile->name
+A            102346976                   40 ffile     
+A            102528984                    4 ffile->name
+A            102347504                   40 ffile     
+A            102528792                    8 ffile->name
+A            102347648                   40 ffile     
+A            102529112                    7 ffile->name
+A            102348224                   40 ffile     
+A            102529224                    5 ffile->name
+A            102347696                   40 ffile     
+A             95139032                   11 ffile->name
+A            102347216                   40 ffile     
+A            102528808                    5 ffile->name
+A            102347072                   40 ffile     
+A             95138744                   16 ffile->name
+A            102347312                   40 ffile     
+A            102529016                    5 ffile->name
+A            102348032                   40 ffile     
+A             95138960                   13 ffile->name
+A            102347552                   40 ffile     
+A            102529128                    5 ffile->name
+A            102348128                   40 ffile     
+A            102528840                    7 ffile->name
+A            102347744                   40 ffile     
+A             95138888                    9 ffile->name
+A            102347792                   40 ffile     
+A             95138696                   14 ffile->name
+A            102349664                   40 ffile     
+A            102529080                    8 ffile->name
+A            102348464                   40 ffile     
+A            102529192                    8 ffile->name
+A            101935080                  112 cg_iteration
+A              3422616                   64 non_linear_iteration
+A            102348608                   40 gauss     
+A             95139056                   16 gauss     
+A            102528968                    4 gauss->p  
+A            103152544                   24 gauss->p[i]
+A            103152224                   24 gauss->w  
+A             95138768                   16 gauss     
+A            102528824                    8 gauss->p  
+A            102047816                   72 gauss->p[i]
+A            102047896                   72 gauss->p[i]
+A            102046296                   72 gauss->w  
+A             95138816                   16 gauss     
+A            102944232                   12 gauss->p  
+A             95374432                  216 gauss->p[i]
+A             95373088                  216 gauss->p[i]
+A             95377568                  216 gauss->p[i]
+A             95371968                  216 gauss->w  
+A            102944496                   16 gauss     
+A            102528904                    8 gauss->p  
+A            103085112                   56 gauss->p[i]
+A            103085560                   56 gauss->p[i]
+A            103086456                   56 gauss->w  
+A            102944520                   16 gauss     
+A            102528776                    8 gauss->p  
+A            103085176                   56 gauss->p[i]
+A            103085304                   56 gauss->p[i]
+A            103085944                   56 gauss->w  
+A            102944568                   16 gauss     
+A            102943968                   12 gauss->p  
+A            102402456                  168 gauss->p[i]
+A            102401576                  168 gauss->p[i]
+A            102401752                  168 gauss->p[i]
+A            102400344                  168 gauss->w  
+F            103085176                      gauss->p[i]
+F            103085304                      gauss->p[i]
+F            103085944                      gauss->w  
+F            102528776                      gauss->p  
+F            102944520                      gauss     
+A            102944520                   16 gauss     
+A            102944040                   12 gauss->p  
+A            102348752                   40 gauss->p[i]
+A            102348800                   40 gauss->p[i]
+A            102348848                   40 gauss->p[i]
+A            102348896                   40 gauss->w  
+A            102944784                   16 gauss     
+A            102944904                   12 gauss->p  
+A             95373312                  216 gauss->p[i]
+A             95378016                  216 gauss->p[i]
+A             95373984                  216 gauss->p[i]
+A             95376672                  216 gauss->w  
+A            102277312                   28 gauus_pointer
+A            103153120                   24 LINEAR_HEXA.s_element_types
+A            103152320                   24 LINEAR_HEXA.s_element_types
+A            103152608                   24 QUAD_HEXA.s_element_types
+A            102113456                   24 QUAD_HEXA2.s_element_types
+A            102113936                   20 LINEAR_PRISM.s_element_types
+A            102114224                   20 PRISM_N15E9.s_element_types
+A            102944736                   16 LINEAR_TETRA.s_element_types
+A            102944808                   16 type->s_element_types
+A            102113808                   20 type->s_element_types
+A            102113520                   20 type->s_element_types
+A            102113904                   20 type->s_element_types
+A            102113744                   20 type->s_element_types
+A            102944856                   16 TIME_CONTROL
+A            102944880                   12 multi_output_steps.steps
+A            102529032                    8 planes    
+A            102528920                    8 planes    
+A            101938440                  108 mat_properties
+A            102277952                   28 MagneticProperty
+A            102529064                    4 IsotropicNonlinear
+A            102277352                   28 MagneticProperty
+A            102528776                    4 IsotropicNonlinear
+A            102277392                   28 MagneticProperty
+A            102944712                   16 LinearProperty
+A            102944832                   16 check mat_ids
+A            102528936                    4 check smat_ids
+F            102944832                      check mat_ids
+F            102528936                      check smat_ids
+A            103085816                   56 external_field
+A            102048136                   72 data      
+A            102524608                   44 external_field.field_ids
+A            102148216                  264 external_field->field
+A            102350480                   40 data->circuit_parm
+A            103086904                   56 external_field
+F            102048136                      field_sources.data
+A            101912712                  144 field_sources.data
+A            102524104                   44 external_field.field_ids
+A            102149056                  264 external_field->field
+A            102350096                   40 data->circuit_parm
+A            102529144                    4 circuit.coil_ids
+A            102528936                    4 circuit.field_sources
+A            102948104                   48 circuit.power_supplies
+A            102528952                    8 circuit.external_inductance
+A            102529000                    8 circuit.external_resistance
+A            102529176                    8 circuit.inductance
+A              2638048                    8 circuit.resistance
+A              2638224                    8 circuit.power_supply_inductance
+A              2638064                    8 circuit.power_supply_resistance
+A              2638416                    8 circuit.connection_matrix.matrix
+A            102349856                   40 data      
+A            102048136                   72 wave_form 
+A            102113392                   24 b_h_curves
+A              3646496                  312 b_h_curve->H
+A              3647808                  312 b_h_curve->B
+A              3648136                  312 b_h_curve->energy
+A             95225880                  148 global_model
+A            102114032                   20 BLOCKED_ARRAY_LIST
+A            102113488                   20 BLOCKED_ARRAY_LIST
+A            102114096                   20 BLOCKED_ARRAY_LIST
+A            102113552                   20 BLOCKED_ARRAY_LIST
+A            102114256                   20 BLOCKED_ARRAY_LIST
+A            102113872                   20 BLOCKED_ARRAY_LIST
+A            102113648                   20 BLOCKED_ARRAY_LIST
+A            102113680                   20 BLOCKED_ARRAY_LIST
+A            102113776                   20 BLOCKED_ARRAY_LIST
+A            102944760                   13 in_file   
+A            102944832                    9 out_file  
+A            102349904                   40 ffile     
+A            102406448                   13 ffile->name
+A            102350720                   40 ffile     
+A            102406376                    9 ffile->name
+F            102944760                      in_file   
+F            102944832                      out_file  
+A            102350672                   40 ffile     
+A            102406088                    9 ffile->name
+A            102406256                   12 LINKED_LIST_WITH_BUFFER
+A              2637984                    8 LINKED_LIST
+A            102406328                   16 ARRAY_LIST
+A            102114000                   20 BLOCKED_ARRAY_LIST
+A              2638304                    8 LINKED_LIST
+A            102406496                   12 LINKED_LIST_WITH_BUFFER
+A              2638192                    8 LINKED_LIST
+A            102406040                   16 ARRAY_LIST
+A            102114064                   20 BLOCKED_ARRAY_LIST
+A              2638320                    8 LINKED_LIST
+A            102113296                   20 BLOCKED_ARRAY_LIST
+A            106053664              1280008 ANY_block 
+A            117334048              1280008 ANY_block 
+A            115019808               960008 ANY_block 
+A            103322512               160008 ANY_block 
+A            103482528               160008 ANY_block 
+A            103642544               160008 ANY_block 
+A            135331912               160008 ANY_block 
+A            135491928               160008 ANY_block 
+A            135651944               160008 ANY_block 
+A            135811960               160008 ANY_block 
+A            135971976               160008 ANY_block 
+A            142946336               960008 ANY_block 
+A            136131992               160008 ANY_block 
+A            136292008               160008 ANY_block 
+A            136452024               160008 ANY_block 
+A            136612040               160008 ANY_block 
+A            136772056               160008 ANY_block 
+A            143929376              2782080 nodes     
+F              2637984                      linked_list->lists
+F            106053664                      ANY_block 
+F            117334048                      ANY_block 
+F            102114000                      array_list
+F              2638304                      array_list->free_list
+F            102406328                      array_list
+F            102406256                      linked_list
+A            146796576              3616200 v_elements
+A            136932072               160008 ANY_block 
+A            137092088               160008 ANY_block 
+A            137252104               160008 ANY_block 
+A            137412120               160008 ANY_block 
+A            137572136               160008 ANY_block 
+A            137732152               160008 ANY_block 
+A            137892168               160008 ANY_block 
+A            138052184               160008 ANY_block 
+A            138212200               160008 ANY_block 
+A            138372216               160008 ANY_block 
+A            138532232               160008 ANY_block 
+A            138692248               160008 ANY_block 
+A            138852264               160008 ANY_block 
+F              2638192                      linked_list->lists
+F            115019808                      ANY_block 
+F            142946336                      ANY_block 
+F            102114064                      array_list
+F              2638320                      array_list->free_list
+F            102406040                      array_list
+F            102406496                      linked_list
+F            103322512                      ANY_block 
+F            103482528                      ANY_block 
+F            103642544                      ANY_block 
+F            135331912                      ANY_block 
+F            135491928                      ANY_block 
+F            135651944                      ANY_block 
+F            135811960                      ANY_block 
+F            135971976                      ANY_block 
+F            136131992                      ANY_block 
+F            136292008                      ANY_block 
+F            136452024                      ANY_block 
+F            136612040                      ANY_block 
+F            136772056                      ANY_block 
+F            102113296                      array_list
+F            102350672                      ffile     
+A            102406184                   12 LINKED_LIST_WITH_BUFFER
+A            106070048               556416 LINKED_LIST
+A            102406400                   16 ARRAY_LIST
+A            102114000                   20 BLOCKED_ARRAY_LIST
+A              2638368                    8 LINKED_LIST
+A            136609800               160008 ANY_block 
+A            106704928              1120008 ANY_block 
+A            139012280               320008 ANY_block 
+A            136769816               160008 ANY_block 
+A            103322512               320008 ANY_block 
+A            103642528               160008 ANY_block 
+A            135331912               160008 ANY_block 
+A            117313568              1120008 ANY_block 
+A            135491928               320008 ANY_block 
+A            135811944               160008 ANY_block 
+A            135971960               160008 ANY_block 
+A            136131976               320008 ANY_block 
+A            150470728               160008 ANY_block 
+A            150630744               160008 ANY_block 
+A            158867488              1120008 ANY_block 
+A            150790760               320008 ANY_block 
+A            151110776               160008 ANY_block 
+A            151270792               320008 ANY_block 
+A            151590808               160008 ANY_block 
+A            151750824               160008 ANY_block 
+A            160084000              1120008 ANY_block 
+A            151910840               320008 ANY_block 
+A            152230856               160008 ANY_block 
+A            152390872               160008 ANY_block 
+A            152550888               160008 ANY_block 
+A            152710904               320008 ANY_block 
+A            153030920               160008 ANY_block 
+A            153190936               160008 ANY_block 
+A            161271840              1120008 ANY_block 
+A            153350952               320008 ANY_block 
+A            153670968               160008 ANY_block 
+A            153830984               160008 ANY_block 
+A            153991000               320008 ANY_block 
+A            154311016               160008 ANY_block 
+A            154471032               160008 ANY_block 
+A            162431008              1120008 ANY_block 
+A            154631048               320008 ANY_block 
+F            106070048                      linked_list->lists
+F            139012280                      ANY_block 
+F            103322512                      ANY_block 
+F            135491928                      ANY_block 
+F            136131976                      ANY_block 
+F            150790760                      ANY_block 
+F            151270792                      ANY_block 
+F            151910840                      ANY_block 
+F            152710904                      ANY_block 
+F            153350952                      ANY_block 
+F            153991000                      ANY_block 
+F            154631048                      ANY_block 
+F            102114000                      array_list
+F              2638368                      array_list->free_list
+F            102406400                      array_list
+F            102406184                      linked_list
+A            102350288                   40 ffile     
+A            102113328                   17 ffile->name
+A            102406280                   12 LINKED_LIST_WITH_BUFFER
+A            106065952               556416 LINKED_LIST
+A            102406328                   16 ARRAY_LIST
+A            102113296                   20 BLOCKED_ARRAY_LIST
+A              2638240                    8 LINKED_LIST
+A            102406184                   12 LINKED_LIST_WITH_BUFFER
+A              2638336                    8 LINKED_LIST
+A            102406256                   16 ARRAY_LIST
+A            102114000                   20 BLOCKED_ARRAY_LIST
+A              2638096                    8 LINKED_LIST
+A            102406208                   12 LINKED_LIST_WITH_BUFFER
+A              2638400                    8 LINKED_LIST
+A            102406136                   16 ARRAY_LIST
+A            102114064                   20 BLOCKED_ARRAY_LIST
+A              2638192                    8 LINKED_LIST
+A            163606560              1600008 ANY_block 
+A            153991000               320008 ANY_block 
+A            165228576              1920008 ANY_block 
+A            153350952               160008 ANY_block 
+A            152710904               160008 ANY_block 
+A            151910840               320008 ANY_block 
+A            167198752              1600008 ANY_block 
+A            151270792               278208 output_nodes
+F            151270792                      output_nodes
+F            106065952                      linked_list->lists
+F            153991000                      ANY_block 
+F            151910840                      ANY_block 
+F            102113296                      array_list
+F              2638240                      array_list->free_list
+F            102406328                      array_list
+F            102406280                      linked_list
+F              2638336                      linked_list->lists
+F            163606560                      ANY_block 
+F            102114000                      array_list
+F              2638096                      array_list->free_list
+F            102406256                      array_list
+F            102406184                      linked_list
+A            115064864               960008 ANY_block 
+A            163606560               960008 ANY_block 
+A              3546832                11880 element_h_matrix
+A              3126216                26568 element_c_matrix
+F              3546832                      element_h_matrix
+F              3126216                      element_c_matrix
+F            143929376                      nodes     
+F            146796576                      v_elements
+F            136932072                      ANY_block 
+F            137092088                      ANY_block 
+F            137252104                      ANY_block 
+F            137412120                      ANY_block 
+F            137572136                      ANY_block 
+F            137732152                      ANY_block 
+F            137892168                      ANY_block 
+F            138052184                      ANY_block 
+F            138212200                      ANY_block 
+F            138372216                      ANY_block 
+F            138532232                      ANY_block 
+F            138692248                      ANY_block 
+F            138852264                      ANY_block 
+F            102114032                      array_list
+F            106704928                      ANY_block 
+F            117313568                      ANY_block 
+F            158867488                      ANY_block 
+F            160084000                      ANY_block 
+F            161271840                      ANY_block 
+F            162431008                      ANY_block 
+F            102114096                      array_list
+F            115064864                      ANY_block 
+F            163606560                      ANY_block 
+F            102113552                      array_list
+F            136609800                      ANY_block 
+F            136769816                      ANY_block 
+F            103642528                      ANY_block 
+F            135331912                      ANY_block 
+F            135811944                      ANY_block 
+F            135971960                      ANY_block 
+F            150470728                      ANY_block 
+F            150630744                      ANY_block 
+F            151110776                      ANY_block 
+F            151590808                      ANY_block 
+F            151750824                      ANY_block 
+F            152230856                      ANY_block 
+F            152390872                      ANY_block 
+F            152550888                      ANY_block 
+F            153030920                      ANY_block 
+F            153190936                      ANY_block 
+F            153670968                      ANY_block 
+F            153830984                      ANY_block 
+F            154311016                      ANY_block 
+F            154471032                      ANY_block 
+F            102113488                      array_list
+F            165228576                      ANY_block 
+F            102114256                      array_list
+F            153350952                      ANY_block 
+F            102113872                      array_list
+F            152710904                      ANY_block 
+F            102113648                      array_list
+F            102113680                      array_list
+F            102113776                      array_list
+A            142950432              2782080 nodes     
+A            158867488              5699568 edges     
+A            145797152              3616200 v_elements
+A            136609800               213216 s_elements
+A            164671520              2137472 node_pointers
+A            168878112              3170672 edge_pointers
+A            106065952              1549800 v_element_centers
+A            102350528                   40 ffile     
+A            102406400                   14 ffile->name
+A            152387592               278208 output_nodes
+A            103322512               278208 set_PHI   
+A            102114256                   20 BLOCKED_ARRAY_LIST
+A            102113776                   20 BLOCKED_ARRAY_LIST
+A            135970824               320008 ANY_block 
+A            115019808               640008 ANY_block 
+A            135331912               320008 ANY_block 
+A            117366816               640008 ANY_block 
+A            150470728               320008 ANY_block 
+A            118038560               640008 ANY_block 
+A            150790744               320008 ANY_block 
+A            118730784               640008 ANY_block 
+A            151110760               320008 ANY_block 
+A            149483552               640008 ANY_block 
+F            103322512                      set_PHI   
+A            102277592                   28 MATRIX_PROFILE
+A            172122144               736544 prof->no_elements_in_row
+A            172941344               736548 prof->no_elements_in_row
+A            102406112                   12 CONNECTION_VECTOR
+A            102876120                  324 c->v      
+A            102113872                   20 BLOCKED_ARRAY_LIST
+A            173789216               736544 lists     
+A            103322512               320008 ANY_block 
+A            151430776               320008 ANY_block 
+A            151750792               320008 ANY_block 
+A            136823024               320008 ANY_block 
+A            137143040               320008 ANY_block 
+A            137463056               320008 ANY_block 
+A            137783072               320008 ANY_block 
+A            138103088               320008 ANY_block 
+A            138423104               320008 ANY_block 
+A            138743120               320008 ANY_block 
+A            139063136               320008 ANY_block 
+A            152665808               320008 ANY_block 
+A            152985824               320008 ANY_block 
+A            153305840               320008 ANY_block 
+A            153625856               320008 ANY_block 
+A            153945872               320008 ANY_block 
+A            154265888               320008 ANY_block 
+A            154585904               320008 ANY_block 
+A            154905920               320008 ANY_block 
+A            155225936               320008 ANY_block 
+A            155545952               320008 ANY_block 
+A            155865968               320008 ANY_block 
+A            156185984               320008 ANY_block 
+A            156506000               320008 ANY_block 
+A            156826016               320008 ANY_block 
+A            157146032               320008 ANY_block 
+A            157466048               320008 ANY_block 
+A            157786064               320008 ANY_block 
+A            158106080               320008 ANY_block 
+A            174587976               320008 ANY_block 
+A            174907992               320008 ANY_block 
+A            175228008               320008 ANY_block 
+A            175548024               320008 ANY_block 
+A            175868040               320008 ANY_block 
+A            176188056               320008 ANY_block 
+A            176508072               320008 ANY_block 
+A            176828088               320008 ANY_block 
+A            177148104               320008 ANY_block 
+A            177468120               320008 ANY_block 
+A            177788136               320008 ANY_block 
+A            178108152               320008 ANY_block 
+A            178428168               320008 ANY_block 
+A            178748184               320008 ANY_block 
+A            179068200               320008 ANY_block 
+A            179388216               320008 ANY_block 
+A            179708232               320008 ANY_block 
+A            180028248               320008 ANY_block 
+A            180348264               320008 ANY_block 
+A            180668280               320008 ANY_block 
+A            180988296               320008 ANY_block 
+A            181308312               320008 ANY_block 
+A            181628328               320008 ANY_block 
+A            181948344               320008 ANY_block 
+A            182268360               320008 ANY_block 
+A            182588376               320008 ANY_block 
+A            182908392               320008 ANY_block 
+A            183228408               320008 ANY_block 
+A            183548424               320008 ANY_block 
+A            183868440               320008 ANY_block 
+A            184188456               320008 ANY_block 
+A            184508472               320008 ANY_block 
+A            184828488               320008 ANY_block 
+A            185148504               320008 ANY_block 
+A            185468520               320008 ANY_block 
+A            185788536               320008 ANY_block 
+A            186108552               320008 ANY_block 
+A            186428568               320008 ANY_block 
+A            186748584               320008 ANY_block 
+A            187068600               320008 ANY_block 
+A            187388616               320008 ANY_block 
+A            187708632               320008 ANY_block 
+A            191189024             23342096 index     
+F            103322512                      ANY_block 
+F            151430776                      ANY_block 
+F            151750792                      ANY_block 
+F            136823024                      ANY_block 
+F            137143040                      ANY_block 
+F            137463056                      ANY_block 
+F            137783072                      ANY_block 
+F            138103088                      ANY_block 
+F            138423104                      ANY_block 
+F            138743120                      ANY_block 
+F            139063136                      ANY_block 
+F            152665808                      ANY_block 
+F            152985824                      ANY_block 
+F            153305840                      ANY_block 
+F            153625856                      ANY_block 
+F            153945872                      ANY_block 
+F            154265888                      ANY_block 
+F            154585904                      ANY_block 
+F            154905920                      ANY_block 
+F            155225936                      ANY_block 
+F            155545952                      ANY_block 
+F            155865968                      ANY_block 
+F            156185984                      ANY_block 
+F            156506000                      ANY_block 
+F            156826016                      ANY_block 
+F            157146032                      ANY_block 
+F            157466048                      ANY_block 
+F            157786064                      ANY_block 
+F            158106080                      ANY_block 
+F            174587976                      ANY_block 
+F            174907992                      ANY_block 
+F            175228008                      ANY_block 
+F            175548024                      ANY_block 
+F            175868040                      ANY_block 
+F            176188056                      ANY_block 
+F            176508072                      ANY_block 
+F            176828088                      ANY_block 
+F            177148104                      ANY_block 
+F            177468120                      ANY_block 
+F            177788136                      ANY_block 
+F            178108152                      ANY_block 
+F            178428168                      ANY_block 
+F            178748184                      ANY_block 
+F            179068200                      ANY_block 
+F            179388216                      ANY_block 
+F            179708232                      ANY_block 
+F            180028248                      ANY_block 
+F            180348264                      ANY_block 
+F            180668280                      ANY_block 
+F            180988296                      ANY_block 
+F            181308312                      ANY_block 
+F            181628328                      ANY_block 
+F            181948344                      ANY_block 
+F            182268360                      ANY_block 
+F            182588376                      ANY_block 
+F            182908392                      ANY_block 
+F            183228408                      ANY_block 
+F            183548424                      ANY_block 
+F            183868440                      ANY_block 
+F            184188456                      ANY_block 
+F            184508472                      ANY_block 
+F            184828488                      ANY_block 
+F            185148504                      ANY_block 
+F            185468520                      ANY_block 
+F            185788536                      ANY_block 
+F            186108552                      ANY_block 
+F            186428568                      ANY_block 
+F            186748584                      ANY_block 
+F            187068600                      ANY_block 
+F            187388616                      ANY_block 
+F            187708632                      ANY_block 
+F            102113872                      array_list
+F            173789216                      lists     
+F            102876120                      CONNECTION_VECTOR->v
+F            102406112                      CONNECTION_VECTOR
+A            173789216               736544 renumbering_index
+A            214568992              2946176 work for renumber_variables
+F            173789216                      renumbering_index
+F            214568992                      work for renumber_variables
+F            172122144                      prof->no_elements_in_rows
+F            172941344                      prof->row_head_pointers
+F            191189024                      prof->index
+F            102277592                      MATRIX_PROFILE
+A            172146720               640008 ANY_block 
+A            102277672                   28 MATRIX_PROFILE
+A            172851232               736544 prof->no_elements_in_row
+A            173604896               736548 prof->no_elements_in_row
+A            102406256                   12 CONNECTION_VECTOR
+A             95378240                  216 c->v      
+A            102406496                   12 CONNECTION_VECTOR
+A             95375552                  216 c->v      
+A            102114000                   20 BLOCKED_ARRAY_LIST
+A            191225888               736544 lists     
+A            103322512               320008 ANY_block 
+A            151430776               320008 ANY_block 
+A            151750792               320008 ANY_block 
+A            136823024               320008 ANY_block 
+A            137143040               320008 ANY_block 
+A            192036896               690880 index     
+F            191225888                      lists     
+F            103322512                      ANY_block 
+F            151430776                      ANY_block 
+F            151750792                      ANY_block 
+F            136823024                      ANY_block 
+F            137143040                      ANY_block 
+F            102114000                      array_list
+F             95378240                      CONNECTION_VECTOR->v
+F            102406256                      CONNECTION_VECTOR
+F             95375552                      CONNECTION_VECTOR->v
+F            102406496                      CONNECTION_VECTOR
+A            192757792              1381760 source_h_matrix
+A             94652760                  624 element_matrix in assemble_h_matrix
+F             94652760                      element_matrix
+F            192757792                      source_h_matrix
+F            172851232                      prof->no_elements_in_rows
+F            173604896                      prof->row_head_pointers
+F            192036896                      prof->index
+F            102277672                      MATRIX_PROFILE
+A            102277592                   28 MATRIX_PROFILE
+A            172875808               736544 prof->no_elements_in_row
+A            173719584               736548 prof->no_elements_in_row
+A            102406496                   12 CONNECTION_VECTOR
+A            102881280                  324 c->v      
+A            102113872                   20 BLOCKED_ARRAY_LIST
+A            191221792               736544 lists     
+A            103322512               320008 ANY_block 
+A            151430776               320008 ANY_block 
+A            151750792               320008 ANY_block 
+A            136823024               320008 ANY_block 
+A            137143040               320008 ANY_block 
+A            137463056               320008 ANY_block 
+A            137783072               320008 ANY_block 
+A            138103088               320008 ANY_block 
+A            138423104               320008 ANY_block 
+A            138743120               320008 ANY_block 
+A            139063136               320008 ANY_block 
+A            152665808               320008 ANY_block 
+A            152985824               320008 ANY_block 
+A            153305840               320008 ANY_block 
+A            153625856               320008 ANY_block 
+A            153945872               320008 ANY_block 
+A            154265888               320008 ANY_block 
+A            154585904               320008 ANY_block 
+A            154905920               320008 ANY_block 
+A            155225936               320008 ANY_block 
+A            155545952               320008 ANY_block 
+A            155865968               320008 ANY_block 
+A            156185984               320008 ANY_block 
+A            156506000               320008 ANY_block 
+A            156826016               320008 ANY_block 
+A            157146032               320008 ANY_block 
+A            157466048               320008 ANY_block 
+A            157786064               320008 ANY_block 
+A            158106080               320008 ANY_block 
+A            158426096               320008 ANY_block 
+A            174587976               320008 ANY_block 
+A            174907992               320008 ANY_block 
+A            175228008               320008 ANY_block 
+A            175548024               320008 ANY_block 
+A            175868040               320008 ANY_block 
+A            176188056               320008 ANY_block 
+A            176508072               320008 ANY_block 
+A            176828088               320008 ANY_block 
+A            177148104               320008 ANY_block 
+A            177468120               320008 ANY_block 
+A            177788136               320008 ANY_block 
+A            178108152               320008 ANY_block 
+A            178428168               320008 ANY_block 
+A            178748184               320008 ANY_block 
+A            179068200               320008 ANY_block 
+A            179388216               320008 ANY_block 
+A            179708232               320008 ANY_block 
+A            180028248               320008 ANY_block 
+A            180348264               320008 ANY_block 
+A            180668280               320008 ANY_block 
+A            180988296               320008 ANY_block 
+A            181308312               320008 ANY_block 
+A            181628328               320008 ANY_block 
+A            181948344               320008 ANY_block 
+A            182268360               320008 ANY_block 
+A            182588376               320008 ANY_block 
+A            182908392               320008 ANY_block 
+A            183228408               320008 ANY_block 
+A            183548424               320008 ANY_block 
+A            183868440               320008 ANY_block 
+A            184188456               320008 ANY_block 
+A            184508472               320008 ANY_block 
+A            184828488               320008 ANY_block 
+A            185148504               320008 ANY_block 
+A            185468520               320008 ANY_block 
+A            185788536               320008 ANY_block 
+A            186108552               320008 ANY_block 
+A            186428568               320008 ANY_block 
+A            186748584               320008 ANY_block 
+A            187068600               320008 ANY_block 
+A            187388616               320008 ANY_block 
+A            192053280             12039320 index     
+F            103322512                      ANY_block 
+F            151430776                      ANY_block 
+F            151750792                      ANY_block 
+F            136823024                      ANY_block 
+F            137143040                      ANY_block 
+F            137463056                      ANY_block 
+F            137783072                      ANY_block 
+F            138103088                      ANY_block 
+F            138423104                      ANY_block 
+F            138743120                      ANY_block 
+F            139063136                      ANY_block 
+F            152665808                      ANY_block 
+F            152985824                      ANY_block 
+F            153305840                      ANY_block 
+F            153625856                      ANY_block 
+F            153945872                      ANY_block 
+F            154265888                      ANY_block 
+F            154585904                      ANY_block 
+F            154905920                      ANY_block 
+F            155225936                      ANY_block 
+F            155545952                      ANY_block 
+F            155865968                      ANY_block 
+F            156185984                      ANY_block 
+F            156506000                      ANY_block 
+F            156826016                      ANY_block 
+F            157146032                      ANY_block 
+F            157466048                      ANY_block 
+F            157786064                      ANY_block 
+F            158106080                      ANY_block 
+F            158426096                      ANY_block 
+F            174587976                      ANY_block 
+F            174907992                      ANY_block 
+F            175228008                      ANY_block 
+F            175548024                      ANY_block 
+F            175868040                      ANY_block 
+F            176188056                      ANY_block 
+F            176508072                      ANY_block 
+F            176828088                      ANY_block 
+F            177148104                      ANY_block 
+F            177468120                      ANY_block 
+F            177788136                      ANY_block 
+F            178108152                      ANY_block 
+F            178428168                      ANY_block 
+F            178748184                      ANY_block 
+F            179068200                      ANY_block 
+F            179388216                      ANY_block 
+F            179708232                      ANY_block 
+F            180028248                      ANY_block 
+F            180348264                      ANY_block 
+F            180668280                      ANY_block 
+F            180988296                      ANY_block 
+F            181308312                      ANY_block 
+F            181628328                      ANY_block 
+F            181948344                      ANY_block 
+F            182268360                      ANY_block 
+F            182588376                      ANY_block 
+F            182908392                      ANY_block 
+F            183228408                      ANY_block 
+F            183548424                      ANY_block 
+F            183868440                      ANY_block 
+F            184188456                      ANY_block 
+F            184508472                      ANY_block 
+F            184828488                      ANY_block 
+F            185148504                      ANY_block 
+F            185468520                      ANY_block 
+F            185788536                      ANY_block 
+F            186108552                      ANY_block 
+F            186428568                      ANY_block 
+F            186748584                      ANY_block 
+F            187068600                      ANY_block 
+F            187388616                      ANY_block 
+F            102113872                      array_list
+F            191221792                      lists     
+F            102881280                      CONNECTION_VECTOR->v
+F            102406496                      CONNECTION_VECTOR
+F            135970824                      ANY_block 
+F            135331912                      ANY_block 
+F            150470728                      ANY_block 
+F            150790744                      ANY_block 
+F            151110760                      ANY_block 
+F            102114256                      array_list
+F            115019808                      ANY_block 
+F            117366816                      ANY_block 
+F            118038560                      ANY_block 
+F            118730784                      ANY_block 
+F            149483552                      ANY_block 
+F            172146720                      ANY_block 
+F            102113776                      array_list
+A            117346336              1473088 potential_pointers
+A            204206112              3088320 variable_pointers
+A            207413280              1473088 work      
+A            102406496                   16 field_sources.resistances
+A            102114000                   20 source_h_matrix
+A            115040288               736548 ksum      
+A            149434400               690880 p_index   
+A            208986144              1381760 source_h_matrix
+A            191184928               814224 A_flags   
+A            151109640                71072 field_source->field.external->A_source
+A            102406160                   12 SPARSE_VECTOR
+A             94966488                35536 v->index  
+A            151180720                71072 v->values 
+A            151251800                71072 field_source->field.external->A_source
+A            102406040                   12 SPARSE_VECTOR
+A              3246496                35536 v->index  
+A            151322880                71072 v->values 
+A            102277672                   32 field_sources.inductance
+A             57847840              1473088 values in external_field_source_internal_inductance
+F             57847840                      values in external_field_source_internal_inductance
+F            115040288                      source_h_matrix->p_ksum
+F            149434400                      source_h_matrix->p_index
+F            208986144                      source_h_matrix->matrix
+F            102114000                      source_h_matrix
+F            191184928                      A_flags   
+F            207413280                      work      
+A            207360032             24078640 h_matrix  
+A             94650816                  624 element_matrix in assemble_h_matrix
+F             94650816                      element_matrix
+F            207360032                      h_matrix  
+F            172875808                      prof->no_elements_in_rows
+F            173719584                      prof->row_head_pointers
+F            192053280                      prof->index
+F            102277592                      MATRIX_PROFILE
+A            102528064                   28 profile in make_r_t_matrices
+A             57839648               736548 profile->row_head_pointers
+A             58621984             12039320 profile->index
+A            207392800             24078640 h_matrix  
+F             57839648                      prof->row_head_pointers
+F             58621984                      prof->index
+F            102528064                      MATRIX_PROFILE
+F            207392800                      h_matrix  
+A            103086712                   56 StopWatch 
+A            103086520                   56 StopWatch 
+A            103086328                   56 StopWatch 
+A            103085944                   56 StopWatch 
+A            103086840                   56 StopWatch 
+A            103086776                   56 StopWatch 
+A            103085688                   56 StopWatch 
+A            103085752                   56 StopWatch 
+A            103085624                   56 StopWatch 
+A            103086008                   56 StopWatch 
+A            103085304                   56 StopWatch 
+A            103084984                   56 StopWatch 
+A            103086648                   56 StopWatch 
+A            103085432                   56 StopWatch 
+A            103085176                   56 StopWatch 
+A             57847840              1473088 initial_solution
+A            135331912               258300 f_v_elements
+A             95002032                17768 f_s_elements
+A            158425096               278208 f_nodes   
+A             59420704               814224 f_edges   
+A             60350496               736544 f_potentials
+A             61177888               772080 f_variables
+F            145797152                      v_elements
+F            136609800                      s_elemennts
+F            106065952                      v_element_centers
+F            142950432                      nodes     
+F            158867488                      edges     
+F            164671520                      node_pointers
+F            168878112                      edge_pointers
+F            117346336                      potential_pointers
+F            204206112                      variable_pointers
+A            187387912               254240 node_pointers
+A            103322512               381360 edge_pointers
+A            135970824               412800 nodes     
+A             62042144               796096 edges     
+A            150470728               444920 v_elements
+A            135590224               227456 potential_pointers
+A             62890016               597056 variable_pointers
+F            135331912                      f_v_elements
+F             95002032                      f_s_elements
+F            158425096                      f_nodes   
+F             59420704                      f_edges   
+F             60350496                      f_potentials
+F             61177888                      f_variables
+F             57847840                      initial_solution
+A             57847840              1473088 initial_solution
+F             94966488                      v->index  
+F            151180720                      v->values 
+F            102406160                      SPARSE_VECTOR
+A            102406160                   12 SPARSE_VECTOR
+A            151393960                35536 v->index  
+A            151180720                71072 v->values 
+F            151109640                      souce->field.external->A_source
+A            151109640                71072 source->field.external->A_source
+F              3246496                      v->index  
+F            151322880                      v->values 
+F            102406040                      SPARSE_VECTOR
+A            102406040                   12 SPARSE_VECTOR
+A             94966488                35536 v->index  
+A            151322880                71072 v->values 
+F            151251800                      souce->field.external->A_source
+A            151251800                71072 source->field.external->A_source
+F            102406496                      field_sources.resistances
+A            102406280                   16 field_sources.resistances
+F            102277672                      field_sources.inductances
+A            102528344                   32 field_sources.inductances
+A            102113296                   20 source_h_matrix
+A             59408416               736548 ksum      
+A             60223520               690880 p_index   
+A             63549472              1381760 source_h_matrix
+A            187642160               113728 A_flag    
+A            102948328                   48 system_equation
+A              3432192                   96 sparse_matrix
+A            191197216             24078640 sparse_matrix->matrix_lower
+A             64962592              1473088 sparse_matrix->D
+A            215322656             24078640 sparse_matrix->L
+A             66469920              1473088 sparse_matrix->Diag
+A            102528304                   28 sparse_matrix->profile
+A             61009952               736544 sparse_matrix->profile->no_elements_in_rows
+A             68010016               736548 sparse_matrix->profile->row_head_pointers
+A            239509536             12039320 sparse_matrix->profile->index
+A              3430736                   96 system_equation->t_matrix_nonlinear
+A             68866080              1473088 system_equation->solution
+A            251633696             10311616 sparse_matrix->works
+A             70418464              1473088 system_equation->RHS
+A            106070048              1473088 load_vector
+A              2638240                    8 voltage_given_resistance
+A              2638096                    8 voltage   
+A              2638000                    4 work in current_in_static_case
+A              2638256                    4 work in current_in_static_case
+F              2638000                      work1     
+F              2638256                      work2     
+A            117313568              1473088 solution in  loop_of_non_linear_iteration
+A            142975008              1473088 RHS_vector in  loop_of_non_linear_iteration
+A            144519200              1473088 norm_vector
+A            102406496                   12 plot_values
+A             95238552                 8000 plot_values->values
+F             68866080                      system_equation->solution
+F             70418464                      system_equation->RHS
+F            251633696                      system_equation->works
+F            191197216                      sparse_matrix->matrix_lower
+F             64962592                      sparse_matrix->D
+F            215322656                      sparse_matrix->L
+F             66469920                      sparse_matrix->Diag
+F             61009952                      prof->no_elements_in_rows
+F             68010016                      prof->row_head_pointers
+F            239509536                      prof->index
+F            102528304                      MATRIX_PROFILE
+F              3432192                      sparse_matrix
+F              3430736                      system_equation->t_matrix_nonlinear
+F            102948328                      system_equation
+F            106070048                      load_vector
+F             57847840                      initial_solution
+F            117313568                      p_solution
+F            142975008                      p_RHS_vector
+F            144519200                      norm_vector
+F            103086712                      StopWatch 
+F            103086520                      StopWatch 
+F            103086328                      StopWatch 
+F            103085944                      StopWatch 
+F            103086840                      StopWatch 
+F            103086776                      StopWatch 
+F            103085688                      StopWatch 
+F            103085752                      StopWatch 
+F            103085624                      StopWatch 
+F            103086008                      StopWatch 
+F            150470728                      v_elements
+F            135970824                      nodes     
+F             62042144                      edges     
+F            187387912                      node_pointers
+F            103322512                      edge_pointers
+F            135590224                      potential_pointers
+F             62890016                      variable_pointers
+A             64950304              2782080 nodes     
+A            142950432              5699568 edges     
+A             67797024              3616200 v_elements
+A            136609800               213216 s_elements
+A             60948512              2137472 node_pointers
+A            158871584              3170672 edge_pointers
+A            106078240              1549800 v_element_centers
+A             57835552              1473088 potential_pointers
+A            162132000              3088320 variable_pointers
+A            117338144              1473088 work in transient_output_control
+A            187755896                71072 A_source in transient_output_control
+A            148725792              1549800 forces_in_v_elements
+A            165318688              1669248 nodal_forces_J_B
+A            168849440              1669248 nodal_forces
+A            158425096               258300 stored_element_no
+A            170553376              2066400 stored_element_data
+A            150470728               278208 stored_node_no
+A            191184928              2225664 stored_node_dat
+A             71454752               556416 B_at_nodes
+A            115044384               556416 B_at_nodes
+A            172748832               556416 B_at_nodes
+A            103322512               278208 no_summations
+A            193482784              1549800 B_source_at_element_centers
+A            195100704              1549800 external->B_source_at_element_centers
+A            196710432              1549800 external->B_source_at_element_centers
+F             71454752                      B_at_nodes[ixyz]
+F            115044384                      B_at_nodes[ixyz]
+F            172748832                      B_at_nodes[ixyz]
+F            103322512                      no_summations
+F            158425096                      stored_element_no
+F            170553376                      stored_element_data
+F            150470728                      stored_node_no
+F            191184928                      stored_node_dat
+A            158425096               258300 stored_element_no
+A            170545184              2583000 stored_element_data
+A            150470728               278208 stored_node_no
+A            198348832              2782080 stored_node_dat
+A             71495712               556416 J_at_nodes
+A            115028000               556416 J_at_nodes
+A            118824992               556416 J_at_nodes
+A            173170720               556416 Q_at_nodes
+A            103322512               278208 no_summations
+F            158425096                      stored_element_no
+F            170545184                      stored_element_data
+F            150470728                      stored_node_no
+F            198348832                      stored_node_dat
+F             71495712                      J_at_nodes[ixyz]
+F            115028000                      J_at_nodes[ixyz]
+F            118824992                      J_at_nodes[ixyz]
+F            173170720                      Q_at_nodes
+F            103322512                      no_summations
+A            102046056                   72 force_to_region in force_J_B
+A            102047096                   72 torque_by_force_to_region in force_J_B
+A            158425096               278208 flag in force_symmerry
+F            158425096                      flags     
+F            102046056                      force_to_region in force_J_B
+A            102046056                   72 force_to_region
+A            102046376                   72 torque_by_force_to_region
+A            158425096               278208 flag in force_symmerry
+A             71438368               556416 volume_connected_nodes in force_to_regions
+F             71438368                      volume_connected_nodes
+F            158425096                      flags     
+A            158425096               258300 stored_element_no
+A            170586144              2066400 stored_element_data
+A            150470728               278208 stored_node_no
+A            191189024              2225664 stored_node_dat
+F            158425096                      stored_element_no
+F            170586144                      stored_element_data
+F            150470728                      stored_node_no
+F            191189024                      stored_node_dat
+F            195100704                      data->field.external->B_source_at_element_centers
+F            196710432                      data->field.external->B_source_at_element_centers
+F            102347024                      ffile     
+F            102346880                      ffile     
+F            148725792                      forces_in_v_elements
+F            165318688                      nodal_forces_J_B
+F            168849440                      nodal_forces
+F            102347360                      ffile     
+F            103152544                      gauss->p[i]
+F            103152224                      gauss->w  
+F            102528968                      gauss->p  
+F             95139056                      gauss     
+F            102047816                      gauss->p[i]
+F            102047896                      gauss->p[i]
+F            102046296                      gauss->w  
+F            102528824                      gauss->p  
+F             95138768                      gauss     
+F             95374432                      gauss->p[i]
+F             95373088                      gauss->p[i]
+F             95377568                      gauss->p[i]
+F             95371968                      gauss->w  
+F            102944232                      gauss->p  
+F             95138816                      gauss     
+F            103085112                      gauss->p[i]
+F            103085560                      gauss->p[i]
+F            103086456                      gauss->w  
+F            102528904                      gauss->p  
+F            102944496                      gauss     
+F            102402456                      gauss->p[i]
+F            102401576                      gauss->p[i]
+F            102401752                      gauss->p[i]
+F            102400344                      gauss->w  
+F            102943968                      gauss->p  
+F            102944568                      gauss     
+F            102348752                      gauss->p[i]
+F            102348800                      gauss->p[i]
+F            102348848                      gauss->p[i]
+F            102348896                      gauss->w  
+F            102944040                      gauss->p  
+F            102944520                      gauss     
+F             95373312                      gauss->p[i]
+F             95378016                      gauss->p[i]
+F             95373984                      gauss->p[i]
+F             95376672                      gauss->w  
+F            102944904                      gauss->p  
+F            102944784                      gauss     
+F            102348608                      gauss     
+F            101905080                      ffile_control_input
+F            101904840                      ffile_check
+F            101905368                      ffile_mesh_gen
+F            101904744                      ffile_mesh_data
+F            101905464                      ffile_element_h_matrices
+F            101904600                      ffile_element_c_matrice
+F            101904936                      ffile_element_e_matrice
+F            101904888                      ffile_system_matrices
+F            101905128                      ffile_r_matrix
+F            101905224                      ffile_t_matrix
+F            101905272                      ffile_source_matrix
+F            101904696                      ffile_solutions
+F            101905320                      ffile_old_solutions
+F            102347936                      ffile_print_out
+F            102347840                      ffile_post_geom
+F            102347264                      ffile_post_torque_to_nodes
+F            102347456                      ffile_potentials
+F            102347168                      ffile_load_vector
+F            102346976                      ffile_tmp 
+F            102347504                      ffile_history
+F            102347648                      ffile_fcheck
+F            102347696                      ffile_s_def_coil
+F            102347216                      ffile_element
+F            102348128                      ffile_motion
+F            102347792                      ffile_cyclic_source
+F            102349664                      ffile_PSIM

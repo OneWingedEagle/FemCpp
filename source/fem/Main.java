@@ -33,6 +33,8 @@ import components.GUI;
 
 	public class Main implements ActionListener, DropTargetListener{
 
+		
+	
 	GUI gui;
 
 	private Model model;
@@ -80,6 +82,7 @@ import components.GUI;
 				prepare();
 			
 				model.loadData(model.dataFilePath);
+			
 	
 				
 				if(model.seepage){
@@ -111,11 +114,11 @@ import components.GUI;
 	}
 
 	public void runMag(){
-		if(model.numberOfRegions==10 && model.motor){
-			 RunMagGear mt=new RunMagGear();
-			 mt.runMag(model, this);
-				}
-		else if(model.numberOfRegions==17 && model.motor){
+		//if(model.numberOfRegions==10 && model.motor){
+			// RunMagGear mt=new RunMagGear();
+			 //mt.runMag(model, this);
+			//	}
+		 if(model.numberOfRegions==17 && model.motor){
 		 RunMagIPM mt=new RunMagIPM();
 		 mt.runMag(model, this);
 		}else{
@@ -148,7 +151,7 @@ import components.GUI;
 
 		public void prepare(){
 		Main.this.model.iterMax=Main.this.iterMax;
-		Main.this.model.errMax=Main.this.errMax;
+		Main.this.model.errCGmax=Main.this.errMax;
 		
 		DateFormat dateFormat = new SimpleDateFormat("MM.dd.HH.mm.ss");
 		Date date = new Date();

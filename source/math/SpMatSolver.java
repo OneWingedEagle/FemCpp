@@ -1,14 +1,76 @@
 package math;
 import static java.lang.Math.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 public class SpMatSolver {
 	public boolean terminate;
+	public int totalIter;
+	public List<Double> errs = new ArrayList<Double>();
+	public double resRef=0;
+
+
 	public SpMatSolver(){}
 
-/*	public static void main(String[] args){
+	public static void main2(String[] args){
 		
-		System.out.println("Main method is empty");
-	}*/
+		int N=300;
+		
+		int Nm=1000;
+		Mat A=new Mat();
+/*		A.symSprand(N, N, 1);
+		A.ddom(1, 1);
+
+		
+		SpMat Ms=new SpMat(A);*/
+		SpMat Ms=new SpMat(N);
+		Ms.lower=true;
+
+	//Ms.show();
+		for(int i=0;i<N;i++){
+			Vect v=new Vect().rand(N, 0, 1);
+			for(int j=0;j<N;j++)
+				if(j>i)v.el[j]=0;
+				else
+				if(v.el[j]<.96) v.el[j]=0;
+			v.el[i]=(1+Math.random())*4;
+			Ms.row[i]=new SpVect(v);
+		}
+		//Ms.show();
+		int M=20;
+		Mat B=new Mat(N,M);
+		for(int i=0;i<M;i++){
+			Vect v=new Vect().rand(N, 0, 1);
+			B.setCol(v, i);
+		}
+		
+		Mat X=new Mat(N,M);
+		
+		SpMat Ls=Ms.ichol();
+	//	Ls.show();
+		
+		
+		SpMatSolver solver=new SpMatSolver();
+		double t1=System.currentTimeMillis();
+		for(int i=0;i<M;i++){
+			Vect x=solver.ICCG(Ms,Ls,  B.getColVect(i), 1e-6, Nm);
+			
+		}
+		double t2=System.currentTimeMillis();
+		
+		//Ms.show();
+		//System.out.println("Main method is empty");
+		
+	X=solver.BLICCG(Ms, Ls, B, 1e-6, Nm, X, M, true);
+	
+	double t3=System.currentTimeMillis();
+
+		System.out.println(t2-t1);
+		System.out.println(t3-t2);
+	//	util.pr(Ms.smul(X).sub(B).norm()/B.norm());	
+		
+		
+	}
 
 	
 	public Vect forwardSub(SpMat L, Vect b,SpMat A){
@@ -58,6 +120,7 @@ public class SpMatSolver {
 			x.el[i]=(b.el[i]-s)/L.row[i].el[j];
 			
 			}
+	
 	
 		return x;
 	}
@@ -541,7 +604,7 @@ public class SpMatSolver {
 		Vect r=b.sub(A.smul(x));
 		Vect v;
 		Vect z=solveTriangular(L,r,A);
-
+		
 		Vect p=z;
 		double resIni=r.norm(),res=resIni;
 		int k=0;
@@ -550,19 +613,27 @@ public class SpMatSolver {
 		if(errType==0 || errType==2) error=resIni; 
 		else error=1;
 		
-		report("ICCG",k,error, resIni);
-		
-			for(k=1;(k<=N &&  error>errMax && !this.terminate) ;k++){
-
-			v=A.smul(p);
 	
+		report("ICCG",k,error, resIni);
+
+		for(k=1;(k<=N &&  error>errMax && !this.terminate) ;k++){
+				
+			if(resRef>0)
+				errs.add(log10(error*resIni/resRef));
+			else
+				errs.add(log10(error));
+
+				totalIter++;
+
+				v=A.smul(p);
+
 			temp=z.dot(r);
 
 			alpha=temp/(p.dot(v));
 			x=x.add(p.times(alpha));
 			r=r.sub(v.times(alpha));
-			z=solveTriangular(L,r,A);
 		
+			z=solveTriangular(L,r,A);
 			beta=z.dot(r)/temp;
 			p=z.add(p.times(beta));
 			
@@ -576,7 +647,8 @@ public class SpMatSolver {
 						
 						res=r.norm();
 						error=res/resIni;
-					}
+						
+						}
 					else if(errType==2) {
 						res=r.abs().max();
 						error=res;
@@ -594,7 +666,6 @@ public class SpMatSolver {
 						report("ICCG",k,error, res);
 					}
 				}
-		
 		}
 		
 		if(echo)
@@ -638,48 +709,20 @@ public class SpMatSolver {
 			 
 			G=ms.gaussel(T, RtR);
 		
-			//X=X.add(P.mul(G));
-				for(int i=0;i<I;i++)
-					for(int j=0;j<m;j++){
-						double s=0;
-						for(int n=0;n<m;n++)
-						
-							s=s+P.el[i][n]*G.el[n][j];
-						X.el[i][j]+=s;
-					}
+			X=X.add(P.mul(G));
 
-
-			
-			for(int i=0;i<I;i++)
-				for(int j=0;j<m;j++){
-					double s=0;
-					for(int n=0;n<m;n++)					
-						s=s-V.el[i][n]*G.el[n][j];
-					
-					R.el[i][j]+=s;
-				}
-			//R=R.sub(V.mul(G));
+			R=R.sub(V.mul(G));
 
 			C=ms.gaussel(RtR,R.transp().mul(R));
-			 
-			 double[][] tt=new double[I][m];
-				for(int i=0;i<I;i++)
-					for(int j=0;j<m;j++){
-						double s=0;
-						for(int n=0;n<m;n++)					
-							s=s+P.el[i][n]*C.el[n][j];
-						
-						tt[i][j]=R.el[i][j]+s;
-					}
-				for(int i=0;i<I;i++)
-					for(int j=0;j<m;j++)
-						P.el[i][j]=tt[i][j];
-			//P=R.add(P.mul(C));
-			
+
+			P=R.add(P.mul(C));
+		
 				resMax=R.absMat().maxElement();
 				resRatio=resMax/resMax0;
-				if(k%50==0 && echo)
+				if(k%50==0 && echo){
 					report("BLCG",k,resRatio, resMax);
+
+				}
 		
 	
 	}
@@ -688,8 +731,76 @@ public class SpMatSolver {
 	return X;
 	}
 	
+	public Mat BLICCG(SpMat A,SpMat L,Mat B,double errMax,int N,Mat X,int errType, boolean echo){
+		// block CG
+			int I=A.getnRow();
+			int J=A.getnCol();
+			MatSolver ms=new MatSolver();
+			
+			int K=B.nRow;
+			if(I!=J) throw new IllegalArgumentException("Matrix is not square");
+			if(I!=K) throw new IllegalArgumentException("Arrays dimensions do not agree");
+			Mat R=B.sub(A.smul(X));
+			
+			Mat Z=new Mat(R.size());
+			for(int j=0;j<Z.nCol;j++){
+				Vect z=solveTriangular(L,R.getColVect(j),A);
+				Z.setCol(z, j);
+			}
+			
+
+			Mat V;
+			int m=B.nCol;
+			Mat P=Z.deepCopy();
+			Mat T,G=new Mat(I,m),RtZ=new Mat(m,m),C=new Mat(I,m);
+
+			double resMax0=B.absMat().maxElement();
+			double resMax=resMax0;
+			int k=0;
+			double resRatio=resMax/resMax0;
+
+				for(k=1;(k<=N &&  resRatio>errMax) ;k++){
+					
+				V=A.smul(P);
+				
+				 T=P.transp().mul(V);
+
+		
+				 RtZ=R.transp().mul(Z);
+				 
+				G=ms.gaussel(T, RtZ);
+			
+				X=X.add(P.mul(G));
+
+				R=R.sub(V.mul(G));
+				
+				for(int j=0;j<Z.nCol;j++){
+					Vect z=solveTriangular(L,R.getColVect(j),A);
+					Z.setCol(z, j);
+				}
+
+				
+				C=ms.gaussel(RtZ.transp(),Z.transp().mul(R));
+
+				
+				P=Z.add(P.mul(C));
+			
+					resMax=R.absMat().maxElement();
+					resRatio=resMax/resMax0;
+					if(k%50==0 && echo){
+						report("BLICCG",k,resRatio, resMax);
+
+					}
+			
+		
+		}
+		if(echo)
+		report("BLICCG",k,resRatio, resMax);
+		return X;
+		}
 	
-	public Mat BLCG2(SpMat A,Mat B,double errMax,int N,Mat X,int errType, boolean echo){
+	
+	public Mat uneqConvBLCG(SpMat A,Mat B,double errMax,int N,Mat X,int errType, boolean echo){
 		// block CG unequal converg. ; not fine yet
 			int I=A.getnRow();
 			int J=A.getnCol();
@@ -735,7 +846,7 @@ public class SpMatSolver {
 		
 		}
 		if(echo)
-		report("CG",k,resRatio, resMax);
+		report("BLCG",k,resRatio, resMax);
 		return X;
 		}
 	
@@ -1401,6 +1512,7 @@ double a=0;
 
 	public void terminate(boolean b){
 		this.terminate=b;
+
 	}
 
 

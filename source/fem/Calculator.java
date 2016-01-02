@@ -210,14 +210,12 @@ public class Calculator {
 					for(int i=0;i<model.nElEdge;i++){
 
 						if(hasJ){
-						//	C[i]+=wsJ*Ne[i].dot(J);
-							
+				
 							Cj[i]=Cj[i].add(Ne[i].times(wsJ));
 						}
 
 						if(hasM){
 							C[i]+=wsJ*rotNe[i].dot(M);
-
 
 						}
 
@@ -247,8 +245,9 @@ public class Calculator {
 		lowSym(H1);
 		if(nonLinear)
 			lowSym(H2);
-		if(eddy)
+		if(eddy){
 			lowSym(H3);
+			}
 
 		model.H2=H2;
 		model.H3=H3;
@@ -261,6 +260,8 @@ public class Calculator {
 
 
 	}
+	
+	
 
 	public double[][] HeCoupled(Model model,int nBH,int nLam,int ie, boolean nonLinear,boolean  eddy,boolean hasJ,boolean hasM){
 		if(this.elCode==0) return HeCoupled3ang(model,nBH,nLam,ie,nonLinear,eddy, hasJ,hasM);
@@ -1029,13 +1030,26 @@ public class Calculator {
 		else
 			nu=model.element[ie].getNu();
 		
-		if(model.element[ie].getRegion()==8&& model.getElementCenter(ie).v2().norm()>.07)
+/*		if(model.element[ie].getRegion()==8&& model.getElementCenter(ie).v2().norm()>-.07)
 		{
 		
-			nu.timesVoid(2);
-			nuVar.timesVoid(2);
+			double  ss=0;
+			if(model.element[ie].isDeformable())
+				ss=model.element[ie].getStress().norm();
+			nu.timesVoid(1+ss/50);
+			nuVar.timesVoid(1+ss/50);
 			
 		}
+		else if(model.element[ie].getRegion()==16){
+			double  ss=0;
+			if(model.element[ie].isDeformable())
+				ss=model.element[ie].getStress().norm();
+		//	nu.timesVoid(1-ss/130);
+			//nuVar.timesVoid(1-ss/130);
+			nu.timesVoid(1-.9);
+			nuVar.timesVoid(1-.9);
+			
+		}*/
 
 		double[][] H1=new double[model.nElEdge][model.nElEdge];
 		double[][] H2=new double[model.nElEdge][model.nElEdge];
@@ -2422,7 +2436,7 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 
 		Node[] vertexNode=model.elementNodes(ie);
 		double[][] M=new double[this.nElVert][this.nElVert];
-		Vect rdtSigma=model.element[ie].getSigma().times(model.dt);
+		Vect dtSigma=model.element[ie].getSigma().times(model.dt);
 
 		double detJac,ws=1;
 		int n=this.PW[0].length;	
@@ -2453,7 +2467,7 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 
 					for(int i=0;i<this.nElVert;i++)
 						for(int j=0;j<=i;j++)	
-							M[i][j]+=ws*gradN[i].dot(gradN[j].times(rdtSigma));
+							M[i][j]+=ws*gradN[i].dot(gradN[j].times(dtSigma));
 				}	
 
 
@@ -2526,8 +2540,6 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 					else
 						ws=detJac;
 
-
-
 					Ne=Ne(jac,localCo);
 
 
@@ -2539,38 +2551,8 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 
 				}	
 
-
-
 		return M;
 	}
-	/*public double[][] Pe3ang1st(Model model, int ie){
-
-
-		double[][] Pe=new double[this.nElVert][this.nElEdge];
-
-		double S=el3angArea(model,ie);
-		double sigmaZ=model.element[ie].getSigma().el[2];
-
-
-		Vect[] gradN=gradN3ang(model,ie);
-		double[] Ne=Ne3ang(model,ie);
-		for(int j=0;j<this.nElEdge;j++)
-			Ne[j]*=sigmaZ;
-
-		for(int i=0;i<this.nElVert;i++)
-			for(int j=0;j<this.nElEdge;j++)	{
-				Pe[i][j]=S*gradN[i].el[2]*Ne[j];
-
-			}
-
-	
-
-		return Pe;
-	
-		//^^^
-
-	}
-*/
 
 	public Vect gradPhi(Node[] vertexNode,double[] nodePhi){
 

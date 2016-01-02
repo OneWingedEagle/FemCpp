@@ -1,0 +1,178 @@
+* RLS_NO *
+r11.0
+* PRE_PROCESSING * MAKE_SYSTEM_MATRICES * PRE_CONDITIONING *
+       1                  1                      1
+* SOLVE_EQUATION * POST_PROCESSING *
+       1                  1
+* STATIC * STEP * AC * TRANSIENT * DISPLACEMENT * NON_LINEAR * TEMP_DEPEND *
+    1       0     0      0         0           1
+* POTENTIAL *
+    0
+* TREE_GAUGE *
+   -1 
+* ORDER_OF_SHEPE_FUNCTIONS *
+         1
+* ICCG_CONV * ACCEL_FACTOR * DIV_FACTOR * DIV_ITERATIONS * SOLVER * THETA *
+    1.e-8        0.0            10.          10             0
+* NON_LINERAR_CONV * RELAXATION * NO_ITERATIONS *
+    1.e-3             1.0            20
+* POINTS_IN_1D * POINT_IN_TRIANGLE * MAT_POINTS * 
+         3               7             0
+* INITIAL_STEP * DATA_TYPE * INITIAL_PHASE *
+     -1
+* NO_STEPS * INITIAL_TIME(s) *  DELTA_TIME(s) *
+      1         0.0              .02
+* INITIAL_STEP * LAST_STEP * STEP_INTERVAL * TIME_DIFF * RESTART_FILE_OPTION * CONT *
+       1             1000           1             0
+* INPUT_MESH_FILE *  UNIT  *
+        5            0
+* POST_DATA_FILE * ELEM_OUT * NODE_OUT *NUMBER_OUTPUT_MATS * AVERAGE *
+        5            1            0           0                 0
+* MESH * CURRENT * MAGNETIC * FORCE_J_B* FORCE_NODAL * DISP * ELEM * HEAT *
+   1        1         1            0          1         0       0      0
+*   MESH   *   A   *   V   *   B   *   B_INTEG *    J_Q  *
+     0         0       0       0         0           0
+*  Q_AVERAGE * HEAT  *  MAG_FLUX  * CUR_FLUX *
+        0         0            0            0
+* FORCE_J_B * FORCE_NODAL *
+        1         1
+* GEOMETRY * DELTA_Z(m) or DETLA_THETA(deg)* NO_LAYERS *
+     0         .0254
+*COORDINATE * NO_COORDINATES *
+COORDINATE         0
+* FAR_BOUNDARY_CONDITION 
+       0
+* DISTANCE_JUDGE(m) * Distance for judgement (m)
+      1.e-4
+* NO_BN0_PLANES *
+    0
+* NO_HT0_PLANES *
+    0
+* NO_A0_LINE *
+    0
+*  0.0   0.0   0.0   0.0  0.0  1.0
+* CYCLIC     *  SYMMETRICITY *  SLIDE_NDIV *  SLIDE_MAT *
+     0               1             0          11
+* NO_MAT_IDS *  EXTEND_TOTAL *  NO_SMAT_IDS 
+     3               0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *
+     1            1           1         0.0     1000.0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *
+     2            1           1         0.0     1.0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *
+     3            0           0         0.0      1.0
+*SOURCE *
+SOURCE  
+COIL         1            0             11              
+*XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  *
+*W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+GCE	1						
+	-0.0715	-0.1145	-0.025	-0.0715	-0.0855	-0.025		
+	0	0	0.0483	0.009	0	0		
+GCE	1						
+	-0.0855	-0.0715	-0.025	-0.1145	-0.0715	-0.025		
+	0	0	0.0483	0	0.009	0		
+GCE	1						
+	-0.1285	-0.0855	-0.025	-0.1285	-0.1145	-0.025		
+	0	0	0.0483	-0.009	0	0		
+GCE	1						
+	-0.1145	-0.1285	-0.025	-0.0855	-0.1285	-0.025		
+	0	0	0.0483	0	-0.009	0		
+GCE-	1						
+	-0.0715	-0.1	-0.025	-0.0715	-0.0855	-0.025		
+	0	0	0.0483	0.009	0	0							
+	5	3	3	3				
+GCE-	1
+	-0.0855	-0.0715	-0.025	-0.1	-0.0715	-0.025		
+	0	0	0.0483	0	0.009	0							
+	5	3	3	3
+*X(m)	*	Y(m)	*	Z(m)	*	RADIUS(m)*
+*ALPHA(deg)*	BETA(deg)	*	PHI1(deg)	*	PHI2(deg)	*
+ARC	1						
+	-0.0855	-0.0855	-0.025	0.014	0.0966	0.018		
+	0	0	0	90				
+ARC	1						
+	-0.1145	-0.0855	-0.025	0.014	0.0966	0.018		
+	0	0	90	180				
+ARC	1						
+	-0.1145	-0.1145	-0.025	0.014	0.0966	0.018		
+	0	0	-180	-90				
+ARC	1						
+	-0.0855	-0.1145	-0.025	0.014	0.0966	0.018		
+	0	0	-90	0				
+ARC-	1						
+	-0.0855	-0.0855	-0.025	0.014	0.0966	0.018		
+	0	0	0	90				
+	5	3	3	3									END 
+*CIRCUIT *
+CIRCUIT
+* NO_SERIES * NO_POWER_SUPPLIES *  REGION_FACTOR *  IN_IND *  IN_RES * IN_CON * REGION_PARALLEL *
+        1                1                  1.		1	1
+* SERIES_IDS *
+      1
+* SERIES_EXTERNAL_INDUCTANCE *
+       0.0
+* SERIES_EXTERNAL_RESISTANCE *
+       1
+*  CONNECTION_MATRIX *
+       1.0 
+* PS_ID    *    TYPE  * TIME_ID *   INITIAL_CURRENT * STATOR_OR_ROTOR
+    1            1         1                0.0 
+* END 0f CIRCUIT
+END
+*END of SOURCE *
+END
+* NO_DATA *
+      1
+* TIME_ID * OPTION *
+     1        0
+*    C0    *    C1    *   C2   *    C3    *    C4    *   C5   *   C6   *
+     11.36		0 	  0      0        0.0       0.0      0.0
+*   TEXP   *  TCYCLE  *
+	0	0
+* NO_CURVES *Å@Bxx
+     1
+* BH_CURVE_ID * NO_DATA *
+     1             39       
+*   H_AT/M     *      B_T    *
+*Åxxx
+0	0
+200	0.07065
+400	0.1413
+600	0.21195
+800	0.2826
+1000	0.35325
+1200	0.4239
+1400	0.49455
+1600	0.5652
+1800	0.63585
+2000	0.7065
+2200	0.77715
+2400	0.8478
+2600	0.91845
+2800	0.9891
+3000	1.05975
+3200	1.1304
+3400	1.20105
+3600	1.2717
+3800	1.34235
+4000	1.413
+8010	1.594
+16010	1.751
+24020	1.839
+32030	1.896
+40030	1.936
+48040	1.967
+64050	2.008
+80070	2.042
+96080	2.073
+112100	2.101
+128110	2.127
+144120	2.151
+176150	2.197
+208180	2.24
+240200	2.281
+272230	2.321
+304260	2.361
+336290	2.4
+396390	2.472

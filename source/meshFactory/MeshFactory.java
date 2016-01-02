@@ -50,37 +50,75 @@ public class MeshFactory {
 
 		MeshFactory mf=new MeshFactory();
 		
-		mf.makeCoil4();
+		mf.makeCoil4();		System.exit(0);
 		
-	/*	Mat R11=util.rotMat2D(PI/8);
+		String bun2d=System.getProperty("user.dir") + "\\resultsMSstress\\mot4th2DFine.txt";
 		
-		Vect[] cent=new Vect[8];
-		Vect[] cv=new Vect[8];
+		Model m2dx=new Model(bun2d);
 		
-		for(int i=0;i<8;i++){
-			 R11=util.rotMat2D(i*PI/4+PI/8);
-			cent[i]=R11.mul(new Vect(.2,0)).v3();
+		
+
+	String bun3d=System.getProperty("user.dir") + "\\resultsMSstress\\stat8th.txt";
+		
+		Model m3dx=new Model(bun3d);
+		
+		String sstr=System.getProperty("user.dir") + "\\resultsMSstress\\stress8th900.txt";
+		
+		m3dx.loadStress(sstr);
+
+		
+		if(2>1){
+		int nrg2=m2dx.region[8].getNumbElements();
+
+		
+		Vect vx=m2dx.getElementCenter(m2dx.region[8].getFirstEl());
+		
+	int	nr3=1;
+	int	nr2=8;
+
+
+for(int layer=1;layer<=6;layer++){
+	String ssMS=System.getProperty("user.dir") + "\\resultsMSstress\\stressMS900layer"+layer+".txt";
+m2dx.loadStress(ssMS);
+
+int iz=-1;
+for(int i=m2dx.region[nr2].getFirstEl();i<=m2dx.region[nr2].getLastEl();i++){
+	iz++;
+	
+	Vect stress2d=m2dx.element[i].getStress();
+	
+	int i3=m2dx.region[nr3].getFirstEl()+iz+(layer-1)*nrg2;
+
+	Vect stress3d=m3dx.element[i3].getStress();
+
+	stress3d.el[0]+=stress2d.el[0];
+	stress3d.el[1]+=stress2d.el[1];
+	stress3d.el[3]+=stress2d.el[2];
 			
-			cv[i]=R11.mul(new Vect(1,0)).v3();
+			m3dx.element[i3].setStress(stress3d);
+	}
+}
+
+		String sstrout=System.getProperty("user.dir") + "\\resultsMSstress\\stress900out.txt";
+		
+		m3dx.writeStress(sstrout);
+		
+		
 		}
+/*		int s=0;
+		for(int p=1;p<695;p++)
+			s+=p;
 		
-		for(int i=0;i<8;i++){
-			cent[i].hshow();
-			cv[i].hshow();
-		}*/
+		util.pr(s+"--");
+		*/
+/*		boolean[] bbi=new boolean[nmax];
+		boolean[] bbj=new boolean[nmax];
+		boolean[] bbk=new boolean[nmax];*/
 		
 		
-/*		Mat M=new Mat(4,4);
 		
-		for(int i=0;i<4;i++)
-			for(int j=0;j<=i;j++)
-				M.el[i][j]=1;
-		
-		M.show();
-		
-		Mat Mr=M.inv();
-		Mr.show();
-*/
+		//mf.makeCoil4();
+
 	
 		//	mf.meshQx();
 
@@ -504,6 +542,7 @@ public class MeshFactory {
 		m2d.writeStress(System.getProperty("user.dir") + "\\resultsShrink3DLamin\\stress2D"+k+".txt");
 
 		}
+		
 	//	mf.triangToQuad();
 		
 		
@@ -5862,10 +5901,6 @@ for(int i=0; i<dh.length; i++){
 
 		}
 
-		half.BCtype=new int[4];
-		half.diricB=new Vect[4];
-		for(int j=0;j<4;j++)
-			half.diricB[j]=new Vect(2);
 
 
 
@@ -6579,12 +6614,6 @@ for(int i=0; i<dh.length; i++){
 			md1.region[i].setYng(md0.region[i].getYng());
 
 		}
-
-		md1.BCtype=new int[4];
-		md1.diricB=new Vect[4];
-		for(int j=0;j<4;j++)
-			md1.diricB[j]=new Vect(2);
-
 
 
 		for(int i=1;i<=md0.numberOfNodes;i++)	
@@ -12098,6 +12127,9 @@ private void makeCoil(){
 
 private void makeCoil4(){
 	
+	for(int ip=0;ip<1;ip++)
+		for(int ic=0;ic<1;ic++){
+	
 	double[][][] dataSolid=new double[4][2][6];
 	int[][] intsSolid=new int[4][];
 	
@@ -12107,49 +12139,33 @@ private void makeCoil4(){
 	int[][] intsArc=new int[4][];
 	
 
-/*	double Lx=.034;
-	double Ly=.031;
-	double Wx=.024;
-	double Wy=.024;
-	double Wz=.017;*/
+/*	double Lx=1;
+	double Ly=1;
+	double Wx=.1;
+	double Wy=.1;
+	double Wz=1;*/
 	
-/*	double Lx=.035;
-	double Ly=.031;
-	double Wx=.023;
-	double Wy=.023;
-	double Wz=.016;*/
-	
-/*	double Lx=.18;
-	double Ly=.18;
-	double Wx=.05;
-	double Wy=.05;
-	double Wz=.08;*/
-	
-/*	double Lx=.018;
-	double Ly=.018;
-	double Wx=.01;
-	double Wy=.01;
-	double Wz=.01;
-	*/
-	double Lx=.024;
-	double Ly=.024;
-	double Wx=.01;
-	double Wy=.01;
+	double Lx=.012;
+	double Ly=.012;
+	double Wx=.005;
+	double Wy=.005;
 	double Wz=.01;
 	
 	
-	double current =350;
 	double rotAng=0;
-	double alpha=0;
-	double beta=00;
+	double alpha=15;
+	double beta=90;
+	
+	if(ic==1) alpha=90-15;
+	
+	alpha+=ip*90;
+	
+	double r=.055036;
+	Vect translate=new Vect(r*Math.cos(alpha*PI/180),r*Math.sin(alpha*PI/180),0.025);
 
-	Vect translate=new Vect(0,-.062,0);
-
-	 translate=new Vect(.025,-.025,.058);
-
-		
-		
+	
 	Vect coilCentre=new Vect(0,0,0);
+
 
 
 	//-------------------------
@@ -12236,6 +12252,8 @@ private void makeCoil4(){
 	dataArc2[3][3]=270;
 	//-------------------------
 
+
+
 	 
 	double[][][] dataSolidX=new double[4][2][6];
 	double[][] dataArcX=new double[4][6];
@@ -12244,8 +12262,8 @@ private void makeCoil4(){
 	int[][] intsArcX=new int[4][];
 	
 	Mat Rx=util.rotEuler(new Vect(1,0,0),(beta)*PI/180);
-	Mat Ry=util.rotEuler(new Vect(0,1,0),0*PI/180);
-	Mat Rz=util.rotEuler(new Vect(0,0,1),alpha*PI/180);
+	Mat Ry=util.rotEuler(new Vect(0,1,0),(alpha)*PI/180);
+	Mat Rz=util.rotEuler(new Vect(0,0,1),rotAng*PI/180);
 	Mat R=Rx.mul(Ry.mul(Rz));
 	
 	//double[][] data2=new double[data.length][data[0].length];
@@ -12329,9 +12347,9 @@ private void makeCoil4(){
 	for(int i=0;i<dataSolidX.length;i++)
 	{
 		if(i<4)
-			util.pr("GCE\t"+current);
+			util.pr("GCE\t1.0");
 			else
-				util.pr("GCE-\t"+current);
+				util.pr("GCE-\t1.0");
 		util.hshow(dataSolidX[i][0]);
 		util.hshow(dataSolidX[i][1]);
 		if(i>3)
@@ -12348,9 +12366,9 @@ private void makeCoil4(){
 	for(int i=0;i<dataArc2X.length;i++)
 	{
 		if(i<4)
-			util.pr("ARC\t"+current);
+			util.pr("ARC\t1.0");
 			else
-				util.pr("ARC-\t"+current);
+			util.pr("ARC-\t1.0");
 		util.hshow(dataArcX[i]);
 		util.hshow(dataArc2X[i]);
 		if(i>3)
@@ -12359,6 +12377,6 @@ private void makeCoil4(){
 		}
 
 }
-	
+}
 	
 }
