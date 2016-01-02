@@ -1,0 +1,30 @@
+
+Loading mesh file completed.
+
+Loading data file completed.
+314.1592653589793
+Computing Symmetric Complex Preconditioner..
+COICCG iteration:    50	 error : 6.59E-03	 res max: 3.90E-05
+COICCG iteration:   100	 error : 2.16E-05	 res max: 1.28E-07
+COICCG iteration:   138	 error : 4.61E-07	 res max: 2.73E-09
+-------------------------  2.0569139891324957E-5
+
+ Bun data was written to:
+    C:\Works\MagFem\fluxes\bun.txt
+
+ Magnetic flux density was written to C:\Works\MagFem\fluxes\flux0.txt
+ >>>>>>>>>> Bmax >>>>>>>0.002514408905740933
+Fmax 0.0010660947901793452at node 1144 with coordinates
+       -0.03000	       -0.03000	        0.05000	
+Force vector :
+       -0.00018	       -0.00018	        0.00103	
+FMsmax 0.0at node 0 with coordinates
+torque >>>>>>>-4.0911820113963834E-13
+
+ Bun data was written to:
+    C:\Works\MagFem\results\bun0.txt
+
+ Magnetic flux density was written to C:\Works\MagFem\results\flux0.txt
+ J0 density was written to C:\Works\MagFem\results\J0.txt
+ Eddy current was written to C:\Works\MagFem\results\Je0.txt
+137

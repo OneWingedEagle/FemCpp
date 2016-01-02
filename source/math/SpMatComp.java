@@ -76,7 +76,13 @@ public class SpMatComp  {
 		row=new SpVectComp[nRow];
 		int nCol=Mr.getnCol();
 		for(int i=0;i<Mr.nRow;i++){
+			if(Mr.row[i]==null){
+				row[i]=new SpVectComp(nCol);
+				continue;
+			}
+			
 			row[i]=new SpVectComp(nCol,Mr.row[i].nzLength);
+			
 			for(int j=0;j<row[i].nzLength;j++){
 			
 					double ur=Mr.row[i].el[j];

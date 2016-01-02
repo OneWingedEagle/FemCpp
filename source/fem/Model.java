@@ -73,10 +73,10 @@ public class Model{
 	public BHCurve[] BH;
 	public CurrentWaveForm ia,ib,ic,va,vb,vc;
 	public String elType="hexahedron";
-	public SpMat Hs,Ms,Ks,Ls,Cs,Ss,Ts;
+	public SpMat Hs,Ms,Ks,Ls,Cs,Ss,Ps,Qs;
 	public Mat eigVects,bigMat;
 	public Vect lams,RHS,bU,bT,HpAp,HkAk;
-	public boolean motor,modal,hasTwoNodeNumb,fullMotor,writeFiles,Tmethod,
+	public boolean AC,motor,modal,hasTwoNodeNumb,fullMotor,writeFiles,Tmethod,
 	circuit,stranded,seepage,wavePC,loadFlux,loadPotentioal,loadPrevMag,loadPrevMech,loadForce,loadDisp,saveFlux,saveForce,saveDisp,saveStress,
 	transfer2DTo3D,magAnalysis,mechAnalysis,rotateRotor,axiSym;
 	public int forceCalcMode=1,dataType;
@@ -1650,7 +1650,7 @@ Vect Ci=this.Cs.scale(this.bT);
 			setElementJe(i);
 
 			Vect Je=element[i].getJe();
-Je.hshow();
+//Je.hshow();
 			if(element[i].isConductor()){
 				Jn2=Je.dot(Je);
 				if(Jn2>Jmax2)

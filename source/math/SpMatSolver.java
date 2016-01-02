@@ -1305,6 +1305,15 @@ double a=0;
 		else error=1;
 
 			for(k=1;(k<=N &&  error>errMax && !this.terminate) ;k++){
+				
+				if(resRef>0)
+					errs.add(log10(error*resIni/resRef));
+				else
+					errs.add(log10(error));
+
+					totalIter++;
+
+					
 			temp=z.dot(r);
 
 			v=A.mul(p);

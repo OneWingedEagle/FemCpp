@@ -2436,7 +2436,7 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 
 		Node[] vertexNode=model.elementNodes(ie);
 		double[][] M=new double[this.nElVert][this.nElVert];
-		Vect dtSigma=model.element[ie].getSigma().times(model.dt);
+		Vect dtSigma=model.element[ie].getSigma();
 
 		double detJac,ws=1;
 		int n=this.PW[0].length;	

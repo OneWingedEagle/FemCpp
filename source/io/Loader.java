@@ -316,7 +316,7 @@ public static void main2(String[] args){
 				model.setNonLin(nonlin);
 
 				line=getNextDataLine(br);
-				model.motor=getBooleanData(line);
+				model.AC=getBooleanData(line);
 				
 				line=getNextDataLine(br);;
 				int nRegions =getIntData(line);		

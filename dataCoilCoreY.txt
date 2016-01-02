@@ -4,12 +4,12 @@
  3
 //coordinate system  (0. Cartesian 1. Cylindrical, 2. Spherical): 
 0
-//Analysis mode  (0. static1   1. eddy-A. 2. eddy-A-phi  3. AC):
-3
+//Analysis mode  (0. static1   1. eddy-A. 2. eddy-A-phi):
+2
 //nonlinear
 f
-//motor:
-f
+//AC:
+t
 //Number_of_Regions:
 10
 //REG_ID,BH_ID,mu,sigma
@@ -21,7 +21,7 @@ f
 6,0,1,0 
 7,0,1,0 
 8,0,1,0 
-9,0,1000,0e6
+9,0,1000,1e4
 10,0,1,0 
 //Boundary conditions
 D
@@ -45,7 +45,7 @@ f
 //eddytimeIntegMode:
 0
 //dt:
-1e-2
+2e-2
 //rotStep
 //0
 //

@@ -32,8 +32,25 @@ public class MagMatrix {
 		setReactMat(model);
 		if(model.analysisMode>0)
 			setConductMat(model);
-		if(model.analysisMode==2 && model.dim==3)
+		
+		if(model.analysisMode>1 && model.dim==3){
+			
 			setA_Phi_couplingMat( model);
+			
+			if(!model.AC){
+	
+				for(int i=0;i<model.numberOfVarNodes;i++)
+					model.Hs.row[i+model.numberOfUnknownEdges]=model.Ps.row[i].deepCopy();
+			
+				model.Qs.times(model.dt);
+
+				for(int i=0;i<model.numberOfVarNodes;i++){
+					model.Hs.row[i+model.numberOfUnknownEdges]=model.Hs.row[i+model.numberOfUnknownEdges].augh(	model.Qs.row[i]);
+				}
+				
+
+			}
+		}
 		
 
 	}
@@ -320,21 +337,12 @@ public class MagMatrix {
 	public void setA_Phi_couplingMat(Model model){
 	
 		
-		model.Ts=getPs(model);
-
-	
-	for(int i=0;i<model.numberOfVarNodes;i++)
-		model.Hs.row[i+model.numberOfUnknownEdges]=model.Ts.row[i].deepCopy();
-
-	SpMat T=getQs(model);
+	model.Ps=getPs(model);
 
 
-	for(int i=0;i<model.numberOfVarNodes;i++){
-		model.Hs.row[i+model.numberOfUnknownEdges]=model.Hs.row[i+model.numberOfUnknownEdges].augh(T.row[i]);
-	}
+	model.Qs=getQs(model);
 	
 
-	
 
 }
 	
@@ -1049,6 +1057,7 @@ public class MagMatrix {
 				if(!model.element[i].isConductor()) continue;
 
 				He=this.calc.Qe(model,i);
+				
 
 				int[] vertNumb=model.element[i].getVertNumb();
 

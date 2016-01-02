@@ -37,22 +37,24 @@ public class FEMsolver {
 		
 		Vect x=null;
 		
-		if(model.analysisMode==0){
+		 
+			if(model.AC){
+				ACMagSolver solver= new ACMagSolver();
+				x= solver.solve(model,  step);
+			}
+			
+		
+			else if(model.analysisMode==0){
 	
 			StaticLinearMagSolver solver= new StaticLinearMagSolver();
 			x= solver.solve(model,  step);
 			
 		}
-		if(model.analysisMode==1|| model.analysisMode==2){
+		else if(model.analysisMode>0){
 			TransientLinearMagSolver solver= new TransientLinearMagSolver();
 			x= solver.solve(model,  step);
 		}
-		else 
-		if(model.analysisMode==3){
-			ACMagSolver solver= new ACMagSolver();
-			x= solver.solve(model,  step);
-		}
-		
+	
 		return x;
 	}
 	

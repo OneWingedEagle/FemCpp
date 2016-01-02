@@ -40,21 +40,75 @@ public class SpVectComp {
 		}
 	}
 	
-	public SpVectComp(double[] el){
+	public SpVectComp(double[] el1){
 		
-		int L=el.length;
+		int L=el1.length;
 		length=L;
 		int nz=0;
 		for(int i=0;i<L;i++){
-			if(el[i]!=0) nz++;
+			if(el1[i]!=0) nz++;
 		}
 		nzLength=nz;
 		this.el=new Complex[nz];
 		index=new int[nz];
 		nz=0;
 		for(int i=0;i<L;i++){
-			if(el[i]!=0) {
-				this.el[nz]=new Complex(el[i],0);
+			if(el1[i]!=0) {
+				this.el[nz]=new Complex(el1[i],0);
+				index[nz++]=i;
+			}
+		}
+	}
+	
+	public SpVectComp(SpVect sv,Complex a){
+		
+		int L=sv.length;
+		length=L;
+	
+		nzLength=sv.nzLength;
+		this.el=new Complex[nzLength];
+		index=new int[nzLength];
+		for(int i=0;i<nzLength;i++){
+		{
+				this.el[i]=new Complex(sv.el[i],0).times(a);
+				index[i]=sv.index[i];
+			}
+		}
+	}
+	
+	
+	public SpVectComp(SpVect sv){
+		
+		int L=sv.length;
+		length=L;
+	
+		nzLength=sv.nzLength;
+		this.el=new Complex[nzLength];
+		index=new int[nzLength];
+		for(int i=0;i<nzLength;i++){
+		{
+				this.el[i]=new Complex(sv.el[i],0);
+				index[i]=sv.index[i];
+			}
+		}
+	}
+	
+	
+	public SpVectComp(double[] el1,Complex a){
+		
+		int L=el.length;
+		length=L;
+		int nz=0;
+		for(int i=0;i<L;i++){
+			if(el1[i]!=0) nz++;
+		}
+		nzLength=nz;
+		this.el=new Complex[nz];
+		index=new int[nz];
+		nz=0;
+		for(int i=0;i<L;i++){
+			if(el1[i]!=0) {
+				this.el[nz]=new Complex(el1[i],0).times(a);
 				index[nz++]=i;
 			}
 		}

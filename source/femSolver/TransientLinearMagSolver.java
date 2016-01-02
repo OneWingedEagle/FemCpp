@@ -52,7 +52,7 @@ int stepNumb;
 				Vect v1=model.getUnknownA();
 				
 				if(model.analysisMode==2){
-					Vect v=model.Ts.amul(v1);
+					Vect v=model.Ps.amul(v1);
 					
 					if(model.RHS!=null)
 					for( int i=0;i<v.length;i++){
