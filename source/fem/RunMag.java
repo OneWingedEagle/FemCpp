@@ -24,6 +24,7 @@ public class RunMag {
 
 	public void runMag(Model model, Main main){
 
+			
 		
 			String folder=model.resultFolder;
 
@@ -37,24 +38,6 @@ public class RunMag {
 
 			int inc=model.nInc;
 
-		/*	Model mx3=new Model(System.getProperty("user.dir") + "\\resultsShrink3DOrthot\\statFrameRough.txt");
-			mx3.loadStress(System.getProperty("user.dir") + "\\resultsShrink3DOrthot\\stressStatFrameRough.txt");*/
-			
-/*			int ix=0;
-	for(int i=model.region[8].getFirstEl();i<=model.region[8].getLastEl();i++){
-				ix++;
-				Vect ss=mx3.element[ix].getStress();
-				model.element[i].setDeformable(true);
-				model.element[i].setStress(ss);
-			}
-	for(int i=model.region[16].getFirstEl();i<=model.region[16].getLastEl();i++){
-		ix++;
-		Vect ss=mx3.element[ix].getStress();
-		model.element[i].setDeformable(true);
-		model.element[i].setStress(ss);
-	}*/
-	//model.writeStress(System.getProperty("user.dir") + "\\resultsShrink3DOrthot\\stressStMotRough.txt");
-			
 			
 			if(model.loadPrevMag){
 				
@@ -64,14 +47,6 @@ public class RunMag {
 				model.loader.loadPrevMag(model,initfile);
 
 				}
-			
-
-			// log mode: 0: instantaneous torque, 1: average torque vs. beta, 2: emfs
-
-			
-			
-			
-		//	MatSolver msolver=new MatSolver();
 			
 
 
@@ -142,20 +117,20 @@ public class RunMag {
 
 				for(int i=nBegin;i<=nEnd;i+=inc){
 
-			
-					double beta=0;
-				model.setBeta(beta);
+
 					
 				double t0=0;
-				if(model.numberOfRegions==17 && model.motor)
-			
-				
-				util.pr(model.dt);
-				
-					model.setJ(t0+(nSamples-1)*model.dt);	
-
 		
+				
+					model.setJ(t0+i*model.dt+i);	
+		/*		int ir=1;
+					for(int ie=model.region[ir].getFirstEl();ie<=model.region[ir].getLastEl();ie++){
+						Vect J=model.region[ir].getJ();
+						model.element[ie].setJ(J.times(1+i));
+				
 
+					}
+*/
 
 					if(!model.loadFlux){
 						
@@ -178,7 +153,7 @@ public class RunMag {
 										model.saveAp();		
 
 										// x=new Vect(model.numberOfUnknowns);
-
+										
 										x=model.solveMagLin(i);	
 
 									}
@@ -222,14 +197,16 @@ public class RunMag {
 									x=model.solveNonLinear(x,true,i-nBegin);
 								}
 
-					/*	if(model.analysisMode>0)
+						if(model.analysisMode>0)
 							model.setJe();
-*/
+
 				
 							this.xp=x.deepCopy();
 
 							if(model.saveFlux){
 								String fluxFile = fluxFolder+"\\flux"+i+".txt";
+								if(i==nBegin)
+									model.writeMesh( fluxFolder+"\\bun.txt");
 							
 								model.writeB(fluxFile);
 		
@@ -253,18 +230,14 @@ public class RunMag {
 					
 						String fluxFile = model.fluxFolderIn+"\\flux"+i+".txt";
 
-						
+					
 
 							model.loadFlux(fluxFile,0);
 
 							model.setReluctForce();
 
 							model.setMSForce();
-							
-							model.node[12045].getCoord().hshow();
-
-
-					
+	
 					}
 					else if(model.loadPotentioal) {
 
@@ -273,8 +246,7 @@ public class RunMag {
 						model.setB();
 
 					}
-					
-			
+
 					
 					folder=System.getProperty("user.dir") + "\\results";
 			
@@ -286,6 +258,9 @@ public class RunMag {
 					
 					
 					util.pr("torque >>>>>>>"+model.TrqZ);
+					
+
+					
 	
 					
 					
@@ -293,11 +268,13 @@ public class RunMag {
 				//	writeFiles=true;
 
 
-					if( writeFiles /*&& i==nEnd*/){
+					if( i==nEnd){
 
 						model.writeMesh( folder+"\\bun"+i+".txt");
 						String fluxFile =  folder+"\\flux"+i+".txt";
 						model.writeB(fluxFile);
+						model.writeJ0(folder+"\\J"+i+".txt");
+						model.writeJe(folder+"\\Je"+i+".txt");
 
 					}
 
@@ -319,7 +296,18 @@ public class RunMag {
 
 			}
 			
+		
 				
+				Vect errs=new Vect(model.solver.totalIter);
+				
+				util.pr(model.solver.totalIter);
+				for(int i=0;i<errs.length;i++)
+					errs.el[i]=model.solver.errs.get(i);
+				
+				util.plot(errs);
+			//	time.show();
+
+				util.pr("-----");
 				
 
 				boolean writeInit=false;

@@ -712,6 +712,7 @@ public class SpMat  {
 	}
 
 	public Vect smul(Vect u){
+		
 
 		Vect v=new Vect(getnRow());
 		Vect w=new Vect(getnRow());
@@ -732,18 +733,16 @@ public class SpMat  {
 	public Vect amul(Vect u){
 
 		Vect v=new Vect(getnRow());
-		Vect w=new Vect(getnRow());
 		int j;
 		for(int i=0;i<nRow;i++)
 			for(int k=0;k<row[i].nzLength;k++){
 				j=row[i].index[k];
-				if(j>i) break;
 				v.el[i]+=row[i].el[k]*u.el[j];
-				if(j!=i)
-					w.el[j]+=row[i].el[k]*u.el[i];
+				
 			}
-		return v.sub(w);
+		return v;
 	}
+	
 	
 	public Vect mulUpper(Vect u){
 		Vect w=new Vect(getnRow());
@@ -776,6 +775,7 @@ public class SpMat  {
 
 		return Y;
 	}
+
 
 	public Vect mulLow(Vect u){
 		Vect v=new Vect(getnRow());

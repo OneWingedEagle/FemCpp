@@ -1934,11 +1934,13 @@ public class Writer {
 			pw.println(0);
 			pw.println(model.stressMin);
 			pw.println(model.stressMax);
+
 			for(int i=1;i<=model.numberOfElements;i++){
 				Vect stress=model.element[i].getStress();
+				
 				if(stress==null) continue;
-				if(stress.norm()==0) continue;
-
+				//if(stress.norm()==0) {util.pr(i);continue;}
+				//util.pr(i-model.region[8].getFirstEl());
 				pw.format("%d\t",i);
 
 				for(int k=0;k<L;k++)

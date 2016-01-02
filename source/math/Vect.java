@@ -163,6 +163,8 @@ Cs.show();
 		el[0]=x; el[1]=y;;
 	}
 	
+	
+	
 	public void set(double[] u){
 	
 		this.length=u.length;		
@@ -438,6 +440,13 @@ public Vect add(double a){
 		return v;
 	}
 	public void timesVoid(Vect D){
+		if(length!=D.length) throw new IllegalArgumentException("vectrs have different lengths");
+		
+		for(int i=0;i<length;i++)
+			el[i]=el[i]*D.el[i];
+	}
+	
+	public void extend(Vect D){
 		if(length!=D.length) throw new IllegalArgumentException("vectrs have different lengths");
 		
 		for(int i=0;i<length;i++)

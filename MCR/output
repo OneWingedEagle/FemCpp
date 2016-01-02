@@ -1,0 +1,156 @@
+
+
+    *EM Solution EM Solution EM Solution EM Solution EM Solution EM Solution EM Solution * 
+    **                                                                                  ** 
+    **          EEEEEEEEEE   MMMM       MMMM     SSSSSSSSS      OOOOOOOO     LL         ** 
+    **          EEEEEEEEEE   MMMM       MMMM    SSSSSSSSSSS    OOOOOOOOOOO   LL         ** 
+    **         EE           MM MM     MM MM    SS       SS    OO       OO   LL          ** 
+    **         EE           MM MM     MM MM    SS             OO       OO   LL          ** 
+    **        EEEEEEEEEE   MM  MM   MM  MM     SSSSSSS       OO       OO   LL           ** 
+    **        EEEEEEEEEE   MM  MM   MM  MM       SSSSSSS     OO       OO   LL           ** 
+    **       EE           MM   MM MM   MM             SS    OO       OO   LL            ** 
+    **       EE           MM   MM MM   MM    SS       SS    OO       OO   LL            ** 
+    **      EEEEEEEEEE   MM    MMM    MM    SSSSSSSSSSS    OOOOOOOOOOO   LLLLLLLLLL     ** 
+    **      EEEEEEEEEE   MM    MMM    MM     SSSSSSSSS      OOOOOOOOO    LLLLLLLLLL     ** 
+    **                                                                                  ** 
+    *EM Solution EM Solution EM Solution EM Solution EM Solution EM Solution EM Solution * 
+    **                                                                                  ** 
+    **      EM Solution is newly developed electro-magnetic analysis system,            ** 
+    **                       Science Solutions International Laboratory Inc.            ** 
+    **                            2-21-7 Naka-cho, Meguro-ku, Tokyo Japan 153           ** 
+    **                                  TEL: +81-3-3711-8908, FAX: +81-3-3711-8910      ** 
+    **                                  EMail: emsolution@ssil.co.jp                    ** 
+    ************************************************************************************** 
+                                                                                           
+                        EMSOL r11.2.3  32bit  June 15, 2015                                           
+  EMSOL has started at Tue Oct 13 00:20:14 2015
+ 
+
+      No. of Parallel = 1
+
+
+
+*************************************** Global Mesh ***************************************** 
+
+                      *****************  Summary of mesh  ***************** 
+
+                         total number of nodes                   =  69552
+                         total number of volume elements         =  64575
+                         total number of surface elements        =   4442
+                         total number of edges                   = 203556
+
+
+                      **********************  Nodes  ********************** 
+
+                         on Bn = 0 planes                        =      0
+                         on Ht = 0 planes                        =      0
+                         on far boundaries                       =   9712
+                         on periodic face                        =      0
+                         on counductors                          =      0
+
+
+                      *****************  Volume elements  ***************** 
+
+                         HEXA_N8E12                              =  64575
+                         in conductors                           =      0
+                         in magnetic regions                     =   7945
+                         in non_linear magnetic regions          =   7945
+                         in air regions                          =  56630
+                         in total potential regions              =  56630
+                         in reduced potential regions            =   7945
+
+
+                      *****************  Surface elements ***************** 
+
+                         QUAD_N4E4                               =   4442
+
+
+                      **********************  Edges  ********************** 
+
+                         on Bn = 0 planes                        =      0
+                         on far boundaries                       =  19420
+                         on periodic face                        =      0
+                         on counductors                          =      0
+                         on interface of potential regions       =   8884
+                         number of tree edges                    =      0
+
+
+                      *****************  System matrix    ***************** 
+
+                         Number of unknowns                      =    184136
+                         Number of non_zero elements             =   3009830
+*************************************************************************************************
+
+
+----- Time step     1  Time  2.00000e-002 ------- 
+*** Accelation facter = 1.03 ***
+*** ICCG iteration ***
+       No.       Error
+         0  1.00000e+000
+        50  7.90470e-002
+       100  8.94377e-004
+       140  1.26363e-002
+*** ICCG doesn't converge ***
+       110  2.88226e-004
+
+Non_linear iteration No.    1   error =  1.00000e+000 
+*** ICCG iteration ***
+       No.       Error
+         0  2.88226e-004
+        31  9.13646e-003
+*** ICCG doesn't converge ***
+         1  1.72942e-004
+
+Non_linear iteration No.    2   error =  2.88226e-004 
+**** Total number of ICCG interations:      171 *********
+**** Total number of nonlinear interations: 2 *********
+
+********************************************************************************************************
+*                            Step No.     1    Time  2.0000000000e-002 sec                             *
+********************************************************************************************************
+
+***  Sources   *********************************************************
+       ID No.      Amplitude(Current)    Voltage              Flux 
+           1        1.00000e+002       1.00000e+002       1.20873e-003
+           2        0.00000e+000       0.00000e+000       0.00000e+000
+***  Power Sources   ***************************************************
+       ID No.         Current            Voltage  
+           1        1.00000e+002       1.00000e+002
+
+
+***   Total J*B Forces   *******************************************************************************
+           No.      Fx(N)          Fy(N)          Fz(N)         Mx(Nm)       My(Nm)        Mz(Nm)
+ Total           0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000 
+
+***   Total NODAL Forces and Torques   *****************************************************************
+           No.      Fx(N)          Fy(N)          Fz(N)          Mx(Nm)        My(Nm)         Mz(Nm)
+   MAT       1   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000 
+   MAT       2   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000   0.00000e+000 
+ Total          -5.56711e-004  -6.94025e-006   1.80096e-004  -1.91078e-008   3.41293e-005   1.30800e-006 
+
+
+****  time step 1 cannot be read from file_solutions ****
+
+
+*************************************************************************************************
+*                      Used region                             93527168 byte :                     *
+*                                                                                               *
+*************************************************************************************************
+*                                                                                               *
+*                     CPU Times                               second                            *
+*                      TOTAL                                  19.0 :        0.0                 *
+*                      Input, Pre-processing                   3.0 :        0.0                 *
+*                      Matrix making                           5.0 :        0.0                 *
+*                      Pre-conditioning                        0.0 :        0.0                 *
+*                      Equation solving                        8.0 :        0.0                 *
+*                      Post-processing                         3.0 :        0.0                 *
+*                                                                                               *
+*************************************************************************************************
+
+                               **********  Start Time  **********
+
+                                   Tue Oct 13 00:20:14 2015
+
+                               **********  End  Time  **********
+
+                                   Tue Oct 13 00:20:33 2015

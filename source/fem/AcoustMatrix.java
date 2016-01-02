@@ -49,7 +49,7 @@ public class AcoustMatrix {
 		}
 
 		
-		model.b=new Vect(model.numberOfUnknownT);
+		model.RHS=new Vect(model.numberOfUnknownT);
 
 		for(int i=1;i<=model.numberOfElements;i++){
 
@@ -81,7 +81,7 @@ public class AcoustMatrix {
 							T=model.node[colNodeNumber].T;									
 			
 				
-							model.b.el[row]-=Se.el[j][k]*T;
+							model.RHS.el[row]-=Se.el[j][k]*T;
 							
 										continue;
 					}

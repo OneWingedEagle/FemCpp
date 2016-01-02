@@ -13,7 +13,7 @@ import materialData.LamBCurve;
 import materialData.LamBSCurve;
 import math.*;
 import meshFactory.Combiner;
-import meshFactory.MeshFactory;
+import meshFactory.MeshManipulator;
 import static java.lang.Math.*;
 
 
@@ -33,7 +33,7 @@ public class Model{
 	public double[] spaceBoundary;
 	public int[] BCtype;
 	public String[] blockMaterial;
-	public Vect[] diricB=new Vect[6];
+	public Vect unifB;
 	public Region[] region;
 	public Node[] node;
 	public Element[] element;
@@ -57,11 +57,12 @@ public class Model{
 	public boolean deform,thermal,hasJ,hasM,forceLoaded,fluxLoaded,potentialLoaded,
 	stressLoaded,forceCalcLoaded,coupled,cpvms,calCurve,nonLin,hasPBC,hasMechPBC=true,rotIndex;
 	public int nEdEd=34,nNodNod=27,nEdNod=18,nNodEd=54,nEdgeHasJ;
-	int[][] facetVert={{6,2,5},{7,4,3},{6,7,2},{0,4,1},{4,7,5},{0,1,3}};
+	static int[][] facetVert={{6,2,5},{7,4,3},{6,7,2},{0,4,1},{4,7,5},{0,1,3}};
 
 	public byte elCode=4;
 	public double nu0=1e7/(4*PI);
-	public double rotAng,rotSubAng,rotStep,meshAngStep,freq=1,dt,errMax=1e-6;
+	public double rotAng,rotSubAng,rotStep,meshAngStep,freq=1,dt,errCGmax=1,
+			errNRmax=1e-6,errCG_NR=1e-1,errFluxMax=1e-3;
 	public int nTsteps,nBegin,nEnd,nInc,nRotorElements,tagx;
 	public int coordCode=0,timeIntegMode=0,eddyTimeIntegMode;
 	public BHSCurve[] BHS;
@@ -71,9 +72,9 @@ public class Model{
 	public BHCurve[] BH;
 	public CurrentWaveForm ia,ib,ic,va,vb,vc;
 	public String elType="hexahedron";
-	public SpMat Hs,Ms,Ks,Ls,Cs,Ss;
+	public SpMat Hs,Ms,Ks,Ls,Cs,Ss,Ts;
 	public Mat eigVects,bigMat;
-	public Vect lams,b,bU,bT,HpAp,HkAk;
+	public Vect lams,RHS,bU,bT,HpAp,HkAk;
 	public boolean motor,modal,hasTwoNodeNumb,fullMotor,writeFiles,Tmethod,
 	circuit,stranded,seepage,wavePC,loadFlux,loadPotentioal,loadPrevMag,loadPrevMech,loadForce,loadDisp,saveFlux,saveForce,saveDisp,saveStress,
 	transfer2DTo3D,magAnalysis,mechAnalysis,rotateRotor,axiSym;
@@ -98,6 +99,7 @@ public class Model{
 	public Model m2d;
 	public Vect[][] forceLamin;
 	public int[] mapnr;
+	public boolean hasBunif;
 	
 
 	public Model(){}
@@ -171,7 +173,10 @@ public class Model{
 
 	public void loadData(String dataFilePath)
 	{
-		loader.loadData(this,dataFilePath);
+		if(dim==3)
+			loader.loadData(this,dataFilePath);
+		else
+			loader.loadData2D(this,dataFilePath);
 		this.femCalc=new Calculator(this);
 		this.forceCalc=new Force(this);	
 		setMagMech();
@@ -285,12 +290,9 @@ public class Model{
 			}
 	}
 
-	public void setNonLin(){
-		for(int ir=1;ir<=numberOfRegions;ir++)
-			if(region[ir].isNonLinear){
-				nonLin=true;
-				break;
-			}
+	public void setNonLin(boolean nonlin){
+	
+				nonLin=nonlin;
 
 		for(int ir=1;ir<=numberOfRegions;ir++){
 			if(region[ir].isNonLinear)
@@ -299,6 +301,18 @@ public class Model{
 		}	
 
 	}
+	public void setNonLinToElememts(){
+
+		if(nonLin)
+		for(int ir=1;ir<=numberOfRegions;ir++){
+			if(region[ir].BHnumber>0){
+				region[ir].isNonLinear=true;
+				for(int i=region[ir].getFirstEl();i<=region[ir].getLastEl();i++)
+					element[i].setNonlin(true);
+			}
+		}	
+
+}
 
 	public void setHasMS(){
 		for(int ir=1;ir<=numberOfRegions;ir++){
@@ -338,16 +352,11 @@ public class Model{
 	}
 
 
-	public void setMagMat(int iter){
-		magMat.setMagMat(this,iter);
-
-	}
-
 	public void setMagMat(){
-
-		magMat.setMagMat(this,2);
+		magMat.setMagMat(this);
 
 	}
+
 
 	public void setStiffMat(boolean massNeeded){
 		mechMat.setStiffMat(this,massNeeded);
@@ -1484,7 +1493,6 @@ Vect Ci=this.Cs.scale(this.bT);
 			util.pr(mx/1024/1024);
 
 			this.setStiffMat(dyn);
-			this.Ks.show();
 			
 /*			SpMat P=Ks.timesNew(1e-9);
 		//	P.showcl();
@@ -1641,7 +1649,7 @@ Vect Ci=this.Cs.scale(this.bT);
 			setElementJe(i);
 
 			Vect Je=element[i].getJe();
-
+Je.hshow();
 			if(element[i].isConductor()){
 				Jn2=Je.dot(Je);
 				if(Jn2>Jmax2)
@@ -1673,6 +1681,7 @@ Vect Ci=this.Cs.scale(this.bT);
 		
 		if(analysisMode==1){
 			element[i].setJe(dA.times(element[i].getSigma()).times(-rdt));
+	
 		}
 		else if(analysisMode==2){
 			double[] nodePhi=new double[nElVert];
@@ -2110,12 +2119,11 @@ Vect Ci=this.Cs.scale(this.bT);
 
 	public void setNodePhi(Vect x){
 		int nodeNumber;
+		util.pr("-------------------------  "+x.norm());
 
 		for(int i=1;i<=numberOfVarNodes;i++){
 			nodeNumber=varNodeNumber[i];	
 			if(nodeNumber>0){
-				util.pr(x.el[i+numberOfUnknownEdges-1]);
-
 				node[varNodeNumber[i]].setPhi(x.el[i+numberOfUnknownEdges-1]);	
 			}
 		}
@@ -2364,11 +2372,10 @@ Vect Ci=this.Cs.scale(this.bT);
 
 	
 	public void setJ(double t){
-
 	for(int ir=1;ir<=numberOfRegions;ir++){
 
 			if(!region[ir].circuit){
-
+			
 				if(region[ir].hasJ  ) 
 					setJfJ(ir,t);	
 			else if(this.region[ir].terminalVoltage0!=0){
@@ -2438,9 +2445,9 @@ Vect Ci=this.Cs.scale(this.bT);
 	
 
 		for(int i=region[ir].getFirstEl();i<=region[ir].getLastEl();i++){
-
 			
 			this.element[i].setJ(J);
+			
 	
 
 		}
@@ -2724,7 +2731,7 @@ public void setJStrandedCircuit(double t){
 
 
 	public void rotate(double rad){
-		MeshFactory mf=new MeshFactory();
+		MeshManipulator mf=new MeshManipulator();
 		mf.rotate(this,rad,false);	
 	}
 
@@ -2896,6 +2903,7 @@ public void setJStrandedCircuit(double t){
 			//se=element[i].getStress().norm();
 
 			sv=element[i].getStress();
+
 			if(sv!=null){
 
 
@@ -2932,6 +2940,7 @@ public void setJStrandedCircuit(double t){
 		{
 			if(count[i]>0)
 				str[i]/=count[i];
+	
 
 			node[i].stress=str[i]*nElVert;
 			if(node[i].stress>nodalStressMax)
@@ -3218,8 +3227,7 @@ public void setJStrandedCircuit(double t){
 	public void transfer2DTo3D(String file,  boolean flux3DNeeded,boolean force3DNeeded){
 		
 		//m2d.loadNodalField(file,1);
-	
-
+		
 		
 		// the following part enforces the periodic bc from 2d to the 3d model 
 	for(int j=1;j<=m2d.numberOfNodes;j++){
@@ -3247,7 +3255,173 @@ public void setJStrandedCircuit(double t){
 		if(this.tag==19 )*/ {nL=6; nLh=nL/2;}
 
 		//=================
-		if(this.numberOfElements<20000) 
+		if(this.numberOfElements<10000) 
+		{nLh=3;
+		nP=1;
+
+		}
+		else if(this.numberOfElements<20000) 
+		{nLh=6;
+		nP=1;
+		}
+		else if(this.numberOfElements<50000) 
+		{nLh=6;
+		nP=4;
+		}
+
+		else if(this.numberOfElements>60000){
+			nLh=12;
+			nP=4;
+		}
+
+
+		//if(m2d.getSliceAngle()<1.6 && this.getSliceAngle()>6) nP=4;
+
+
+		if(flux3DNeeded){
+
+			for(int k=0;k<nLh;k++)	
+			for(int t=0;t<nP;t++)
+				
+				{
+					Mat R=util.rotMat2D(t*PI/2);
+					for(int j=m2d.region[ir].getFirstEl();j<=m2d.region[ir].getLastEl();j++){
+
+						Vect B=m2d.element[j].getB();
+						if(t!=0) B=R.mul(B);
+						B=B.v3();
+						this.element[this.region[nr].getFirstEl()+p].setB(B);
+						p++;
+					}
+				}
+		}
+
+		if(force3DNeeded){
+
+			double spaceFaqcor=.96;
+
+			p=0;
+
+			int he=m2d.nElVert;
+
+
+			for(int k=0;k<nLh;k++)	
+			for(int t=0;t<nP;t++){
+
+			Mat R=util.rotMat2D(t*PI/2);			
+
+				{
+					boolean[] nc=new boolean[m2d.numberOfNodes+1];
+					for(int j=m2d.region[ir].getFirstEl();j<=m2d.region[ir].getLastEl();j++){
+						int[] vn=m2d.element[j].getVertNumb();
+
+						int[] vn2=this.element[this.region[nr].getFirstEl()+p].getVertNumb();
+						double kf=abs(this.node[vn2[vn2.length-1]].getCoord(2)-this.node[vn2[0]].getCoord(2))/2;
+
+						//============
+						//============
+						kf*=spaceFaqcor;
+						//============
+						//============
+
+
+						p++;
+
+						for(int kk=0;kk<m2d.nElVert;kk++){
+							if(nc[vn[kk]]) continue;
+
+							double hx=this.node[vn2[kk]].getCoord(2);
+				
+							
+							int ih=(int)Math.round(hx/.025*6);
+							if(ih<4)
+								ih=0;
+							else
+								ih=1;
+							ih=0;
+							
+							Vect F=this.forceLamin[ih][this.mapnr[vn[kk]]];
+
+						//	Vect F=m2d.node[vn[kk]].F;
+
+
+							if(F!=null) 
+							{
+
+								if(t!=0 && this.coordCode==0)
+									{
+									F=R.mul(F);  
+									}
+
+								F=F.v3().times(kf);
+
+								if(this.node[vn2[kk]].F!=null){
+
+									this.node[vn2[kk]].setF(F.add(this.node[vn2[kk]].F));
+								}
+								else
+									this.node[vn2[kk]].setF(F);
+
+								if(this.node[vn2[kk+he]].F!=null)
+									this.node[vn2[kk+he]].setF(F.add(this.node[vn2[kk+he]].F));
+								else
+									this.node[vn2[kk+he]].setF(F);
+
+
+
+							}
+
+
+							nc[vn[kk]]=true;
+
+
+						}
+					}
+				}
+
+			}
+
+
+		}
+
+
+
+	}
+	
+	public void transfer2DTo3DLayered(String file,  boolean flux3DNeeded,boolean force3DNeeded){
+		
+		// the following part enforces the periodic bc from 2d to the 3d model 
+	for(int j=1;j<=m2d.numberOfNodes;j++){
+		Vect v=m2d.node[j].getCoord();
+		if(m2d.node[j].F!=null && v.el[0]<1e-5){
+		
+		m2d.node[j].F=new Vect(0,0);
+		}
+	}
+
+		for(int i=1;i<=this.numberOfNodes;i++){
+			this.node[i].F=null;
+		}
+
+
+		int ir=8;
+		int p=0;
+		int nr=1;
+		int nL=6;
+		int nP=1;
+
+		int nLh=nL;
+		/*	if(this.tag==17 ) {nL=6; nLh=nL;nP=4;}
+	else
+		if(this.tag==19 )*/ {nL=6; nLh=nL/2;}
+
+		//=================
+		if(this.numberOfElements<10000) 
+		{nLh=3;
+		nP=1;
+
+		}
+		else if(this.numberOfElements<20000) 
 		{nLh=6;
 		nP=1;
 		}
@@ -3319,16 +3493,9 @@ public void setJStrandedCircuit(double t){
 
 							double hx=this.node[vn2[kk]].getCoord(2);
 							
-							int ih=(int)Math.round(hx/.025*6);
-						/*	if(ih<4)
-								ih=0;
-							else
-								ih=1;*/
-							ih=0;
-							
+							int ih=(int)Math.floor((hx-1e-6)/.025*6);
+												
 							Vect F=this.forceLamin[ih][this.mapnr[vn[kk]]];
-
-							//Vect F=m2d.node[vn[kk]].F;
 
 
 							if(F!=null) 
@@ -3340,7 +3507,6 @@ public void setJStrandedCircuit(double t){
 									}
 
 								F=F.v3().times(kf);
-								
 
 								if(this.node[vn2[kk]].F!=null){
 
@@ -3353,7 +3519,6 @@ public void setJStrandedCircuit(double t){
 									this.node[vn2[kk+he]].setF(F.add(this.node[vn2[kk+he]].F));
 								else
 									this.node[vn2[kk+he]].setF(F);
-
 
 
 

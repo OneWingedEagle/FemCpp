@@ -4,7 +4,9 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 public class Label extends JLabel {
-	Font tfFont = new Font("Arial", 0, 13);
+	
+	int size=(int)(10.0*GUI.screenWidth/1000);
+	Font tfFont = new Font("Arial", 0, size);
 	public Label(){
 	super();	
 	setFont(tfFont);

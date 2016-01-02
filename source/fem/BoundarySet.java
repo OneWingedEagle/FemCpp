@@ -132,8 +132,7 @@ public class BoundarySet {
 
 		if(model.hasPBC || model.hasTwoNodeNumb)
 			mapEdges(model);
-		for(int i=1;i<=model.numberOfEdges;i++)
-			if(model.edge[i].map>0) util.hshow(model.edge[i].endNodeNumber);
+	
 
 
 		if(model.dim==3) {
@@ -157,9 +156,7 @@ public class BoundarySet {
 
 
 			double Au0=-1e6;
-			double Au2=model.diricB[2].el[1]*(model.spaceBoundary[5]-model.spaceBoundary[4]);
-			double Au4=model.diricB[4].el[2]*(model.spaceBoundary[1]-model.spaceBoundary[0]);	
-
+		
 
 			for(int i=1;i<=model.numberOfEdges;i++){
 
@@ -631,7 +628,60 @@ public class BoundarySet {
 
 	public void setMagIndice(Model model){
 
+		
+		
+		if(model.analysisMode==2){
+			
+		
 
+			model.nodeVarIndex=new int[model.numberOfNodes+1];
+
+			for(int ir=1;ir<=model.numberOfRegions;ir++)
+				if(model.region[ir].isConductor)
+					for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
+						int[] vertNumb=model.element[i].getVertNumb();
+						for(int j=0;j<model.nElVert;j++){
+							model.node[vertNumb[j]].setPhiVar(true);
+						}
+					}
+			
+			for(int i=1;i<=model.numberOfEdges;i++)
+				if(model.edge[i].edgeKnown){
+					model.node[model.edge[i].endNodeNumber[0]].setPhiVar(false);
+					model.node[model.edge[i].endNodeNumber[1]].setPhiVar(false);
+				}
+
+			
+			
+			int nnx=0;	
+				for(int i=1;i<=model.numberOfNodes;i++)
+					if(model.node[i].isPhiKnown())
+						nnx++;
+				
+			model.numberOfKnownPhis=nnx;
+		
+
+			 nnx=0;	
+			for(int i=1;i<=model.numberOfNodes;i++)
+				if(model.node[i].isPhiVar())
+					model.nodeVarIndex[i]=++nnx;
+
+			model.numberOfVarNodes=nnx;
+	
+			
+			model.varNodeNumber=new int[model.numberOfVarNodes+1];
+
+			nnx=0;
+
+			for(int i=1;i<=model.numberOfNodes;i++){
+				if(model.node[i].isPhiVar() && !model.node[i].isPhiKnown()){
+					model.varNodeNumber[++nnx]=i;
+				}
+			}
+
+		}
+
+	
 
 		
 		int nex=0;	
@@ -685,8 +735,8 @@ public class BoundarySet {
 
 			}
 		}
-
 		
+
 		
 
 		
@@ -701,51 +751,7 @@ public class BoundarySet {
 			mapEdges(model);
 
 
-		if(model.analysisMode==2){
-
-			model.nodeVarIndex=new int[model.numberOfNodes+1];
-
-			for(int ir=1;ir<=model.numberOfRegions;ir++)
-				if(model.region[ir].isConductor)
-					for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){
-						int[] vertNumb=model.element[i].getVertNumb();
-
-						for(int j=0;j<model.nElVert;j++){
-							model.node[vertNumb[j]].setPhiVar(true);
-						}
-					}
-
-			for(int i=1;i<=model.numberOfNodes;i++)
-				if(model.node[i].isPhiVar()){
-					for(int j=0;j<model.nBoundary;j++)
-						if(model.BCtype[j]!=1 && model.node[i].onBound[j]){
-							model.node[i].setPhi(0);
-							model.node[i].setPhiKnown(true);
-						}
-				}
-
-			int nnx=0;	
-			for(int i=1;i<=model.numberOfNodes;i++)
-				if(model.node[i].isPhiVar())
-					model.nodeVarIndex[i]=++nnx;
-
-			model.numberOfVarNodes=nnx;
-			model.numberOfKnownPhis=model.numberOfNodes-model.numberOfVarNodes;
-			model.varNodeNumber=new int[model.numberOfVarNodes+1];
-
-			nnx=0;
-
-			for(int i=1;i<=model.numberOfNodes;i++){
-				if(model.node[i].isPhiVar() && !model.node[i].isPhiKnown()){
-					model.varNodeNumber[++nnx]=i;
-				}
-			}
-
-		}
-
-
-		model.numberOfVarNodes=0;
-
+	
 		if(model.hasJ || model.hasM || model.stranded)
 			for(int i=1;i<=model.numberOfEdges;i++){
 				for(int j=0;j<model.nBoundary;j++){
@@ -758,15 +764,15 @@ public class BoundarySet {
 					}					
 				}
 			}
-		else{
-
+		else if(model.hasBunif){
+			
 			if(model.dim==2){
 
 
-				double Au0=model.diricB[0].el[0]*(model.spaceBoundary[3]-model.spaceBoundary[2]);
-				double Au1=model.diricB[2].el[1]*(model.spaceBoundary[1]-model.spaceBoundary[0]);	
+				double Au0=model.unifB.el[0]*(model.spaceBoundary[3]-model.spaceBoundary[2]);
+				double Au1=model.unifB.el[1]*(model.spaceBoundary[1]-model.spaceBoundary[0]);	
 
-				if(model.BCtype[0]==1)
+	
 					for(int i=1;i<=model.numberOfEdges;i++){
 						if (model.node[model.edge[i].endNodeNumber[0]].onBound[3] && 
 								model.node[model.edge[i].endNodeNumber[1]].onBound[3])
@@ -778,7 +784,7 @@ public class BoundarySet {
 					}
 
 
-				else if(model.BCtype[2]==1)
+				
 					for(int i=1;i<=model.numberOfEdges;i++){
 						if(model.node[model.edge[i].endNodeNumber[0]].onBound[0] && 
 								model.node[model.edge[i].endNodeNumber[1]].onBound[0])
@@ -795,13 +801,12 @@ public class BoundarySet {
 
 			else if(model.dim==3) {
 
-				double Au0=model.diricB[0].el[0]*(model.spaceBoundary[3]-model.spaceBoundary[2]);
-				double Au2=model.diricB[2].el[1]*(model.spaceBoundary[5]-model.spaceBoundary[4]);
-				double Au4=model.diricB[4].el[2]*(model.spaceBoundary[1]-model.spaceBoundary[0]);	
-				
-			
+				double Au0=model.unifB.el[0]*(model.spaceBoundary[3]-model.spaceBoundary[2]);
+				double Au2=model.unifB.el[1]*(model.spaceBoundary[5]-model.spaceBoundary[4]);
+				double Au4=model.unifB.el[2]*(model.spaceBoundary[1]-model.spaceBoundary[0]);	
 
-				if(model.BCtype[0]==1)
+
+				if(model.BCtype[0]==0)
 					for(int i=1;i<=model.numberOfEdges;i++){
 						if(model.node[model.edge[i].endNodeNumber[0]].onBound[4] && 
 								model.node[model.edge[i].endNodeNumber[1]].onBound[4]||
@@ -823,7 +828,7 @@ public class BoundarySet {
 					}
 
 
-				if(model.BCtype[2]==1)
+				if(model.BCtype[2]==0)
 					for(int i=1;i<=model.numberOfEdges;i++){
 						if((model.node[model.edge[i].endNodeNumber[0]].onBound[0] && 
 								model.node[model.edge[i].endNodeNumber[1]].onBound[0]||
@@ -842,7 +847,7 @@ public class BoundarySet {
 							model.edge[i].setKnownA(Au2*model.edge[i].length);
 					}
 
-				if(model.BCtype[4]==1)
+				if(model.BCtype[4]==0)
 					for(int i=1;i<=model.numberOfEdges;i++){
 
 						if((model.node[model.edge[i].endNodeNumber[0]].onBound[2] && 
@@ -866,9 +871,13 @@ public class BoundarySet {
 					}
 
 			}
+			
+			
 
 
 		}
+		
+
 
 		for(int i=1;i<=model.numberOfEdges;i++){
 			int mp=model.edge[i].map;

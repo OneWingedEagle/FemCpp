@@ -259,14 +259,18 @@ public static void main2(String[] args){
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(dataFilePath));
 			String line;
-			line=br.readLine();
+			line=getNextDataLine(br);
 
 			int dataType =getIntData(line);
 			model.dataType=dataType;
 			
-			line=br.readLine();
-			line=br.readLine();
+			line=getNextDataLine(br);
 			int dim =getIntData(line);
+			
+
+			line=getNextDataLine(br);
+			int coordCode =getIntData(line);
+			model.coordCode=coordCode;
 			
 			if(dim!=dim0){
 				System.err.println("Mesh and Data do not match in dimension: "+dim0+" and "+dim);
@@ -301,57 +305,47 @@ public static void main2(String[] args){
 		
 			try {
 
-				line=br.readLine();
-				line=br.readLine();
-				int coordCode =getIntData(line);
-				model.coordCode=coordCode;
-				line=br.readLine();
-				line=br.readLine();
+		
+				line=getNextDataLine(br);
 				int am =getIntData(line);
 				model.analysisMode=am;
+				
+				line=getNextDataLine(br);
+				boolean nonlin=getBooleanData(line);;
+				
+				model.setNonLin(nonlin);
 
-				line=br.readLine();
-				line=br.readLine();
+				line=getNextDataLine(br);
 				model.motor=getBooleanData(line);
 				
-				line=br.readLine();
-				line=br.readLine();
+				line=getNextDataLine(br);;
 				int nRegions =getIntData(line);		
 				if(nRegions!=model.numberOfRegions){
 					System.err.println("Mesh and Data do not match in the number of regions: "+model.numberOfRegions+" and "+nRegions);
 				}
 		
 
-				line=br.readLine();
-				line=br.readLine();
 			
 				
 				for(int ir=1;ir<=model.numberOfRegions;ir++){
-				line=br.readLine();
-				line=br.readLine();
-				readAndSetRegDataMag(model,ir,line);
+					line=getNextDataLine(br);
+				readAndSetRegMagPropery(model,ir,line);
 				}
 				
-				for(int j=0;j<model.nBoundary;j++){
-					model.diricB[j]=new Vect(dim);
-				}
+			
 				model.BCtype=new int[model.nBoundary];
 				for(int j=0;j<model.nBoundary;j++)
 					model.BCtype[j]=-1;
 				model.PBCpair=new int[model.nBoundary];
-				line=br.readLine();
-				line=br.readLine();
-				
+
 				Vect B;
 				int[] bcData=new int[2];
 				
 				for(int j=0;j<model.nBoundary;j++){
-					line=br.readLine();
-
-					B=new Vect(dim);
+					line=getNextDataLine(br);
 
 					if(model.BCtype[j]>-1) continue;
-					bcData=getBCdata(line,B);
+					bcData=getBCdata(line);
 					model.BCtype[j]=bcData[0];
 					
 					model.PBCpair[j]=bcData[1];
@@ -364,25 +358,46 @@ public static void main2(String[] args){
 
 					}
 
-					if(model.BCtype[j]==1) model.diricB[j]=B.deepCopy();
-				
+									
 				}
 				
+				line=getNextDataLine(br);
+				int numbRegsWithJ=Integer.parseInt(line);
+				for(int j=0;j<numbRegsWithJ;j++){
+					line=getNextDataLine(br);
+					String[] sp=line.split(this.regex);	
 
-				double f=0,dt=0;
-				//int N=1;
+					int ib=0;
+					if(sp[0].equals("")) ib=1;
+					int nr=Integer.parseInt(sp[ib++]);
+					Vect J=new Vect(dim);
+					
+					for(int k=0;k<dim;k++)
+						J.el[k]=Double.parseDouble(sp[ib++]);
+					
+					model.region[nr].setJ(J);
+					
+				}
+
+				line=getNextDataLine(br);
+				model.hasBunif=getBooleanData(line);
+				if(model.hasBunif){
+					line=getNextDataLine(br);
+					double[] array=getCSV(line);
+					
+					model.unifB=new Vect(array);
+				}
+				
+				line=getNextDataLine(br);
 			
+				model.eddyTimeIntegMode=getIntData(line);	
 				
-				line=br.readLine();
-				line=br.readLine();
-				if(line!=null){
-					 f =getScalarData(line);		
-				}
-				
-				line=br.readLine();
-				if(line!=null){
-					 dt =getScalarData(line);		
-				}
+				line=getNextDataLine(br);
+				model.dt=getScalarData(line);	
+			
+			/*	line=getNextDataLine(br);
+				model.freq=getScalarData(line);	*/
+				/*
 				line=br.readLine();
 				if(line!=null){
 					model.rotStep =getScalarData(line);		
@@ -391,7 +406,8 @@ public static void main2(String[] args){
 				if(line!=null){
 					model.meshAngStep =getScalarData(line);		
 				}
-				line=br.readLine();
+				*/
+				line=getNextDataLine(br);
 
 				if(line!=null){
 					
@@ -419,9 +435,7 @@ public static void main2(String[] args){
 					}
 				
 			
-			
-				line=br.readLine();
-				model.eddyTimeIntegMode=getIntData(line);	
+		
 				
 
 
@@ -456,7 +470,8 @@ public static void main2(String[] args){
 				else if(line.startsWith("loadFlux")) 
 					model.loadFlux=this.getBooleanData(line);
 				else if(line.startsWith("fluxFolder")){
-					line=br.readLine();
+
+				line=br.readLine();
 					model.fluxFolderIn=line;
 				}
 				else if(line.startsWith("saveFlux")) model.saveFlux=this.getBooleanData(line);
@@ -471,18 +486,10 @@ public static void main2(String[] args){
 				
 			}
 
-
-
-		
-		
-
-	
+		//util.pr(model.fluxFolderIn);
 
 		if(model.axiSym) model.height=2*Math.PI;
  				
-				model.setFreq(f);
-				model.setDt(dt);
-				
 				model.setHasJ();
 
 				model.setHasM();
@@ -490,7 +497,7 @@ public static void main2(String[] args){
 				model.setHasMS();
 
 
-				model.setNonLin();
+				model.setNonLinToElememts();
 				
 				model.setEdge();
 
@@ -1129,6 +1136,9 @@ public boolean loadFlux(Model model,String fluxFilePath, double angDeg){
 				
 				
 				if(rotating && model.element[i].rotor) B1=R.mul(B1);
+				
+				//B1=model.getElementCenter(i).normalized();
+
 				model.element[i].setB(B1);
 				
 				Bn2=B1.dot(B1);
@@ -1726,57 +1736,47 @@ public void average(String bun1, String bun2,String bun3){
 
 
 
-	private int[] getBCdata(String line,Vect B){
+	private int[] getBCdata(String line){
+		
+	
 		int[] bctp=new int[2];
-		String[] sp=line.split("");	
+		
+		String[] sp=line.split(regex);
+		
+		int ib=0;
+		if(sp[0].equals("")) ib=1;
+		
 		int pair=-1,bct=0;
-		int k=0;
-		while(!sp[k].equals(":")){ k++;}	
-		k++;
-		if(k==sp.length) return bctp;
-		if(sp[k].equals(" ")) k++;
-		String s=sp[k];
+		//int k=0;
+
+		String s=sp[ib];
 
 		if(s.equals("P")){
 
-			if(sp[k+1].equals("S")){
+			if(sp[ib+1].equals("S")){
 				bct=2;
 			}
 
-			else if(sp[k+1].equals("A")){
+			else if(sp[ib+1].equals("A")){
 
 				bct=3;
 			}
 
-			sp=line.split(regex);
 			String s2=sp[sp.length-1];
 			if(s2.equals(","))
 				s2=sp[sp.length-2];
 			pair=Byte.parseByte(s2)-1;
 
 		}
-
+		
+	
 		else if(s.equals("N"))
 			bct=0;
 
 		else if(s.equals("D")){
-			sp=line.split(regex);
-		
+
 			bct=1;
-			k=0;
 
-			while(k<sp.length && !sp[k].equals("[")){ k++;}	
-	
-			if(k<sp.length-1){
-			
-			
-				k++;
-
-
-				for( int p=0;p<B.length;p++){
-					B.el[p]=Double.parseDouble(sp[k+p]);
-				}
-			}
 
 		}
 		
@@ -1836,26 +1836,6 @@ public void average(String bun1, String bun2,String bun3){
 		return bctp;
 	}
 
-	private Vect getVectData(String line, int dim){
-
-		String[] sp=line.split(regex2);	
-	
-		Vect v=new Vect(dim);
-	
-		int k=0;
-		while(sp[k].equals("")){k++;}	
-
-		k++;
-			
-		for( int p=k;p<sp.length;p++){
-		v.el[p-k]=Double.parseDouble(sp[p]);
-		}
-
-		return v;
-	}
-
-
-
 	
 	private double[] getTabedData(String line){
 		String[] sp=line.split(regex);	
@@ -1906,140 +1886,52 @@ public void average(String bun1, String bun2,String bun3){
 		return sp2[sp2.length-1];
 	}
 
-	private void readAndSetRegDataMag(Model model,int ir,String line){
+	private void readAndSetRegMagPropery(Model model,int i,String line){
 		int is=0;
 		String[] sp=line.split(this.regex);	
 
-		model.region[ir].setName(sp[0]);
-		model.region[ir].setMaterial(sp[1]);
-		model.region[ir].setNonLinear(sp[2].startsWith("t"));
-		is=3;
+		int ib=0;
+		if(sp[0].equals("")) ib=1;
+		int ir=Integer.parseInt(sp[ib++]);
+	
+		int BH_id=Integer.parseInt(sp[ib++]);
+	
+		model.region[ir].BHnumber=BH_id;
+		
 		Vect v=new Vect(model.dim);
+		
+		double mu=Double.parseDouble(sp[ib++]);
 		for(int k=0;k<v.length;k++){
-			v.el[k]=Double.parseDouble(sp[is++]);
+			v.el[k]=mu;
 		}
 		
-		if(!model.region[ir].isNonLinear)
+		if(model.region[ir].BHnumber==0)
 		model.region[ir].setMur(v);
-
-		if(is==sp.length) return;
-
-		v=new Vect(model.dim);
-			for(int k=0;k<v.length;k++)
-			v.el[k]=Double.parseDouble(sp[is++]);
-		model.region[ir].setM(v);
 		
-
-		
-		if(is==sp.length) return;
-		
-
-		model.region[ir].stranded=sp[is++].startsWith("t");
-		
-
-
-	if(model.region[ir].stranded) {
-
-
-		model.stranded=true;
-		
-		if(model.dim==2)
-		model.region[ir].windingSurf=model.getRegionArea(ir);
-		else
-			model.region[ir].windingSurf=model.getRegionAreaXY(ir);
-		
-		model.region[ir].terminalVoltage0=Double.parseDouble(sp[is++]);
-		model.region[ir].setFreq(Double.parseDouble(sp[is++]));
+		double sigma=Double.parseDouble(sp[ib++]);
+		for(int k=0;k<v.length;k++){
+			v.el[k]=sigma;
+		}
 	
-		model.region[ir].phase0=Double.parseDouble(sp[is++])*Math.PI/180;
-		model.region[ir].setWireRes(Double.parseDouble(sp[is++]));
-
-		if(is<sp.length)
-			model.region[ir].nloop=Double.parseDouble(sp[is++]);
-			else
-				model.region[ir].nloop=100;
-	
+		model.region[ir].setSigma(v);
 		
-		if(is<sp.length)
-			model.region[ir].circuit=sp[is++].startsWith("t");
+		if(ib<sp.length){
+			Vect M=new Vect(model.dim);
+			for(int k=0;k<v.length;k++){
+				M.el[k]=Double.parseDouble(sp[ib++]);;
+			}
 		
-		if(model.region[ir].circuit){
-
-			if(is<sp.length)
-			model.region[ir].curMap1=Integer.parseInt(sp[is++]);
-		
-		if(is<sp.length)
-			model.region[ir].currCoef1=Double.parseDouble(sp[is++]);
-		else
-			model.region[ir].currCoef1=1;
+			model.region[ir].setM(M);
 		}
 		
-		model.region[ir].NtS=model.region[ir].nloop/model.region[ir].windingSurf;
-
-
 	}
-	else{
-
-		if(is==sp.length) return;
-
-		if(model.dim==3){
-			for(int k=0;k<v.length;k++)
-				v.el[k]=Double.parseDouble(sp[is++]);
-
-			}
-			else{
-
-				v=new Vect(0,0,Double.parseDouble(sp[is++]));
-				}
-		
-			model.region[ir].setJ(v);
-
-		
-		if(is==sp.length) return;
-
-			if(model.dim==3){
-			for(int k=0;k<v.length;k++)
-				v.el[k]=Double.parseDouble(sp[is++]);
-			model.region[ir].setJ(v);
-
-
-			}
-			else{
-					v=new Vect(0,0,Double.parseDouble(sp[is++]));
-				model.region[ir].setSigma(v);
-
-				}
-		
-			
-			if(is==sp.length) return;
-			
-			model.region[ir].setFreq(Double.parseDouble(sp[is++]));
-			model.region[ir].phase0=Double.parseDouble(sp[is++])*Math.PI/180;
-
 	
-			
-			if(is==sp.length) return;
-			
-			if(model.dim==3){
-			for(int k=0;k<v.length;k++)
-				v.el[k]=Double.parseDouble(sp[is++]);
-			model.region[ir].setSigma(v);
-			}
-			else 
-				model.region[ir].setSigma(new Vect(0,0,Double.parseDouble(sp[is++])));
-			
-			
-	}
-
-
-	}
 	
 private void readAndSetRegDataMech(Model model,int ir,String line){
 		
 		int is=0;
 		String[] sp=line.split(this.regex);	
 
-		model.region[ir].setName(sp[0]);
 
 
 		is=1;
@@ -2247,5 +2139,518 @@ public int[] getCSInt(String line){
 	return v;
 }
 
+public String getNextDataLine(BufferedReader br) throws IOException{
+	String line;
+	while((line=br.readLine()).startsWith("/")){}
+return line;
+}
+
+
+public void loadData2D(Model model,String dataFilePath){
+	int dim0=model.dim;
+
+
+	try{
+		BufferedReader br = new BufferedReader(new FileReader(dataFilePath));
+		String line;
+		line=br.readLine();
+
+		int dataType =getIntData(line);
+		model.dataType=dataType;
+		
+		line=br.readLine();
+		line=br.readLine();
+		int dim =getIntData(line);
+		
+		if(dim!=dim0){
+			System.err.println("Mesh and Data do not match in dimension: "+dim0+" and "+dim);
+		}
+	
+			
+		if(dataType==0)
+			setDataMag2D( model,br);
+		else if(dataType==1)
+			setDataMech( model,br);
+		else if(dataType==3)
+			setDataSeep( model,br);
+	
+			br.close();
+	}
+
+	catch(IOException e){
+		e.printStackTrace();
+	}
+
+	System.out.println();
+	System.out.println("Loading data file completed.");
+
+}
+
+public void setDataMag2D(Model model,BufferedReader br){
+
+
+	String line;
+	String s;
+	int dim=model.dim;
+
+	try {
+
+		line=br.readLine();
+		line=br.readLine();
+		int coordCode =getIntData(line);
+		model.coordCode=coordCode;
+		line=br.readLine();
+		line=br.readLine();
+		int am =getIntData(line);
+		model.analysisMode=am;
+
+		line=br.readLine();
+		line=br.readLine();
+		model.motor=getBooleanData(line);
+		
+		line=br.readLine();
+		line=br.readLine();
+		int nRegions =getIntData(line);		
+		if(nRegions!=model.numberOfRegions){
+			System.err.println("Mesh and Data do not match in the number of regions: "+model.numberOfRegions+" and "+nRegions);
+		}
+
+
+		line=br.readLine();
+		line=br.readLine();
+	
+		
+		for(int ir=1;ir<=model.numberOfRegions;ir++){
+		line=br.readLine();
+		line=br.readLine();
+		readAndSetRegDataMag2D(model,ir,line);
+		}
+
+		model.BCtype=new int[model.nBoundary];
+		for(int j=0;j<model.nBoundary;j++)
+			model.BCtype[j]=-1;
+		model.PBCpair=new int[model.nBoundary];
+		line=br.readLine();
+		line=br.readLine();
+
+		int[] bcData=new int[2];
+		
+		for(int j=0;j<model.nBoundary;j++){
+			line=br.readLine();
+
+
+			if(model.BCtype[j]>-1) continue;
+			bcData=getBCdata(line);
+			model.BCtype[j]=bcData[0];
+			
+			model.PBCpair[j]=bcData[1];
+			if(model.BCtype[j]>1){
+			
+				model.BCtype[model.PBCpair[j]]=bcData[0];
+				model.PBCpair[model.PBCpair[j]]=j;
+
+			 model.hasPBC=true;
+
+			}
+
+		
+		}
+		
+
+		double f=0,dt=0;
+		//int N=1;
+	
+		
+		line=br.readLine();
+		line=br.readLine();
+		if(line!=null){
+			 f =getScalarData(line);		
+		}
+		
+		line=br.readLine();
+		if(line!=null){
+			 dt =getScalarData(line);		
+		}
+		line=br.readLine();
+		if(line!=null){
+			model.rotStep =getScalarData(line);		
+		}
+		line=br.readLine();
+		if(line!=null){
+			model.meshAngStep =getScalarData(line);		
+		}
+		line=br.readLine();
+
+		if(line!=null){
+			
+			int nSteps=1;
+			String sp[]=line.split(regex);
+			int L=sp.length;
+			
+			int n1=0,n2=0, d=1;
+	
+				n1=Integer.parseInt(sp[L-3]);
+				n2=Integer.parseInt(sp[L-2]);
+				d=Integer.parseInt(sp[L-1]);
+				if(d!=0)
+				 nSteps=(n2-n1)/d+1;
+		
+		
+		
+				model.setnTsteps(nSteps);
+				model.nBegin=n1;
+				model.nEnd=n2;
+				model.nInc=d;
+
+
+
+			}
+		
+	
+	
+		line=br.readLine();
+		model.eddyTimeIntegMode=getIntData(line);	
+		
+
+
+
+for(int j=0;j<30+model.numberOfRegions;j++){
+	
+		line=br.readLine();
+		if(line==null) continue;
+		if(line.startsWith("MS")){
+					
+			String sp[]=line.split(regex);
+			int L=sp.length;
+							
+				int nr=Integer.parseInt(sp[L-3]);
+				model.region[nr].MS=true;
+
+				Vect E=new Vect(Double.parseDouble(sp[L-2]),0,0);
+				model.region[nr].setYng(E);
+				Vect v=new Vect(Double.parseDouble(sp[L-1]),0,0);
+				model.region[nr].setPois(v);	
+				
+				if(model.region[nr].isotElast){
+				Vect sh=new Vect(1);
+					v.el[0]=.5*E.el[0]/(1+v.el[0]);
+					
+					model.region[nr].setShear(sh);
+
+				}
+				
+
+			}
+		else if(line.startsWith("loadFlux")) 
+			model.loadFlux=this.getBooleanData(line);
+		else if(line.startsWith("fluxFolder")){
+			line=br.readLine();
+			model.fluxFolderIn=line;
+		}
+		else if(line.startsWith("saveFlux")) model.saveFlux=this.getBooleanData(line);
+		else if(line.startsWith("saveForce")) model.saveForce=this.getBooleanData(line);
+		else if(line.startsWith("mag")) model.magAnalysis=this.getBooleanData(line);
+		else if(line.startsWith("trans")) model.transfer2DTo3D=this.getBooleanData(line);	
+		else if(line.startsWith("forceCal")) model.forceCalcMode=this.getIntData(line);	
+		else if(line.startsWith("rotate")) model.rotateRotor=this.getBooleanData(line);	
+		else if(line.startsWith("loadPrev")) model.loadPrevMag=this.getBooleanData(line);
+		else if(line.startsWith("axi")) model.axiSym=this.getBooleanData(line);	
+		else if(line.startsWith("height")) model.height=this.getScalarData(line);
+		
+	}
+
+
+
+
+
+
+
+
+if(model.axiSym) model.height=2*Math.PI;
+			
+		model.setFreq(f);
+		model.setDt(dt);
+		
+		model.setHasJ();
+
+		model.setHasM();
+
+		model.setHasMS();
+
+
+		model.setNonLinToElememts();
+		
+		model.setEdge();
+
+
+		model.setElementsParam();
+
+		
+		model.setBounds();
+
+	
+	if(model.coordCode==1) {
+		
+		model.cpb=1;
+
+		for(int j=0;j<model.nBoundary;j++){
+
+			if(model.BCtype[j]==3) model.cpb=-1;
+		}
+		if(model.hasTwoNodeNumb && model.nRotReg>0)
+		 model.mapCommonNodes();	
+	}
+	
+	//=====================
+
+
+	model.setNodeOnBound();
+	
+	if(model.hasPBC) model.mapPBC();
+
+	
+		if(model.deform)
+			model.setMechBC();
+		
+		
+		
+		for(int ir=1;ir<=model.numberOfRegions;ir++){
+			if(model.region[ir].circuit ) {
+				model.circuit=true;
+				break;
+			}
+			
+		}
+
+	
+		int ix=0;
+		int iy=0;
+
+		for(int ir=1;ir<=model.numberOfRegions;ir++){
+			if(model.region[ir].circuit ) {
+				model.region[ir].currentIndex=ix;
+		ix++;
+		}
+
+		}
+		
+		for(int ir=1;ir<=model.numberOfRegions;ir++){
+			if(model.region[ir].circuit && model.region[ir].curMap1==0)
+			{
+			model.region[ir].unknownCurrentIndex=iy;
+		iy++;
+		}
+
+		}
+		
+		
+		model.numberOfCurrents=ix;
+		
+		model.numberOfUnknownCurrents=iy;
+		
+		
+		if(ix>0){/*
+			model.analysisMode=1;
+			model.eddyTimeIntegMode=-2;
+		*/}
+	//--------------
+		
+		
+		model.threePhaseRegs=new int[3];
+		if(model.circuit){
+
+
+			if(model.numberOfRegions>8){
+				model.threePhaseRegs[0]=9;
+				model.threePhaseRegs[1]=11;
+				model.threePhaseRegs[2]=13;
+			}
+				
+				 if(model.numberOfRegions==8){
+					model.threePhaseRegs[0]=1;
+					model.threePhaseRegs[1]=3;
+					model.threePhaseRegs[2]=5;
+				}
+				 if(model.numberOfRegions==4){
+						model.threePhaseRegs[0]=1;
+						model.threePhaseRegs[1]=0;
+						model.threePhaseRegs[2]=0;
+					}
+
+			}
+		
+	//)))))))))))))))))))))))
+
+		if(model.threePhaseRegs[0]!=0 &&model.threePhaseRegs[1]!=0&& model.threePhaseRegs[2]!=0)
+			model.nNeutral=1;
+		
+		//model.nNeutral=0;
+
+	
+		int nCur=model.numberOfUnknownCurrents;
+		
+		model.unCurRegNumb=new int[nCur];
+	
+		for(int ir=1;ir<=model.numberOfRegions;ir++)
+			if(model.region[ir].circuit && model.region[ir].curMap1==0)
+				model.unCurRegNumb[model.region[ir].unknownCurrentIndex]=ir;
+		
+
+
+		try {
+			model.ia=new CurrentWaveForm("emf//Ian.txt");
+			model.ib=new CurrentWaveForm("emf//Ibn.txt");
+			model.ic=new CurrentWaveForm("emf//Icn.txt");
+
+			/*	model.va=new CurrentWaveForm("emf//Va.txt");
+			model.vb=new CurrentWaveForm("emf//Vb.txt");
+			model.vc=new CurrentWaveForm("emf//Vc.txt");*/
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	
+	
+	
+		
+		
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	
+	
+	//model.setForceCalc();
+
+}
+
+private void readAndSetRegDataMag2D(Model model,int ir,String line){
+	int is=0;
+	String[] sp=line.split(this.regex);	
+
+	model.region[ir].setName(sp[0]);
+	model.region[ir].setMaterial(sp[1]);
+	model.region[ir].setNonLinear(sp[2].startsWith("t"));
+	is=3;
+	Vect v=new Vect(model.dim);
+	for(int k=0;k<v.length;k++){
+		v.el[k]=Double.parseDouble(sp[is++]);
+	}
+	
+	if(!model.region[ir].isNonLinear)
+	model.region[ir].setMur(v);
+
+	if(is==sp.length) return;
+
+	v=new Vect(model.dim);
+		for(int k=0;k<v.length;k++)
+		v.el[k]=Double.parseDouble(sp[is++]);
+	model.region[ir].setM(v);
+	
+
+	
+	if(is==sp.length) return;
+	
+
+	model.region[ir].stranded=sp[is++].startsWith("t");
+	
+
+
+if(model.region[ir].stranded) {
+
+
+	model.stranded=true;
+	
+	if(model.dim==2)
+	model.region[ir].windingSurf=model.getRegionArea(ir);
+	else
+		model.region[ir].windingSurf=model.getRegionAreaXY(ir);
+	
+	model.region[ir].terminalVoltage0=Double.parseDouble(sp[is++]);
+	model.region[ir].setFreq(Double.parseDouble(sp[is++]));
+
+	model.region[ir].phase0=Double.parseDouble(sp[is++])*Math.PI/180;
+	model.region[ir].setWireRes(Double.parseDouble(sp[is++]));
+
+	if(is<sp.length)
+		model.region[ir].nloop=Double.parseDouble(sp[is++]);
+		else
+			model.region[ir].nloop=100;
+
+	
+	if(is<sp.length)
+		model.region[ir].circuit=sp[is++].startsWith("t");
+	
+	if(model.region[ir].circuit){
+
+		if(is<sp.length)
+		model.region[ir].curMap1=Integer.parseInt(sp[is++]);
+	
+	if(is<sp.length)
+		model.region[ir].currCoef1=Double.parseDouble(sp[is++]);
+	else
+		model.region[ir].currCoef1=1;
+	}
+	
+	model.region[ir].NtS=model.region[ir].nloop/model.region[ir].windingSurf;
+
+
+}
+else{
+
+	if(is==sp.length) return;
+
+	if(model.dim==3){
+		for(int k=0;k<v.length;k++)
+			v.el[k]=Double.parseDouble(sp[is++]);
+
+		}
+		else{
+
+			v=new Vect(0,0,Double.parseDouble(sp[is++]));
+			}
+	
+		model.region[ir].setJ(v);
+
+	
+	if(is==sp.length) return;
+
+		if(model.dim==3){
+		for(int k=0;k<v.length;k++)
+			v.el[k]=Double.parseDouble(sp[is++]);
+		model.region[ir].setJ(v);
+
+
+		}
+		else{
+				v=new Vect(0,0,Double.parseDouble(sp[is++]));
+			model.region[ir].setSigma(v);
+
+			}
+	
+		
+		if(is==sp.length) return;
+		
+		model.region[ir].setFreq(Double.parseDouble(sp[is++]));
+		model.region[ir].phase0=Double.parseDouble(sp[is++])*Math.PI/180;
+
+
+		
+		if(is==sp.length) return;
+		
+		if(model.dim==3){
+		for(int k=0;k<v.length;k++)
+			v.el[k]=Double.parseDouble(sp[is++]);
+		model.region[ir].setSigma(v);
+		}
+		else 
+			model.region[ir].setSigma(new Vect(0,0,Double.parseDouble(sp[is++])));
+		
+		
+}
+
+
+}
 
 }

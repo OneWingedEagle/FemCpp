@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
@@ -25,9 +26,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import fem.Main;
+import math.util;
 
 public class GUI extends JFrame implements ActionListener{
 
+	
+	
+
+	
 	public		JPanel		panel,pp1;
 	public JTextArea progressArea=new JTextArea(), paramArea=new JTextArea();
 	public  TextField tfMeshFile,tfDataFile;
@@ -36,10 +42,19 @@ public class GUI extends JFrame implements ActionListener{
 	public Label[] lbX=new Label[3];
 	public  Button Browse1,Browse2,bMainGUI,Run,bTerminate;
 	public String dataFile,meshFile,fluxFilePath;
+	
+	public static int screenWidth,screenHeight;
+
 		
 	 
 	 public GUI(String path) {
 
+		
+				Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				screenWidth = (int)(screenSize.getWidth());
+				screenHeight = (int)(screenSize.getHeight());
+		
+			
 		 //======================  file paths	
 				
 				
@@ -47,7 +62,7 @@ public class GUI extends JFrame implements ActionListener{
 				String dataFile= "";
 
 
-			int	tag=20;	
+			int	tag=0;	
 				
 				if(tag==0){
 					//meshFile= System.getProperty("user.dir") + "\\quiz.txt";
@@ -64,9 +79,16 @@ public class GUI extends JFrame implements ActionListener{
 					//dataFile= System.getProperty("user.dir") + "\\dataCondDular.txt";
 					//dataFile= System.getProperty("user.dir") + "\\dataCondSurf.txt";
 					dataFile= System.getProperty("user.dir") + "\\dataLabyringth.txt";
+					meshFile= System.getProperty("user.dir") + "\\prob20.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataProb20.txt";
 					
-				/*	meshFile= System.getProperty("user.dir") + "\\mot4th2DFine.txt";
-					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DJ.txt";*/
+					meshFile= System.getProperty("user.dir") + "\\coilcoreY1.txt";
+					dataFile= System.getProperty("user.dir") + "\\dataCoilCoreY.txt";
+					
+					//meshFile= System.getProperty("user.dir") + "\\inputs\\mesh\\cube_unif.txt";
+					//dataFile= System.getProperty("user.dir") + "\\inputs\\data\\data_unif.txt";
+					//meshFile= System.getProperty("user.dir") + "\\inputs\\mesh\\model3D2.txt";
+					//dataFile= System.getProperty("user.dir") + "\\inputs\\data\\dataModel3D2.txt";
 				}
 				
 				else if(tag==1){
@@ -106,8 +128,8 @@ public class GUI extends JFrame implements ActionListener{
 				}
 				
 				else if(tag==2){
-					meshFile= System.getProperty("user.dir") + "\\mot4th2Dfine.txt";
-					dataFile= System.getProperty("user.dir") + "\\dataMot4th2DfineJ.txt";
+					meshFile= System.getProperty("user.dir") + "\\inputs\\mesh\\mot4th2Dfine.txt";
+					dataFile= System.getProperty("user.dir") + "\\inputs\\data\\dataMot4th2DfineJ.txt";
 				}
 				
 				else if(tag==3){
@@ -224,8 +246,8 @@ public class GUI extends JFrame implements ActionListener{
 	else if(tag==19){
 		
 		
-	//	meshFile= System.getProperty("user.dir") + "\\caps\\motor8th.txt";
-		meshFile= System.getProperty("user.dir") + "\\caps\\motor8thFiner.txt";
+		meshFile= System.getProperty("user.dir") + "\\caps\\motor8th.txt";
+		//meshFile= System.getProperty("user.dir") + "\\caps\\motor8thFiner.txt";
 			dataFile= System.getProperty("user.dir") + "\\dataMechMotor8th.txt";
 			//dataFile= System.getProperty("user.dir") + "\\dataMot8th3D.txt";
 		}
@@ -250,73 +272,86 @@ public class GUI extends JFrame implements ActionListener{
 			getContentPane().add(panel);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			setTitle(" FEM Analysis : "+path);
-			setSize(850,680);
+		
+			int width = (int)(.7*screenWidth);
+			int height = (int)(.7*screenHeight);
+			
+			setSize(width,height);
 			setLocation(10, 10);
 	
 		 
 		    
 	 //================================================================ redirecting console to text area
+			
+			int ww1=(int)(.65*width);
+			int hh1=(int)(.7*height);
 		
 			progressArea.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			progressArea.setEditable(false);;
+			progressArea.setFont(new Font("Arial", 0, (int)(10.0*screenWidth/1200)));
 		
 			progressArea.setBorder(BorderFactory.createLineBorder(Color.blue,1));
 			   JScrollPane scrollPane = new JScrollPane(progressArea);
 			   scrollPane.setBorder(BorderFactory.createCompoundBorder(
 						BorderFactory.createTitledBorder("Progress"),
 						BorderFactory.createEmptyBorder(10,5,5,5)));
-		  scrollPane.setPreferredSize(new Dimension(500,420));
+		  scrollPane.setPreferredSize(new Dimension(ww1,hh1));
 		  
 		  paramArea.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 			paramArea.setEditable(false);;
+			paramArea.setFont(new Font("Arial", 0, (int)(10.0*screenWidth/1200)));
+			
 			paramArea.setBorder(BorderFactory.createLineBorder(Color.blue,1));
 			   JScrollPane scrollPane2 = new JScrollPane(paramArea);
 			   scrollPane2.setBorder(BorderFactory.createCompoundBorder(
 						BorderFactory.createTitledBorder("Parameters"),
 						BorderFactory.createEmptyBorder(10,5,5,5)));
-		  scrollPane2.setPreferredSize(new Dimension(300,420));
+		  scrollPane2.setPreferredSize(new Dimension((int)(.3*width),hh1));
 
 	//=================================================================== configuring the panel		
 
 				Label lbMeshFile=new  Label("Load Mesh"   , Label.RIGHT);
 				Label lbDataFile=new  Label("Load Data"   , Label.RIGHT);
-				lbMeshFile.setPreferredSize(new Dimension(80,30));
-				lbDataFile.setPreferredSize(new Dimension(80,30));
+				
+				int d1=(int)(80.*GUI.screenWidth/1200);
+				int h1=(int)(20.*GUI.screenWidth/1200);
+				lbMeshFile.setPreferredSize(new Dimension(d1,h1));
+				lbDataFile.setPreferredSize(new Dimension(d1,h1));
 				
 				
-
+				int d2=(int)(300.*GUI.screenWidth/1200);
 
 				tfMeshFile=new TextField(meshFile);
-				tfMeshFile.setPreferredSize(new Dimension(300,30));
+				tfMeshFile.setPreferredSize(new Dimension(d2,h1));
 							
 				tfDataFile=new TextField(dataFile);
-				tfDataFile.setPreferredSize(new Dimension(300,30));
+				tfDataFile.setPreferredSize(new Dimension(d2,h1));
 				
 				Browse1=new Button("Load Mesh");
-				Browse1.setPreferredSize(new Dimension(100,30));
+				Browse1.setPreferredSize(new Dimension(d2/3,h1));
 				Browse2=new Button("Load Data");
-				Browse2.setPreferredSize(new Dimension(100,30));
+				Browse2.setPreferredSize(new Dimension(d2/3,h1));
 				bMainGUI=new Button("Open Main GUI");
 				bTerminate=new Button("Terminate");
-				bTerminate.setPreferredSize(new Dimension(100,30));
-				bMainGUI.setPreferredSize(new Dimension(210,30));
+				bTerminate.setPreferredSize(new Dimension(d2/3,h1));
+				bMainGUI.setPreferredSize(new Dimension(d2,h1));
 				
 				Browse1.addActionListener(this);
 				Browse2.addActionListener(this);
 				bMainGUI.addActionListener(this);
 				
 				tfIterMax=new TextField("3000");
-				tfIterMax.setPreferredSize(new Dimension(60,30));
-				tfErrorMax=new TextField("1e-8");
-				tfErrorMax.setPreferredSize(new Dimension(60,30));
+				tfIterMax.setPreferredSize(new Dimension(d2/5,h1));
+				tfErrorMax=new TextField("1e-6");
+				tfErrorMax.setPreferredSize(new Dimension(d2/5,h1));
 				Label lbIterMax=new Label("ICCG Iteration max.");
 				Label lbErrorMax=new Label(" Error max.");
 
 				for(int i=0;i<3;i++){
 					lbX[i]=new Label("");
-					lbX[i].setPreferredSize(new Dimension(60,30));
+					lbX[i].setPreferredSize(new Dimension(d2/5,h1));
 				tfX[i]=new TextField("");
-				tfX[i].setPreferredSize(new Dimension(60,30));
+				tfX[i].setPreferredSize(new Dimension(d2/5,h1));
 				}
 			
 
@@ -333,7 +368,7 @@ public class GUI extends JFrame implements ActionListener{
 				
 				 Run=new Button("Run");
 				Run.setBackground(Color.GREEN);
-				Run.setPreferredSize(new Dimension(100,30));
+				Run.setPreferredSize(new Dimension(d2/3,h1));
 				 
 				Label empty1=new Label();
 				empty1.setPreferredSize(new Dimension(50,3));

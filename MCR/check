@@ -1,0 +1,502 @@
+* File input.ems start. *
+* RLS_NO *
+r11.0
+**** Execution module: EMSOL  r11.2.3  June 15, 2015 ****
+* PRE_PROCESSING * MAKE_SYSTEM_MATRICES *
+       1                  1                      1
+* SOLVE_EQUATION * POST_PROCESSING *
+       1                  1
+* STATIC * STEP * AC * TRANSIENT * MOTION * NON_LINEAR * TEMP_DEPEND * STEADY_CURRENT *
+    1       0     0      0         0           1
+* POTENTIAL * NODAL_FORCE_OPTION * PHI_OPTION * FIXED_COODINATE *
+    0
+* TREE_GAUGE * REGULARIZATION * RENUMBERING * SCALING * LINE_SERACH * MATRIX_ASYMMETRICITY *
+   -1 
+* NODE_ORDER * EDGE_ORDER *  METRIC_MOD * QUAD_TRI * CALC_IND *  THIN_ELEM * PARALLEL_NO * PARALLEL_OPTION
+         1
+**** Number of parallel threads: 1 ****
+         priority : speed
+* ICCG_CONV * ACCEL_FACTOR * DIV_FACTOR * DIV_ITERATIONS * SOLVER * THETA * THETA_NETWOEK * THETA_MOTION * MAX_ITERATIONS *
+    1.e-8        0.0            10.          10             0
+* NON_LINERAR_CONV * RELAXATION * NO_ITERATIONS * INIT_OPTION * ICCG_CONV_RATIO * CHECK_B * DELTA_A * NON_LINEAR_METHOD *
+    1.e-3             1.0            20
+* POINTS_IN_1D * POINT_IN_TRIANGLE * MAT_POINTS * 
+         3               7             0
+* INITIAL_STEP * DATA_TYPE * INITIAL_PHASE * MULTI * 
+     -1
+* NO_STEPS * INITIAL_TIME(s) *  DELTA_TIME(s) * NO_DATA * CYCLE * N_CORRECT * N_BACK * TP_EEC_OPTION *
+      1         0.0              .02
+* INITIAL_STEP * LAST_STEP * STEP_INTERVAL * TIME_DIFF * RESTART_FILE_OPTION * CONT *
+       1             1000           1             0
+* INPUT_MESH_FILE *  UNIT  * NO_MESH *  MESHLESS *
+        5            0
+* POST_DATA_FILE * ELEM_OUT * NODE_OUT * NUMBER_OUTPUT_MATS * AVERAGE * WIDE * SUF_OPTION * POST_COORDINATE * COIL_OPTION * POST_FFT *
+        5            1            0           0                 0
+* MESH * CURRENT * MAGNETIC * FORCE_J_B * FORCE_NODAL * DISP * ELEM * HEAT * MAGNETIZATION * IRON_LOSS *   E   * COIL_FORCE *
+   1        1         1            0          1         0       0      0
+*   MESH   *   A   *   V   *   B   *   B_INTEG *    J_Q  *
+     0         0       0       0         0           0
+*  Q_AVERAGE * HEAT  *  MAG_FLUX  * CUR_FLUX *
+        0         0            0            0
+* FORCE_J_B * FORCE_NODAL * MAGNETIC_ENERGY * IRON_LOSS *
+        1         1
+* GEOMETRY * DELTA_Z(m) or DETLA_THETA(deg)* NO_LAYERS * ADD_SYMMETRY * PITCH(M) *
+     0         .0254
+*COORDINATE * NO_COORDINATES *
+COORDINATE         0
+* FAR_BOUNDARY_CONDITION 
+       0
+* DISTANCE_JUDGE(m) *
+      1.e-4
+* NO_BN0_PLANES *
+    0
+* NO_HT0_PLANES *
+    0
+* NO_A0_LINE *
+    0
+* CYCLIC  *  SYMMETRICITY * SLIDE_NDIV * SLIDE_MAT_ID * FITTNESS * LINE_INPUT * N_CYCLIC *
+     0               1             0          11
+* NO_MAT_IDS *  EXTEND_TOTAL *  NO_SMAT_IDS 
+     3               0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *  ANISOTROPY * IRON_LOSS * SIGMA_DEPEND_ID *
+     1            1           1         0.0     1000.0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *  ANISOTROPY * IRON_LOSS * SIGMA_DEPEND_ID *
+     2            1           1         0.0     1.0
+* MAT_ID  *  POTENTIAL * B_H_CURVE_ID * SIGMA * MU  * PACKING *  ANISOTROPY * IRON_LOSS * SIGMA_DEPEND_ID *
+     3            0           0         0.0      1.0
+*SOURCE *
+SOURCE  
+*COIL   * SERIES_NO  *  TIME_ID * NO_ELEMENTS * MOTIN_ID * IN_ROTOR * POTENTIAL *
+COIL         1            0             11              
+*GCE    * CURRENT(A)*
+GCE	1.3				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.129	0	-0.067	-0.129	0	0.107
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	0.018	0	0
+*GCE    * CURRENT(A)*
+GCE	1.3				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.213	0	0.191	-0.387	0	0.191
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	0	0	0.018
+*GCE    * CURRENT(A)*
+GCE	1.3				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.471	0	0.107	-0.471	0	-0.067
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	-0.018	0	0
+*GCE    * CURRENT(A)*
+GCE	1.3				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.387	0	-0.151	-0.213	0	-0.151
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	0	0	-0.018
+*GCE    * CURRENT(A)*
+GCE-	1.3.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.129	0	0.02	-0.129	0	0.107
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	0.018	0	0
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3		
+*GCE    * CURRENT(A)*
+GCE-	1.3				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+-0.213	0	0.191	-0.3	0	0.191
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0	0.0966	0	0	0	0.018
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3		
+*ARC    *  current(A)  *
+ARC	1.3				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+-0.213	0	0.107	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+0	90	0	90		
+*ARC    *  current(A)  *
+ARC	1.3				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+-0.387	0	0.107	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+0	90	90	180		
+*ARC    *  current(A)  *
+ARC	1.3				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+-0.387	0	-0.067	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+0	90	-180	-90		
+*ARC    *  current(A)  *
+ARC	1.3				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+-0.213	0	-0.067	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+0	90	-90	0		
+*ARC    *  current(A)  *
+ARC-	1.3				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+-0.213	0	0.107	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+0	90	0	90		
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3				
+*END of COIL *
+END
+*COIL   * SERIES_NO  *  TIME_ID * NO_ELEMENTS * MOTIN_ID * IN_ROTOR * POTENTIAL *
+COIL         2            0            11              
+*GCE    * CURRENT(A)*
+GCE	200.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	0.171	-0.517	0.3	0.171	-0.343
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	0.018	0
+*GCE    * CURRENT(A)*
+GCE	200.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	0.087	-0.259	0.3	-0.087	-0.259
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	0	0.018
+*GCE    * CURRENT(A)*
+GCE	200.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	-0.171	-0.343	0.3	-0.171	-0.517
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	-0.018	0
+*GCE    * CURRENT(A)*
+GCE	1				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	-0.087	-0.601	0.3	0.087	-0.601
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	0	-0.018
+*GCE    * CURRENT(A)*
+GCE-	200.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	0.171	-0.43	0.3	0.171	-0.343
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	0.018	0
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3		
+*GCE    * CURRENT(A)*
+GCE-	200.				
+*            XS(m)  *   YS(m)  *  ZS(m)  *  XE(m)  *  YE(m)  *  ZE(m)  * 
+0.3	0.087	-0.259	0.3	0	-0.259
+*            W1X(m) *   W1Y(m) *  W1Z(m) *  W2X(m) *  W2Y(m) *  W2Z(m) *
+0.0966	0	0	0	0	0.018
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3		
+*ARC    *  current(A)  *
+ARC	200.				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+0.3	0.087	-0.343	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+90	90	0	90		
+*ARC    *  current(A)  *
+ARC	200.				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+0.3	-0.087	-0.343	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+90	90	90	180		
+*ARC    *  current(A)  *
+ARC	200.				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+0.3	-0.087	-0.517	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+90	90	-180	-90		
+*ARC    *  current(A)  *
+ARC	200.				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+0.3	0.087	-0.517	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+90	90	-90	0		
+*ARC    *  current(A)  *
+ARC-	200.				
+*          X(m)  *  Y(m)  *   Z(m)  * RADIUS(m)* AXIAL_W(m)*RADIAL_W(m)*
+0.3	0.087	-0.343	0.084	0.1932	0.036
+*          ALPHA(deg)* BETA(deg) * PHI1(deg)   * PHI2(deg) *
+90	90	0	90		
+* NDIV * INT_X * INT_Y * INT_Z *
+5	3	3	3						
+*END of COIL *
+END			
+*CIRCUIT *
+CIRCUIT
+* NO_SERIES * NO_POWER_SUPPLIES *  REGION_FACTOR *  IN_IND *  IN_RES * IN_CON * REGION_PARALLEL *
+       1                1                  1.		1	1
+* SERIES_IDS *
+      1		
+* SERIES_EXTERNAL_INDUCTANCE *
+       0.0	
+* SERIES_EXTERNAL_RESISTANCE *
+       1.0	
+*  CONNECTION_MATRIX *
+       1.0 		
+* PS_ID    *    TYPE  * TIME_ID *   INITIAL_CURRENT *
+    1            1         1                0.0 
+* END of CIRCUIT
+END
+*END of SOURCE *
+END
+* NO_DATA *
+      1
+* TIME_ID * OPTION *
+     1        0
+*   C0    *   C1    *   C2    *   C3     *   C4     *  C5    *   C6    *
+     100		 0      0        0.0       0.0      0.0		0
+*  TEXP   *   TCYCLE  *
+	0	0
+* NO_CURVES * NO_T_DEPEND_CURVES * NO_2D_B_H * NO_B_H_MAGNET_CURVES *
+     1
+* BH_CURVE_ID * NO_DATA *
+     1             39       
+*   H_AT/M     *      B_T    *
+0	0
+200	0.07065
+400	0.1413
+600	0.21195
+800	0.2826
+1000	0.35325
+1200	0.4239
+1400	0.49455
+1600	0.5652
+1800	0.63585
+2000	0.7065
+2200	0.77715
+2400	0.8478
+2600	0.91845
+2800	0.9891
+3000	1.05975
+3200	1.1304
+3400	1.20105
+3600	1.2717
+3800	1.34235
+4000	1.413
+8010	1.594
+16010	1.751
+24020	1.839
+32030	1.896
+40030	1.936
+48040	1.967
+64050	2.008
+80070	2.042
+96080	2.073
+112100	2.101
+128110	2.127
+144120	2.151
+176150	2.197
+208180	2.24
+240200	2.281
+272230	2.321
+Warning:Differential relative permeability is less than 1.
+304260	2.361
+Warning:Differential relative permeability is less than 1.
+336290	2.4
+Warning:Differential relative permeability is less than 1.
+
+* File input.ems end *  162 cards are read.
+
+
+*** pre_geom file has been read ******************
+    Number of elements 64575 : min 1 : max 64575
+    Number of nodes    69552 : min 1 : max 69552
+
+finish elem_file
+finish output_geom_file
+finish T_R_interface_file
+*******  Pre_processing is completed ********
+          utime         3.0  stime         0.0
+*******  Make_system_matrices is completed ********
+          utime         5.0  stime         0.0
+*** ICCG iteration **
+       No.       Error
+         0  1.00000e+000
+         1  1.14585e+000
+         2  1.62834e+000
+         3  1.64405e+000
+         4  1.38980e+000
+         5  1.32832e+000
+         6  1.51054e+000
+         7  1.47799e+000
+         8  1.40027e+000
+         9  1.45639e+000
+        10  1.43982e+000
+        11  1.45358e+000
+        12  1.47309e+000
+        13  1.53163e+000
+        14  1.61891e+000
+        15  1.64662e+000
+        16  1.65649e+000
+        17  1.83281e+000
+        18  1.88834e+000
+        19  1.92670e+000
+        20  2.12346e+000
+        21  2.20722e+000
+        22  2.32270e+000
+        23  2.29659e+000
+        24  2.21721e+000
+        25  2.04622e+000
+        26  1.81995e+000
+        27  1.55769e+000
+        28  1.30599e+000
+        29  1.11600e+000
+        30  9.25261e-001
+        31  8.06470e-001
+        32  7.04582e-001
+        33  6.26211e-001
+        34  5.28945e-001
+        35  4.59062e-001
+        36  4.00980e-001
+        37  3.52246e-001
+        38  3.10117e-001
+        39  2.79983e-001
+        40  2.50606e-001
+        41  2.25732e-001
+        42  2.07708e-001
+        43  1.75191e-001
+        44  1.57747e-001
+        45  1.38940e-001
+        46  1.30487e-001
+        47  1.18464e-001
+        48  1.05371e-001
+        49  9.14926e-002
+        50  7.90470e-002
+        51  6.52671e-002
+        52  5.57918e-002
+        53  5.10118e-002
+        54  4.63056e-002
+        55  4.29249e-002
+        56  4.29699e-002
+        57  4.38203e-002
+        58  4.85464e-002
+        59  4.98257e-002
+        60  5.13464e-002
+        61  5.33440e-002
+        62  5.42593e-002
+        63  5.15882e-002
+        64  4.97355e-002
+        65  4.50577e-002
+        66  4.03286e-002
+        67  3.82445e-002
+        68  3.52906e-002
+        69  3.31527e-002
+        70  3.06894e-002
+        71  2.76048e-002
+        72  2.53176e-002
+        73  2.43516e-002
+        74  2.17809e-002
+        75  2.13395e-002
+        76  2.06902e-002
+        77  1.88178e-002
+        78  1.68052e-002
+        79  1.51065e-002
+        80  1.35606e-002
+        81  1.19038e-002
+        82  1.09364e-002
+        83  8.93402e-003
+        84  7.52587e-003
+        85  6.63663e-003
+        86  5.48638e-003
+        87  4.51805e-003
+        88  3.78398e-003
+        89  3.21760e-003
+        90  2.65674e-003
+        91  2.27263e-003
+        92  2.00716e-003
+        93  1.81301e-003
+        94  1.65475e-003
+        95  1.49921e-003
+        96  1.38729e-003
+        97  1.21134e-003
+        98  1.12076e-003
+        99  1.05329e-003
+       100  8.94377e-004
+       101  7.40173e-004
+       102  6.20565e-004
+       103  5.48333e-004
+       104  4.64115e-004
+       105  3.98635e-004
+       106  3.68801e-004
+       107  3.45410e-004
+       108  3.16431e-004
+       109  2.95208e-004
+       110  2.88226e-004
+       111  2.94746e-004
+       112  2.97984e-004
+       113  3.11041e-004
+       114  3.33073e-004
+       115  3.60096e-004
+       116  4.16205e-004
+       117  4.66292e-004
+       118  4.68995e-004
+       119  5.24137e-004
+       120  5.98262e-004
+       121  6.87728e-004
+       122  8.29112e-004
+       123  1.05508e-003
+       124  1.25593e-003
+       125  1.40839e-003
+       126  1.58816e-003
+       127  1.88894e-003
+       128  2.23601e-003
+       129  2.67578e-003
+       130  3.07008e-003
+       131  3.41258e-003
+       132  3.71650e-003
+       133  4.25084e-003
+       134  4.53453e-003
+       135  5.26708e-003
+       136  6.33728e-003
+       137  7.66950e-003
+       138  9.25495e-003
+       139  1.08179e-002
+       140  1.26363e-002
+*** ICCG doesn't converge ***
+       110  2.88226e-004
+
+*** ICCG iteration **
+       No.       Error
+         0  2.88226e-004
+         1  1.72942e-004
+         2  2.18640e-004
+         3  2.54509e-004
+         4  2.40163e-004
+         5  2.66755e-004
+         6  3.20416e-004
+         7  3.44593e-004
+         8  3.59796e-004
+         9  4.20990e-004
+        10  5.05055e-004
+        11  5.58784e-004
+        12  5.89576e-004
+        13  6.56607e-004
+        14  7.76283e-004
+        15  8.44831e-004
+        16  9.04267e-004
+        17  1.04627e-003
+        18  1.19929e-003
+        19  1.37537e-003
+        20  1.54933e-003
+        21  1.83888e-003
+        22  2.26144e-003
+        23  2.59993e-003
+        24  3.12565e-003
+        25  3.64223e-003
+        26  4.10673e-003
+        27  4.70071e-003
+        28  5.70898e-003
+        29  6.69857e-003
+        30  7.70841e-003
+        31  9.13646e-003
+*** ICCG doesn't converge ***
+         1  1.72942e-004
+
+********** ICCG:2:    4.00000e+000, PRE_COND:2:    0.00000e+000, MATRIX :2:   0.00000e+000, ELEM_MATRIX :0:   0.00000e+000, LINE_SERACH:0:    0.00000e+000
+*** Time for Block_ICCG_real_openmp       4.000 (sec)
+*** Time for assemble       0.000 (sec)
+*** Time for sparse_matrix_preconditioning       0.000 (sec)
+*** Time for sparse_matrix_solver       4.000 (sec)
+*** Time for line_search       0.000 (sec)
+*** Time for renumbering       0.000 (sec)
+*******  Solve_equation is completed ********
+          utime         8.0  stime         0.0
+*******  Post_processing is completed ********
+          utime         3.0  stime         0.0

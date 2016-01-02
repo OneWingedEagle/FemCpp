@@ -4,8 +4,6 @@ import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -17,11 +15,12 @@ import javax.swing.JFrame;
 
 import org.math.plot.Plot2DPanel;
 
+import components.GUI;
 import math.Mat;
 import math.MatSolver;
 import math.Vect;
 import math.util;
-import meshFactory.MeshFactory;
+import meshFactory.MeshManipulator;
 
 public class RunMagIPM {
 
@@ -37,43 +36,36 @@ public class RunMagIPM {
 
 	public void runMag(Model model, Main main){
 
+		boolean villari=false;
+		
+		//model.m2d=new Model(System.getProperty("user.dir") + "\\bun0.txt");
+		//model.m2d.loadFlux(System.getProperty("user.dir") + "\\flux0.txt");
 
-	//	Model stf=new Model(System.getProperty("user.dir") + "\\statFrame2D.txt");
+if(villari){
+		model.m2d=new Model(System.getProperty("user.dir") + "\\inputs\\mesh\\statFrame2D.txt");
+
+
+		model.m2d.loadStress("C:\\Works\\proj8\\resultsShrink3DLamin\\stressLamins\\stress2D"+24+".txt");
+		
+		int[] ir1={1,2};
+		int[] ir2={8,16};
+		for(int k=0;k<ir1.length;k++){
+			int ix=0;
+			for(int i=model.region[ir2[k]].getFirstEl(); i<model.region[ir2[k]].getLastEl();i++)
+			{
+				
+				model.element[i].setDeformable(true);
+				Vect ss=model.m2d.getStress(model.region[ir1[k]].getFirstEl()+ix);
+				model.element[i].setStress(ss);
+				
+				ix++;
+			}
+		}
 	
-		model.m2d=new Model(System.getProperty("user.dir") + "\\statFrame2D.txt");
-
-
-		model.m2d.loadStress(System.getProperty("user.dir") + "\\resultsShrink3DLamin\\stressLamins\\stress2D"+24+".txt");
-
-		String m3dBun;
-			Model m3d=new Model();
+	}
 		
 			String folder=model.resultFolder;
 
-		//	model.timeIntegMode=1;
-			
-			if(model.transfer2DTo3D)
-				{
-					
-					
-					m3dBun= System.getProperty("user.dir") + "\\motor8th.txt";
-				//	String m3dData= System.getProperty("user.dir") + "\\dataMot4th2DfineJ.txt";
-
-					m3d=new Model(m3dBun);
-				//	m3d.loadData(m3dData);
-					m3d.coordCode=model.coordCode;
-					
-					String folder1 = System.getProperty("user.dir")+"\\forces3DMag";
-
-					File dfolder = new File(folder1);
-				if(dfolder.exists())
-					util.deleteDir(dfolder);
-				dfolder.mkdir();
-
-			
-			
-					
-				}
 
 			int nTsteps=model.nTsteps;
 		
@@ -85,10 +77,10 @@ public class RunMagIPM {
 			int inc=model.nInc;
 
 			Vect T=new Vect(nTsteps);
-			Vect T2=new Vect(nTsteps);
+			
+			
 			Vect time=new Vect(nTsteps);
-			Vect Tdg=new Vect(2*nTsteps);
-			Vect hdg=new Vect(2*nTsteps);
+
 			
 			Vect Vn=new Vect(nTsteps);
 			double[][] Is=new double[5][nTsteps];
@@ -97,9 +89,8 @@ public class RunMagIPM {
 			double[][] Vs=new double[4][nTsteps];
 	
 			//******************************
-			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			int width = (int)screenSize.getWidth();
-			int height = (int)screenSize.getHeight();
+			int width = GUI.screenWidth;
+			int height = GUI.screenHeight;
 		
 			 Plot2DPanel[] plot = new Plot2DPanel[4];
 			 JFrame[] frame = new JFrame[4];
@@ -193,7 +184,6 @@ public class RunMagIPM {
 
 			  //*******************************
 			  
-			Vect de=new Vect(nTsteps);
 			
 
 			double kme;
@@ -216,18 +206,9 @@ public class RunMagIPM {
 			
 	
 			double tet=model.tet,tetp=model.tetp,tetpp=model.tetpp;
-			double up=0,upp=0,uu=0,vv=0,aa=0,bb=0,cc=0,ff=0,ffp=0,udgp=0,vdgp=0,dt=0,dtp;
-			double mp=.075,ks=1,cs=.05;
 
-		
-			uu=.0;
-			up=uu;
-			mp=.1;ks=5;cs=.0;
-			//double dt=model.dt;
-			
-			
-			MatSolver msolver=new MatSolver();
-			
+			double dt=model.dt;
+
 		
 			double dx=0,dxp=0,dang=0;
 
@@ -239,11 +220,11 @@ public class RunMagIPM {
 			mechAngStep=model.rotStep;
 			
 			elAngStep=mechAngStep/kme;
+
 			
+		double elAng0=0;
 			
-		double elAng0=0*260;
-			
-			if(model.circuit) elAng0=280;
+			if(!model.circuit) elAng0=280;
 			//if(model.circuit) elAng0=0;
 
 			//elAng0=0;
@@ -267,18 +248,7 @@ public class RunMagIPM {
 			String dispFolder="";
 			String fluxFolder="";
 
-			if(model.saveDisp){
-				if(model.fullMotor)
-					dispFolder = System.getProperty("user.dir")+"\\disp6AFull-0-90mode"+model.defMode;
-				else
-					dispFolder = System.getProperty("user.dir")+"\\disp6A4th-0-90mode"+model.defMode;
-			
-				File dfolder = new File(dispFolder);
-				if(dfolder.exists())
-					util.deleteDir(dfolder);
-				dfolder.mkdir();
-
-			}
+		
 
 			if(model.saveForce){
 			
@@ -290,17 +260,6 @@ public class RunMagIPM {
 
 			}
 
-			if(model.saveFlux){
-				if(model.fullMotor)
-					fluxFolder = System.getProperty("user.dir")+"\\flux6AFull-0-90";
-				else
-					fluxFolder = System.getProperty("user.dir")+"\\flux6A4th-0-90";
-				File dfolder = new File(fluxFolder);
-				if(dfolder.exists())
-					util.deleteDir(dfolder);
-				dfolder.mkdir();
-
-			}
 
 			
 			if(nTsteps>1)
@@ -321,17 +280,13 @@ public class RunMagIPM {
 
 			double omega=2*PI*model.freq;
 			
+			
+			
 
 			int nM=8;
 
 			double tav=0;
-			
-			//String bun=System.getProperty("user.dir") + "\\plungers\\plunger2Dv.txt";
-			String bun=System.getProperty("user.dir") + "\\plungers\\EM.txt";
-			if(model.dim==3)
-				bun=System.getProperty("user.dir") + "\\plungers\\EMSlice.txt";
-			
-			Model model0=new Model(bun);
+
 			
 		for(int m=0;m<=1*nM;m++){
 			
@@ -347,239 +302,11 @@ public class RunMagIPM {
 				mechAng=mechAng0;
 				elAng=elAng0;
 
-				int iy=0;
 				int ix=-1;
-				
-				MeshFactory mf=new MeshFactory();
-				
-				double dtfact=1;
-				
 
 				for(int i=nBegin;i<=nEnd;i+=inc){
 					
-		
-
-				
-					double dt0=5e-2/5;
-				//	dt0=1;
-				
-				
-					ix++;
-		
-			
-				//	model.dt=dtfact*dt0;
-									
-					double umax=.0095;
-					
-					umax=100;
-					
-					if(uu>umax){
-						double ut=uu;
-						uu=up;
-						up=ut;
-						vv=-vv;
-						
-				
-					}
-					
-					/*if(umax-uu<2e-3) dtfact=.2;
-					else*/
-						dtfact=1;
-				
-					//else dtfact=Math.exp(-1e4*abs(uu-up));
-
-					dtp=dt;
-
-					 dt=model.dt;
-					double dt2=dt*dt;
-					double dt3=dt2*dt;
-					double dt4=dt2*dt2;
-					
-				 int pp=200;
-						 
-					 
-				if(pp==1){
-
-					 //uu=ix*.0004;
-					 if(uu>.009) {
-						 uu=.009; 
-						// break;
-					 }
-					 
-					 mf.meshPlunger(uu,true);
-
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-					Model modelp=model.deepCopy();
-					modelp.femCalc=new Calculator(modelp);
-					
-					 bun=System.getProperty("user.dir") + "\\plungers\\plungerX.txt";
-					model.loadMesh(bun);
-					
-					String 	dataFile= System.getProperty("user.dir") + "\\dataPlunger2D.txt";
-					model.loadData(dataFile);
-				
-				
-					model.dt=dtfact*dt0;
-					
-					 dt=model.dt;
-					 dt2=dt*dt;
-					 dt3=dt2*dt;
-					dt4=dt2*dt2;
-					
-				
-					int[] ncr={1};
-					int nt=0;
-					for(int j=0;j<ncr.length;j++)
-						nt+=model.getRegNodes(ncr[j]).length;
-					
-					int[] ee=new int[nt];
-					boolean[] ec=new boolean[model.numberOfEdges+1];
-					int kx=0;
-					for(int j=0;j<ncr.length;j++)
-					for(int k=model.region[ncr[j]].getFirstEl();k<=model.region[ncr[j]].getLastEl();k++){
-						for(int jj=0;jj<model.nElEdge;jj++){
-							int en=model.element[k].getEdgeNumb(jj);
-							if(!ec[en]){
-								ec[en]=true;
-								ee[kx++]=en;
-							}
-						}
-						
-					}
-					
-					for(int k:ee)
-					{
-						
-						Vect P=model.node[model.edge[k].endNodeNumber[0]].getCoord();
-
-						double[] AnAp=modelp.getApAnAt(P);
-						
-						model.edge[k].Ap=AnAp[0];
-						model.edge[k].A=AnAp[1];
-
-						
-					}
-				}
-				 else if(pp==2){
-
-				
-					/*Model modelp=model.deepCopy();
-					modelp.femCalc=new Calculator(modelp);
-					*/
-					model.resetReluctForce();
-					
-				/*	for(int k=1;k<model.numberOfEdges;k++){
-						model.edge[k].A=0;
-						model.edge[k].Ap=0;
-					}
-	
-						*/
-					
-				
-					if(abs(uu)>1e4 ){
-				
-					//	util.pr(uu);
-						main.gui.tfX[1].setText(this.formatter.format(uu*1e6));
-								
-						
-						main.gui.tfX[2].setText(this.formatter.format(dtfact));
-
-						
-						int n1=1561;
-						int n2=1834;
-						int n3=1210;
-						int n4=2146;
-						
-						int cmp=1;
-						if(model.dim==3){
-							cmp=2;
-							 n1=1601;
-							 n2=1881;
-							 n3=1241;
-							 n4=2201;
-							
-						}
-						
-
-					double y1=model0.node[n1].getCoord(cmp);
-					double y2=model0.node[n2].getCoord(cmp);
-					double y3=model0.node[n3].getCoord(cmp);
-					double y4=model0.node[n4].getCoord(cmp);
-					
-				
-					
-					for(int k=1;k<model.numberOfNodes;k++){
-						double y=model0.node[k].getCoord(cmp);
-						if(y>=y1 && y<=y2) 
-							model.node[k].setCoord(cmp,y-uu);
-						else if(y<y1 && y>y3)  model.node[k].setCoord(cmp,y-(y-y3)*uu/(y1-y3));
-						else if(y>y2 && y<y4)  model.node[k].setCoord(cmp,y-(y-y4)*uu/(y2-y4));
-					}
-						
-					}
-
-
-					
-				
-					model.dt=dtfact*dt0;
-					
-					 dt=model.dt;
-					 dt2=dt*dt;
-					 dt3=dt2*dt;
-					dt4=dt2*dt2;
-				
-					int[] ncr={};
-					int nt=0;
-					
-					for(int j=0;j<ncr.length;j++)
-						nt+=model.getRegNodes(ncr[j]).length;
-					
-					int[] ee=new int[nt];
-
-					
-					boolean[] ec=new boolean[model.numberOfEdges+1];
-					
-					
-					int kx=0;
-					for(int j=0;j<ncr.length;j++)
-					for(int k=model.region[ncr[j]].getFirstEl();k<=model.region[ncr[j]].getLastEl();k++){
-						for(int jj=0;jj<model.nElEdge;jj++){
-							int en=model.element[k].getEdgeNumb(jj);
-
-							if(!ec[en]){
-								ec[en]=true;
-								ee[kx++]=en;
-								
-							}
-						}
-						
-					}
-
-					
-					
-			/*		for(int k:ee)
-					{
-						
-						int nn=model.edge[k].endNodeNumber[0];
-						Vect P=model.node[nn].getCoord();
-
-						double[] AnAp=modelp.getApAnAt(P);
-						
-			
-						model.edge[k].Ap=AnAp[0];
-						model.edge[k].A=AnAp[1];
-
-						
-					}*/
-				}
-		
-					  
+					ix++;  
 				
 					nSamples++;
 					double beta=m*.5/nM*PI;
@@ -596,7 +323,6 @@ public class RunMagIPM {
 
 						tetpp=tetp;
 						tetp=tet;
-						double tetd=0;
 						
 						double dTr=(model.TrqZ-10)+20*(tets-tet);
 						
@@ -608,7 +334,6 @@ public class RunMagIPM {
 						
 						tet=tets;
 					
-						tetd=180*tet/PI;
 						
 						mechAng=mechAng0+i*mechAngStep;
 						
@@ -698,6 +423,7 @@ public class RunMagIPM {
 							
 									
 									x=model.solveNonLinear(x,true,i-nBegin);
+									
 								}
 
 					/*	if(model.analysisMode>0)
@@ -718,7 +444,15 @@ public class RunMagIPM {
 
 						model.resetReluctForce();
 						model.setReluctForce();
+		/*				
+						int ir=8;
+						for(int ie=model.region[ir].getFirstEl();ie<=model.region[ir].getLastEl();ie++){
+							model.element[ie].setDeformable(true);
+							//model.element[ie].getStress().hshow();
+						}*/
+						
 						model.setMSForce();
+
 						
 				}
 
@@ -726,25 +460,28 @@ public class RunMagIPM {
 
 					{	
 					
-						String fluxFile = System.getProperty("user.dir")+"\\flux-0-1800CalfineOK\\flux"+i+".txt";
+					//	String fluxFile = System.getProperty("user.dir")+"\\flux-0-1800CalfineOK\\flux"+i+".txt";
 
+						String fluxFile = model.fluxFolderIn+"\\flux"+i+".txt";
+						
 
 							model.loadFlux(fluxFile,0);
 
 							model.setReluctForce();
+							
+							int ir=8;
+							for(int ie=model.region[ir].getFirstEl();ie<=model.region[ir].getLastEl();ie++){
+								model.element[ie].setDeformable(true);
+								//model.element[ie].getStress().hshow();
+							}
 
 							model.setMSForce();
 							
-							if(model.transfer2DTo3D){
-
-							transfer2DTo3D( model, m3d,false, true);
+						
+							String stressFile = model.resultFolder+"\\stressMS"+i+".txt";
 							
-
-							m3d.setTorque(0,1,1);
+							model.writeStress(stressFile);
 							
-							String forceFile =System.getProperty("user.dir")+"\\forces3DMag\\force"+i+".txt";
-							m3d.writeNodalField(forceFile,model.forceCalcMode);
-							}
 						
 
 					
@@ -771,369 +508,6 @@ public class RunMagIPM {
 					util.pr("torque >>>>>>>"+model.TrqZ);
 			
 				T.el[ix]=model.TrqZ;
-				
-				int cmp=model.dim-1;
-				int ne=425;
-				if(cmp==1) ne=412;
-				
-		/*		if(model.circuit)
-				T.el[ix]=model.region[model.unCurRegNumb[0]].current;
-				else
-				T.el[ix]=model.element[ne].getB().el[cmp];*/
-				
-				int[] nn=model.getRegNodes(4);
-				//int[] nn={1009,1010,1011,1012,1013,1014,1015};
-				Vect F=new Vect(model.dim);
-				
-				boolean spring=true;
-				ffp=ff;
-
-				if(spring) ff=-10*mp*Math.cos(ix*dt0*10);
-				else
-				{
-				if(model.axiSym){
-				for(int u=0;u<nn.length;u++)
-					if(model.node[nn[u]].F!=null)
-					F=F.add(model.node[nn[u]].F.times(2*PI*abs(model.node[nn[u]].getCoord(0))));
-			
-				ff=-F.el[1];
-				util.pr(" AKKKK ");
-
-				}
-				else{
-					for(int u=0;u<nn.length;u++)
-					if(model.node[nn[u]].F!=null)
-						F=F.add(model.node[nn[u]].F);
-					
-					ff=-F.el[2]*360;
-				}
-					
-				
-				}
-
-				util.pr("force >>>>> "+ff);
-
-
-				int mdf=4;
-
-				
-				T2.el[ix]=uu;
-				
-				if(mdf==0){
-
-					
-					double kdt=1;
-					if(dtp>0)
-					 kdt=dt/dtp;
-					//implicit euler
-					double numax=dt2*ff+mp*((1+kdt)*uu-kdt*up)+cs*dt*uu;
-					double denum=mp+cs*dt+ks*dt2;
-					upp=up;
-					up=uu;
-				//	if(ix<-2) uu=.01;
-					//else
-					uu=numax/denum;
-			
-				}
-				else if(mdf==-1)
-				{
-					//GN1
-				
-					double bet1;
-					
-					bet1=.5;
-					
-					double ubar=uu+(1-bet1)*dt*vv;
-					double vbar=vv+dt*aa;
-					
-					
-					double numax=ff-(ks*ubar);
-					double denum=mp+cs*bet1*dt;
-
-					 aa=numax/denum;
-			
-					uu=ubar+bet1*dt*aa;
-					vv=vbar+bet1*dt*aa;
-						
-					}
-				else if(mdf==1)
-				{
-					//S22
-				
-					double thet1,thet2;
-					
-					thet1=.5;
-					thet2=.5;
-					
-					double ubar=uu+thet1*dt*vv;
-					
-					double fbar=0;
-
-					fbar=(ffp+ff)/2;
-					
-					
-					double numax=fbar-(cs*vv+ks*ubar);
-					double denum=mp+cs*thet1*dt+ks*thet2*dt2/2;
-
-					 aa=numax/denum;
-						if(ix<-2) {uu=.01;
-						vv=0;
-						
-						}else{
-					uu=uu+vv*dt+dt2*aa/2;
-					vv=vv+dt*aa;
-						}
-					}
-				else if(mdf==2){
-					//velocity Verlet
-					
-					double a=(ff-cs*vv-ks*uu)/mp;
-					
-					uu=uu+vv*dt+a*dt2/2;
-					
-					double vvh=vv+a*dt/2;
-					
-					a=(ff-cs*vvh-ks*uu)/mp;
-					
-					vv=vvh+a*dt/2;
-				}
-				else if(mdf==3){
-					//central diff
-					
-					double numax=dt2*ffp+mp*(2*uu-up)+0.5*cs*dt*up-ks*dt2*uu;
-					double denum=mp+0.5*cs*dt;
-					up=uu;
-					if(ix<-2) uu=.01;
-					else
-					uu=numax/denum;
-				
-				}
-				else if(mdf==4){
-					//GN22
-										
-					double bet1,bet2;
-					
-					bet1=.5;
-					bet2=.5;
-					
-					double ubar=uu+dt*vv+(1-bet2)*dt2/2*aa;
-					
-					double vbar=vv+(1-bet1)*dt*aa;
-					
-					double numax=ff-(cs*vbar+ks*ubar);
-					double denum=mp+cs*bet1*dt+ks*bet2*dt2/2;
-
-					 aa=numax/denum;
-			
-						up=uu;
-
-					uu=ubar+bet2*dt2*aa/2;
-					vv=vbar+bet1*dt*aa;
-						
-			
-				}
-
-				else if(mdf==5){
-					//GN32
-									
-					double bet1,bet2,bet3;
-					
-					bet1=.5;
-					bet2=.5;
-					bet3=.5;
-					
-					double ubar=uu+dt*vv+aa*dt2/2+(1-bet3)*dt3/6*bb;
-					
-					double vbar=vv+dt*aa+(1-bet2)*dt2/2*bb;
-					
-					double abar=aa+(1-bet1)*dt*bb;
-					
-					double numax=ff-(mp*abar+cs*vbar+ks*ubar);
-					double denum=bet1*mp*dt+cs*bet2*dt2/2+ks*bet3*dt3/6;
-
-					 bb=numax/denum;
-					
-					uu=ubar+bet3*dt3*bb/6;
-					vv=vbar+bet2*dt2*bb/2;
-					aa=abar+bet1*dt*bb;
-				
-				}
-				
-				else if(mdf==6){
-					//GN44
-									
-					double bet1,bet2,bet3,bet4;
-					
-					bet1=.5;
-					bet2=.5;
-					bet3=.5;
-					bet4=.5;
-					
-					double ubar=uu+dt*vv+aa*dt2/2+dt3/6*bb+(1-bet4)*dt4/24*cc;
-					
-					double vbar=vv+dt*aa+dt2/2*bb+(1-bet3)*dt3/6*cc;
-					
-					double abar=aa+dt*bb+(1-bet2)*dt2/2*cc;
-					
-					double bbar=bb+(1-bet1)*dt*cc;
-					
-					double numax=ff-(mp*abar+cs*vbar+ks*ubar);
-					double denum=bet2*mp*dt2/2+cs*bet3*dt3/6+ks*bet4*dt4/24;
-
-					 cc=numax/denum;
-					
-					uu=ubar+bet4*dt4*cc/24;
-					vv=vbar+bet3*dt3*cc/6;
-					aa=abar+bet2*dt2*cc/2;
-					bb=bbar+bet1*dt*cc;
-			
-				
-				}
-				else if (mdf==7){
-					//DG
-					
-					if(ix==0) util.pr(uu+"  <<<<<<<<<<<<<<<<<");
-					
-					Mat A=new Mat(4,4);
-					A.el[0][0]=mp;
-					A.el[0][1]=mp;
-					A.el[0][2]=cs+ks*dt;
-					A.el[0][3]=cs+ks*dt/2;
-					
-					A.el[1][0]=dt;					
-					A.el[1][1]=dt/2;
-					A.el[1][2]=-1;
-					A.el[1][3]=-1;
-					
-					A.el[2][0]=0;
-					A.el[2][1]=mp/2;
-					A.el[2][2]=ks*dt/2;
-					A.el[2][3]=ks*dt/3+cs/2;
-					
-					A.el[3][0]=dt/2;
-					A.el[3][1]=dt/3;
-					A.el[3][2]=0;
-					A.el[3][3]=-.5;
-					
-					
-					Vect b=new Vect(4);
-
-
-					b.el[0]=(ffp+ff)*dt/2+mp*vv+cs*uu;
-							
-					b.el[1]=-uu;
-					b.el[2]=(ffp/6+ff/3)*dt;	
-					
-					Vect y=msolver.gaussel(A, b);
-					
-					T2.el[ix]=(udgp+uu)/2;
-
-					vdgp=y.el[0];
-					udgp=y.el[2];
-					vv=vdgp+y.el[1];
-					uu=udgp+y.el[3];
-					
-					hdg.el[iy]=ix*dt;
-					Tdg.el[iy++]=udgp;
-					hdg.el[iy]=(ix+1)*dt;
-
-					Tdg.el[iy++]=uu;
-
-					
-				}
-				else if (mdf==8){
-					//DG from Li paper
-
-					
-					Mat A=new Mat(4,4);
-					A.el[0][0]=ks/2;
-					A.el[0][1]=ks/2;
-					A.el[0][2]=-ks*dt/3;
-					A.el[0][3]=-ks*dt/6;
-					
-					A.el[1][0]=-ks/2;					
-					A.el[1][1]=ks/2;
-					A.el[1][2]=-ks*dt/6;
-					A.el[1][3]=-ks*dt/3;
-					
-					A.el[2][0]=ks*dt/3;
-					A.el[2][1]=ks*dt/6;
-					A.el[2][2]=mp/2+cs*dt/3;
-					A.el[2][3]=mp/2+cs*dt/6;
-					
-					A.el[3][0]=ks*dt/6;
-					A.el[3][1]=ks*dt/3;
-					A.el[3][2]=-mp/2+cs*dt/6;;
-					A.el[3][3]=mp/2+cs*dt/3;;
-					
-					
-		Vect b=new Vect(4);
-					
-		
-		b.el[0]=ks*uu;
-		b.el[2]=(ffp+ff)*dt/2-(ffp/6+ff/3)*dt+mp*vv;
-		b.el[3]=(ffp/6+ff/3)*dt;
-				
-					
-					Vect y=msolver.gaussel(A, b);
-					
-					hdg.el[2*ix]=ix*dt;
-					Tdg.el[2*ix]=uu;
-					udgp=y.el[0];
-					uu=y.el[1];
-					vdgp=y.el[2];				
-					vv=y.el[3];
-				
-				
-					Tdg.el[2*ix+1]=udgp;
-					hdg.el[2*ix+1]=ix*dt;
-
-					T2.el[ix]=(udgp+uu)/2;
-					
-
-					
-				}
-	
-				else if(mdf==9)
-				{
-					
-					// dg for first order equation
-					double c1=cs;
-					double k1=ks;
-					
-					Mat B=new Mat(2,2);
-					B.el[0][0]=c1+k1*dt;
-					B.el[0][1]=c1+k1*dt/2;
-					B.el[1][0]=k1*dt/2;
-					B.el[1][1]=c1/2+k1*dt/3;
-					
-					Vect h=new Vect(2);
-					
-					h.el[0]=(ffp+ff)*dt/2+c1*uu;
-					h.el[1]=(ffp/6+ff/3)*dt;			
-	
-					Vect w=msolver.gaussel(B, h);
-
-					udgp=w.el[0];
-					uu=udgp+w.el[1];
-
-
-					Tdg.el[2*ix]=udgp;
-					Tdg.el[2*ix+1]=uu;
-
-
-					hdg.el[2*ix]=ix*dt;
-					hdg.el[2*ix+1]=(ix+1)*dt;
-
-				
-			
-				}
-
-
-		
-					//T2.el[ix]=.01-uu;
-			/*	if(mdf<7)
-					T2.el[ix]=uu;*/
 
 		
 				if(ix>0)
@@ -1182,13 +556,8 @@ public class RunMagIPM {
 					Vs[0][ix]=ix;
 					Vf[0][ix]=ix;
 		
-					//Vn.el[ix]=10*model.spwmLevel;
 					double tetx=(elAng-elAng0)*kme-mechAng;
-					
-			/*		if(tetx<0) tetx+=360;
-					
-					 if(tetx>=360)
-						tetx=tetx-Math.round(tetx/(360))*360;*/
+
  
 					Vn.el[ix]=Math.sin(tetx/180*PI/kme*2);
 		
@@ -1511,27 +880,24 @@ public class RunMagIPM {
 			}
 			
 			
-			
-			/*if(nTsteps>2)
-				util.plot(time,T);*/
-			
-			
-			util.plot(time,T);
-			
-			util.plot(hdg,Tdg);
 
-		
-			//	util.plotBunch(Is);
+			//util.plot(time,T);
+			
 
-				//util.plot(de);
-				T.show();
-				time.show();
+	
+		//		T.show();
 				
-				T2.show();
-				Tdg.show();
-				hdg.show();
+				Vect errs=new Vect(model.solver.totalIter);
 				
-						
+				util.pr(model.solver.totalIter);
+				for(int i=0;i<errs.length;i++)
+					errs.el[i]=model.solver.errs.get(i);
+				
+				util.plot(errs);
+			//	time.show();
+
+				util.pr("-----");
+				util.pr(T.sum()/T.length);
 		
 		
 				
@@ -1628,175 +994,7 @@ public class RunMagIPM {
 	}
 
 	
-public void transfer2DTo3D(Model model, Model m3d, boolean flux3DNeeded,boolean force3DNeeded){
-		
-		for(int i=1;i<=m3d.numberOfNodes;i++){
-		m3d.node[i].F=null;
-		m3d.node[i].Fms=null;
-		}
-		
-
-		int ir=8;
-		int p=0;
-		int nr=1;
-		int nL=6;
-		int nP=1;
-
-		int nLh=nL;
-	/*	if(m3d.tag==17 ) {nL=6; nLh=nL;nP=4;}
-		else
-			if(m3d.tag==19 )*/ {nL=6; nLh=nL/2;}
-
-
-	
-		if(model.getSliceAngle()<1.6 && m3d.getSliceAngle()>6) nP=4;
-
-		
-		if(flux3DNeeded){
-			for(int k=0;k<nLh;k++)	
-				for(int t=0;t<nP;t++){
-					Mat R=util.rotMat2D(t*PI/2);
-					for(int j=model.region[ir].getFirstEl();j<=model.region[ir].getLastEl();j++){
-
-						Vect B=model.element[j].getB();
-						if(t!=0) B=R.mul(B);
-						B=B.v3();
-						m3d.element[m3d.region[nr].getFirstEl()+p].setB(B);
-						p++;
-					}
-				}
-		}
-
-		if(force3DNeeded){
-		
-			p=0;
-	
-			int he=model.nElVert;
-
-
-			for(int k=0;k<nLh;k++)	
-				for(int t=0;t<nP;t++){
-					
-					boolean[] nc=new boolean[model.numberOfNodes+1];
-					for(int j=model.region[ir].getFirstEl();j<=model.region[ir].getLastEl();j++){
-						int[] vn=model.element[j].getVertNumb();
-
-						int[] vn2=m3d.element[m3d.region[nr].getFirstEl()+p].getVertNumb();
-						double kf=abs(m3d.node[vn2[vn2.length-1]].getCoord(2)-m3d.node[vn2[0]].getCoord(2))/2;
-
-						p++;
-
-						for(int kk=0;kk<model.nElVert;kk++){
-							if(nc[vn[kk]]) continue;
-							
-							Vect F=model.node[vn[kk]].F;
-
-
-							Vect Fms=model.node[vn[kk]].Fms;
-							
-							
-							if(F!=null) 
-							{
-								F=F.v3().times(kf);
-							
-								if(m3d.node[vn2[kk]].F!=null){
-								
-								m3d.node[vn2[kk]].setF(F.add(m3d.node[vn2[kk]].F));
-								}
-								else
-									m3d.node[vn2[kk]].setF(F);
-								
-								if(m3d.node[vn2[kk+he]].F!=null)
-									m3d.node[vn2[kk+he]].setF(F.add(m3d.node[vn2[kk+he]].F));
-									else
-										m3d.node[vn2[kk+he]].setF(F);
-
-								
-						
-
-							}
-
-							if(Fms!=null) 
-							{
-
-								Fms=Fms.v3().times(kf);
-								
-								if(m3d.node[vn2[kk]].Fms!=null){
-									
-									m3d.node[vn2[kk]].setFms(Fms.add(m3d.node[vn2[kk]].Fms));
-									}
-									else
-										m3d.node[vn2[kk]].setFms(Fms);
-									
-									if(m3d.node[vn2[kk+he]].Fms!=null)
-										m3d.node[vn2[kk+he]].setFms(Fms.add(m3d.node[vn2[kk+he]].Fms));
-										else
-											m3d.node[vn2[kk+he]].setFms(Fms);
-
-							}
-
-							nc[vn[kk]]=true;
-					
-						
-						}
-					}
-
-
-				}
-
-
-		}
-		
-
-				
-	}
 		
 
 
-	public void disp3Dto2D(Model model, Model m2d){
-
-		double h0=0;
-
-		double eps=1e-6;
-		int ir=3;
-		int ir2=7;
-		int nt=0;
-
-
-
-		for(int j=model.region[ir].getFirstEl();j<=model.region[ir].getLastEl();j++){
-			int[] vn=model.element[j].getVertNumb();
-			boolean found=false;
-			for(int k=0;k<model.nElVert;k++){
-				if(abs(model.node[vn[k]].getCoord(2)-h0)<eps) 
-				{
-					found=true;
-					nt=j;
-					break;
-				}
-			}
-			if(found) break;
-		}
-
-		int kt=0;
-		if(model.getElementCenter(nt).el[2]>h0) kt=1;
-
-		int ix=0;
-	
-		for(int j=m2d.region[ir2].getFirstEl();j<=m2d.region[ir2].getLastEl();j++){
-			int[] vn=model.element[ix+nt].getVertNumb();
-					ix++;
-			int[] vn2=m2d.element[j].getVertNumb();
-			for(int k=0;k<m2d.nElVert;k++)
-			{
-				if(model.node[vn[k+kt*m2d.nElVert]].isDeformable()){
-					m2d.node[vn2[k]].setDeformable(true);
-					m2d.node[vn2[k]].setU(model.node[vn[k+kt*m2d.nElVert]].getU().v2());
-					
-				
-				}
-			}
-
-		}
-	}
 }

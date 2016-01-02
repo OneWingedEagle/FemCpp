@@ -5,8 +5,11 @@ import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JTextField;
 
+
 public class TextField extends JTextField {
-	Font tfFont = new Font("Arial", 0, 12);
+	
+	int size=(int)(10.0*GUI.screenWidth/1200);
+	Font tfFont = new Font("Arial", 0, size);
 	
 	public TextField(){
 	super();	

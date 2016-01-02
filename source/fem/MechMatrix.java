@@ -423,11 +423,11 @@ public class MechMatrix {
 
 		if(bU1.abs().max()!=0){
 		if(model.xp==null){
-			u=solver.ICCG(model.Ks,model.Ls, bU1,model.errMax,model.iterMax);
+			u=solver.ICCG(model.Ks,model.Ls, bU1,model.errCGmax,model.iterMax);
 		}
 		else{
 			//	u=solver.ICCG(model.Ks,model.Ls, bU1,2e-3,model.iterMax,model.xp);
-			u=model.solver.err0ICCG(model.Ks,model.Ls, bU1,model.errMax*1e-3,model.iterMax,model.xp);	
+			u=model.solver.err0ICCG(model.Ks,model.Ls, bU1,model.errCGmax*1e-3,model.iterMax,model.xp);	
 
 		}
 		}
@@ -538,6 +538,7 @@ public class MechMatrix {
 			SpMat  Ks=model.Ks.deepCopy();
 
 			model.Ci=Ks.scale(bU1);
+
 
 			SpMat L=Ks.ichol();
 			

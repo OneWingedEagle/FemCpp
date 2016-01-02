@@ -86,9 +86,9 @@ public class Geo {
 
 				Vect bU1;
 				if(model.hp==null)
-				 bU1=model.b.deepCopy();
+				 bU1=model.RHS.deepCopy();
 				else 
-				 bU1=model.b.add(model.Ms.smul(model.hp.times(rdt)));
+				 bU1=model.RHS.add(model.Ms.smul(model.hp.times(rdt)));
 			
 				
 			if(model.Ci==null)

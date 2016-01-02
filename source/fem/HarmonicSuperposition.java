@@ -194,7 +194,7 @@ public class HarmonicSuperposition {
 				
 				
 
-						xc=model.solver.COICCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nn),1,true);
+						xc=model.solver.COICCG(Ks,Ls,b,model.errCGmax,model.iterMax,new VectComp(Nn),1,true);
 						//xc=model.solver.COCG(Ks,Ls,b,model.errMax,model.iterMax,new VectComp(Nn),1,true);
 			
 					

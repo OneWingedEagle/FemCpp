@@ -312,6 +312,7 @@ public class Force {
 
 			int nLam;
 			for(int ir=1;ir<=this.numberOfRegions;ir++){
+	
 				if(!model.region[ir].MS && !model.region[ir].thermal) continue;
 				nLam=model.region[ir].lamBNumber;
 				for(int i=model.region[ir].getFirstEl();i<=model.region[ir].getLastEl();i++){	
@@ -343,7 +344,7 @@ public class Force {
 
 					else {
 						nodalForce=nodalMSForce(model,nLam,i);
-
+						
 
 						for(int j=0;j<this.nElVert;j++){
 
@@ -948,7 +949,7 @@ public class Force {
 
 			
 			model.element[i].setStress(MSS.times(1e-6));
-
+		
 
 			return F;
 
@@ -1168,7 +1169,7 @@ private Vect[] nodalThermalForcePrism(Model model,int ie){
 			
 		//	model.m2d
 		//	Mat S1=model.element[ie].getStressTensor();
-			if(model.element[ie].getRegion()==8){
+			if(1>2 && model.element[ie].getRegion()==8){
 		
 				Mat S1=model.m2d.element[ie-model.region[8].getFirstEl()+1].getStressTensor();
 			
@@ -1185,6 +1186,7 @@ private Vect[] nodalThermalForcePrism(Model model,int ie){
 			Vect h=B.normalized();
 			
 			 seq=1.5*S2.mul(h).dot(h);	
+			 
 			 
 					}
 			}
@@ -1231,16 +1233,17 @@ private Vect[] nodalThermalForcePrism(Model model,int ie){
 			double a;
 			if(!coupled){
 				a=-model.lamB[nLam].getLam(Bn);	
+
 				
-if(seq<0){
+if(1>2 && seq<0){
 	
 /*	if(ie==11007 ||ie==9882){
 	util.pr(seq+"<<<<<<");
 	}*/
 	
-//a=a*(1-9*seq/100);
-/*if(a<-5e-6)
-util.pr(-a*1e6+" "+seq);*/
+a=a*(1-9*seq/100);/*
+if(a<-5e-6)
+util.pr(-a*1e6+" "+seq)*/;
 }
 				T=S.times(G*a);
 
@@ -1249,47 +1252,13 @@ util.pr(-a*1e6+" "+seq);*/
 			else{
 			double sn=model.getStressB(ie,B);
 			a=-model.lamBS[nLam].getLam(Bn,sn);
-			
-		
+
+
 			
 			T=S.times(G*a);
 			}
 			
 			}
-			
-		
-		if(model.element[ie].isThermal()) {
-				double dT=-200;
-				double ct=1e-5;
-				
-				double E=model.element[ie].getYng().el[0];
-				double v=model.element[ie].getPois().el[0];
-
-				//double ss=-dT*ct*E/(1-2*v);
-				double ss=-dT*ct*E/(1-v);
-				if(dim==3) ss=-dT*ct*E/((1+v)*(1-2*v));
-					//Vect thEv=new Vect(3*(dim-1));
-					/*for(int i=0;i<this.dim;i++)
-						thEv.el[i]=ee;*/
-					
-					// Mat Tth=util.tensorize(model.femCalc.hook(model, ie).mul(thEv));
-					
-				 Mat Tth=new Mat(dim,dim);//model.femCalc.hook(model, ie).times(-ee);
-				 for(int i=0;i<Tth.nCol;i++)
-					 Tth.el[i][i]=ss;
-				
-				 if(dim==3) Tth.el[2][2]=0;
-				 
-					T=T.times(0).add(Tth);
-					
-			
-				
-				}
-				
-			
-			
-		
-		
 
 
 			return T;
