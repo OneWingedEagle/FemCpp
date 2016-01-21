@@ -148,7 +148,7 @@ public class Geo {
 					}
 			}
 			
-			util.plot(hh);
+		//	util.plot(hh);
 
 		String logFilePath = model.resultFolder+ "\\log.txt";
 		main.gui.writeLog(logFilePath);
