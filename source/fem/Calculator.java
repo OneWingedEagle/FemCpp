@@ -3130,6 +3130,7 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 
 		if(this.elCode==0) return Se3ang(model,ie);
 		else if(this.elCode==1) return SeQuad(model,ie);
+		else if(this.elCode==4) return SeHexa(model,ie);
 		else return null;
 	}
 	
@@ -3138,6 +3139,8 @@ public Vect[] gradNPrism(Mat jac,Vect localCo){
 		if(this.elCode==0) { fillMe3angScalar(model,ie,Me); return Se3ang(model,ie);}
 
 		 if(this.elCode==1) { fillMeQuadScalar(model,ie,Me); return SeQuad(model,ie);}
+		 if(this.elCode==4) { fillMeHexaScalar(model,ie,Me); return SeHexa(model,ie);}
+	
 		else return null;
 	}
 	
@@ -3191,6 +3194,58 @@ public Mat SeQuad(Model model,int ie){
 
 		return Ke;
 	}	
+
+public Mat SeHexa(Model model,int ie){
+	
+	
+	Node[] vertexNode=model.elementNodes(ie);
+	Mat Ke=new Mat(this.nElVert,this.nElVert);
+
+
+	double detJac,ws=1;
+	int n=this.PW[0].length;	
+	Mat jac;
+
+
+	Vect kt=model.element[ie].getSigma();
+
+	Vect[] gradN;
+	Vect localCo=new Vect(dim);
+	for(int p=0;p<n;p++)
+		for(int q=0;q<n;q++)
+			for(int r=0;r<n;r++)
+		{
+			localCo.el[0]=this.PW[0][p];
+			localCo.el[1]=this.PW[0][q];
+			localCo.el[2]=this.PW[0][r];
+
+			jac=jacobian(vertexNode,localCo);
+
+			detJac=abs(jac.determinant());
+
+			if(n!=2)
+				ws=this.PW[1][p]*this.PW[1][q]*this.PW[1][q]*detJac;
+			else
+				ws=detJac;
+			
+
+			gradN=gradN(jac,localCo);
+		
+
+			for(int i=0;i<this.nElVert;i++){
+				for(int j=0;j<this.nElVert;j++){
+					double BtkB=gradN[i].dot(kt.times(gradN[j]))*ws;
+					Ke.el[i][j]+=BtkB;
+
+				}
+			}
+
+		}	
+
+
+	return Ke;
+}	
+
 
 
 
@@ -3351,6 +3406,7 @@ private void fillMe3angScalar(Model model,int ie,Mat Me){
 
 }
 
+
 private void fillMeQuadScalar(Model model,int ie,Mat Me){
 
 	Node[] vertexNode=model.elementNodes(ie);
@@ -3397,6 +3453,55 @@ private void fillMeQuadScalar(Model model,int ie,Mat Me){
 
 
 }
+
+private void fillMeHexaScalar(Model model,int ie,Mat Me){
+
+	Node[] vertexNode=model.elementNodes(ie);
+
+	
+	double detJac,ws=1;
+	Mat jac;
+	double gw=model.gw;
+	double he=model.getElementT(ie);
+	double lam=gw*Math.exp(-.05*he);
+	Mat M1=new Mat(this.nElVert,this.nElVert);
+	double[] localNe=new double[this.nElVert];
+	Mat Nv=new Mat(1,this.nElVert);
+	Vect lc=new Vect(dim);		
+	int n=this.PW[0].length;	
+	for(int p=0;p<n;p++)
+		for(int q=0;q<n;q++)
+			for(int r=0;r<n;r++)
+		{
+
+			lc.el[0]=this.PW[0][p];
+			lc.el[1]=this.PW[0][q];
+			lc.el[2]=this.PW[0][r];
+		
+			localNe=NQuad(lc);
+
+			for(int j=0;j<this.nElVert;j++){
+				Nv.el[0][j]=localNe[j];
+			}
+
+			jac=jacobian(vertexNode,lc);
+			detJac=abs(jac.determinant());
+
+			ws=this.PW[1][p]*this.PW[1][q]*this.PW[1][r]*detJac;
+			
+			M1=M1.add(Nv.transp().mul(Nv).times(ws));
+
+
+
+		}
+	
+	for(int i=0;i<this.nElVert;i++)
+		for(int j=0;j<this.nElVert;j++)
+				Me.el[i][j]=lam*M1.el[i][j];
+
+
+}
+
 
 Mat BtDB(Vect yng,Vect pois, Vect shear,Vect gNi,Vect gNj){
 

@@ -5,11 +5,11 @@
 //coordinate system  (0. Cartesian 1. Cylindrical, 2. Spherical): 
 0
 //Analysis mode  (0. static1   1. eddy-A. 2. eddy-A-phi):
-2
+0
 //nonlinear
 f
 //AC:
-t
+f
 //Number_of_Regions:
 10
 //REG_ID,BH_ID,mu,sigma

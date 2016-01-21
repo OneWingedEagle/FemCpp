@@ -2241,10 +2241,10 @@ Vect Ci=this.Cs.scale(this.bT);
 
 	public void setElementVelocity(int i){
 		Node[] vertexNode=elementNodes(i);
-		Vect zero=new Vect(2);
+		Vect zero=new Vect(dim);
 		Mat jac=new Mat();
 		Vect[] gradN;
-		Vect B=new Vect(2);
+		Vect B=new Vect(dim);
 		Vect Kt=element[i].getSigma();
 
 		jac=femCalc.jacobian(vertexNode,zero);
@@ -2446,6 +2446,7 @@ Vect Ci=this.Cs.scale(this.bT);
 	
 
 		for(int i=region[ir].getFirstEl();i<=region[ir].getLastEl();i++){
+			
 			
 			this.element[i].setJ(J);
 			

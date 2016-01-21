@@ -3,6 +3,9 @@ import static java.lang.Math.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import Jama.Matrix;
+import Jama.QRDecomposition;
 public class SpMatSolver {
 	public boolean terminate;
 	public int totalIter;
@@ -12,9 +15,9 @@ public class SpMatSolver {
 
 	public SpMatSolver(){}
 
-	public static void main2(String[] args){
+	public static void main(String[] args){
 		
-		int N=300;
+		int N=100;
 		
 		int Nm=1000;
 		Mat A=new Mat();
@@ -33,20 +36,32 @@ public class SpMatSolver {
 				if(j>i)v.el[j]=0;
 				else
 				if(v.el[j]<.96) v.el[j]=0;
-			v.el[i]=(1+Math.random())*4;
+			v.el[i]=(1+Math.random())*2;
 			Ms.row[i]=new SpVect(v);
 		}
 		//Ms.show();
-		int M=20;
+		int M=2;
 		Mat B=new Mat(N,M);
 		for(int i=0;i<M;i++){
 			Vect v=new Vect().rand(N, 0, 1);
-			B.setCol(v, i);
+			//Vect v=new Vect(N);
+			//v.el[i]=1000;;
+			Vect v2=Ms.smul(v);
+			B.setCol(v2, i);
 		}
 		
-		Mat X=new Mat(N,M);
+		QRDecomposition qr=new QRDecomposition(new Matrix(B.el));
+		Mat Q=new Mat(qr.getQ().getArray());
+		B=Q.deepCopy();
+		/*Mat R=new Mat(qr.getR().getArray());
+		Q.show();
+		R.show();*/
 		
-		SpMat Ls=Ms.ichol();
+		
+		Mat X=new Mat(N,M);
+	
+		
+		SpMat Ls=Ms.ichol(1.05);
 	//	Ls.show();
 		
 		
@@ -54,6 +69,7 @@ public class SpMatSolver {
 		double t1=System.currentTimeMillis();
 		for(int i=0;i<M;i++){
 			Vect x=solver.ICCG(Ms,Ls,  B.getColVect(i), 1e-6, Nm);
+			//Vect x=solver.CG(Ms,  B.getColVect(i), 1e-6, Nm);
 			
 		}
 		double t2=System.currentTimeMillis();
@@ -61,7 +77,8 @@ public class SpMatSolver {
 		//Ms.show();
 		//System.out.println("Main method is empty");
 		
-	X=solver.BLICCG(Ms, Ls, B, 1e-6, Nm, X, M, true);
+	  X=solver.blockICCG(Ms, Ls, B, 1e-6, Nm);
+	//X=solver.blockCG(Ms, B, 1e-6, Nm);
 	
 	double t3=System.currentTimeMillis();
 
@@ -675,63 +692,83 @@ public class SpMatSolver {
 		return x;
 	}
 	
+	public Mat blockCG(SpMat A,Mat B,double errMax,int N){
+		return blockCG( A, B, errMax, N,new Mat(B.size()), true);
+	}
 	
-	public Mat BLCG(SpMat A,Mat B,double errMax,int N,Mat X,int errType, boolean echo){
-	// block CG
-		int I=A.getnRow();
-		int J=A.getnCol();
-		MatSolver ms=new MatSolver();
-		
-		int L=B.nRow;
-		if(I!=J) throw new IllegalArgumentException("Matrix is not square");
-		if(I!=L) throw new IllegalArgumentException("Arrays dimensions do not agree");
-		Mat R=B.sub(A.smul(X));
-
-		Mat V;
-		int m=B.nCol;
-		Mat P=R.deepCopy();
-		Mat T,G=new Mat(I,m),RtR=new Mat(m,m),C=new Mat(I,m);
-
-		double resMax0=B.absMat().maxElement();
-		double resMax=resMax0;
-		int k=0;
-		double resRatio=resMax/resMax0;
-
-			for(k=1;(k<=N &&  resRatio>errMax) ;k++){
-				
-			V=A.smul(P);
+	public Mat blockCG(SpMat A,Mat B,double errMax,int N,Mat X, boolean echo){
+		// block CG
+			int I=A.getnRow();
+			int J=A.getnCol();
+			MatSolver ms=new MatSolver();
 			
-			 T=P.transp().mul(V);
-			 
-	
-			 RtR=R.transp().mul(R);
-	
-			 
-			G=ms.gaussel(T, RtR);
+			int L=B.nRow;
+			if(I!=J) throw new IllegalArgumentException("Matrix is not square");
+			if(I!=L) throw new IllegalArgumentException("Arrays dimensions do not agree");
+			Mat R=B.sub(A.smul(X));
+
+			Mat V;
+			int m=B.nCol;
+			Mat P=R.deepCopy();
+			Mat T,G=new Mat(I,m),RtR=new Mat(m,m),C=new Mat(I,m);
+
+			Vect  allRes=null;
+			
+			Vect resMax0=B.normCol();
+			double resMax=resMax0.max();
+			int k=0;
+			double resRatio=1;
+
+				for(k=1;(k<=N &&  resRatio>errMax) ;k++){
+				
+					
+					allRes=R.normCol();
+					
+					resRatio=allRes.div(resMax0).max();
+					
+					if(k%50==1 && echo){
+						resMax=allRes.max();
+						report("BLCG",k,resRatio, resMax);
+
+					}
+			
+					
+				V=A.smul(P);
+				
+				 T=P.transp().mul(V);
+				 
 		
-			X=X.add(P.mul(G));
-
-			R=R.sub(V.mul(G));
-
-			C=ms.gaussel(RtR,R.transp().mul(R));
-
-			P=R.add(P.mul(C));
+				 RtR=R.transp().mul(R);
 		
-				resMax=R.absMat().maxElement();
-				resRatio=resMax/resMax0;
-				if(k%50==0 && echo){
-					report("BLCG",k,resRatio, resMax);
+				 
+				G=ms.gaussel(T, RtR);
+			
+				X=X.add(P.mul(G));
 
-				}
+				R=R.sub(V.mul(G));
+
+				C=ms.gaussel(RtR,R.transp().mul(R));
+
+
+				P=R.add(P.mul(C));
+				
+
+				
+			
 		
+		}
+		if(echo)
+			resMax=allRes.max();
+		report("BLCG",k,resRatio, resMax);
+		return X;
+		}
 	
+	public Mat blockICCG(SpMat A,SpMat L,Mat B,double errMax,int N){
+		
+		return blockICCG( A, L, B, errMax, N,new Mat(B.size()), true);
 	}
-	if(echo)
-	report("BLCG",k,resRatio, resMax);
-	return X;
-	}
 	
-	public Mat BLICCG(SpMat A,SpMat L,Mat B,double errMax,int N,Mat X,int errType, boolean echo){
+	public Mat blockICCG(SpMat A,SpMat L,Mat B,double errMax,int N,Mat X, boolean echo){
 		// block CG
 			int I=A.getnRow();
 			int J=A.getnCol();
@@ -741,6 +778,12 @@ public class SpMatSolver {
 			if(I!=J) throw new IllegalArgumentException("Matrix is not square");
 			if(I!=K) throw new IllegalArgumentException("Arrays dimensions do not agree");
 			Mat R=B.sub(A.smul(X));
+			
+		//	QRDecomposition qr=new QRDecomposition(new Matrix(R.el));
+		// R=new Mat(qr.getQ().getArray());
+		/*	int rnk=qr.getQ().rank();
+			util.show(;
+			util.pr("Rank= "+rnk);*/
 			
 			Mat Z=new Mat(R.size());
 			for(int j=0;j<Z.nCol;j++){
@@ -754,10 +797,11 @@ public class SpMatSolver {
 			Mat P=Z.deepCopy();
 			Mat T,G=new Mat(I,m),RtZ=new Mat(m,m),C=new Mat(I,m);
 
-			double resMax0=B.absMat().maxElement();
-			double resMax=resMax0;
+			//double resMax0=B.absMat().maxElement();
+			Vect resMax0=B.normCol();
+			double resMax=resMax0.max();
 			int k=0;
-			double resRatio=resMax/resMax0;
+			double resRatio=1;
 
 				for(k=1;(k<=N &&  resRatio>errMax) ;k++){
 					
@@ -767,9 +811,9 @@ public class SpMatSolver {
 
 		
 				 RtZ=R.transp().mul(Z);
-				 
+
 				G=ms.gaussel(T, RtZ);
-			
+				
 				X=X.add(P.mul(G));
 
 				R=R.sub(V.mul(G));
@@ -779,14 +823,17 @@ public class SpMatSolver {
 					Z.setCol(z, j);
 				}
 
-				
+		
 				C=ms.gaussel(RtZ.transp(),Z.transp().mul(R));
-
+			
 				
 				P=Z.add(P.mul(C));
-			
-					resMax=R.absMat().maxElement();
-					resRatio=resMax/resMax0;
+					
+					//resMax=R.absMat().maxElement();
+				//	resMax=R.absMat().maxElement();
+				resRatio=R.normCol().div(resMax0).max();
+					//resMax=R.getColVect(0).norm();
+					//resRatio=resMax/resMax0;
 					if(k%50==0 && echo){
 						report("BLICCG",k,resRatio, resMax);
 
@@ -1001,13 +1048,20 @@ public Vect errMixICCG(SpMat A,SpMat L,Vect b,double errMax,double er2Max,int N,
 		Vect p=new Vect(I);
 		Vect v;
 		p=r.deepCopy();
-		double resMax0=b.abs().max();
-		double resMax=r.abs().max();
+		double res0=b.norm();
+		double res=r.norm();
 		int k=0;
 		double c,temp,alpha;
-		double resRatio=resMax/resMax0;
+		double resRatio=res/res0;
 
 			for(k=1;(k<=N &&  resRatio>errMax) ;k++){
+				
+				res=r.norm();
+				resRatio=res/res0;
+				
+				if(k%50==1 && echo)
+					report("CG",k,resRatio, res);
+				
 				
 			v=A.smul(p);
 	
@@ -1020,15 +1074,13 @@ public Vect errMixICCG(SpMat A,SpMat L,Vect b,double errMax,double er2Max,int N,
 			c=r.dot(r)/temp;
 			p=r.add(p.times(c));
 	
-				resMax=r.abs().max();
-				resRatio=resMax/resMax0;
-				if(k%50==0 && echo)
-					report("CG",k,resRatio, resMax);
+				
+	
 	
 	
 	}
 	if(echo)
-	report("CG",k,resRatio, resMax);
+	report("CG",k,resRatio, res);
 	return x;
 	}
 	

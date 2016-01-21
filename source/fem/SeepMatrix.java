@@ -144,6 +144,7 @@ public class SeepMatrix {
 	model.Hs.sortAndTrim(nz);
 
 
+
 	if(massNeeded){
 
 		model.Ms.sortAndTrim(nz);	

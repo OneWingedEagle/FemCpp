@@ -46,8 +46,13 @@ public class FEMsolver {
 		
 			else if(model.analysisMode==0){
 	
-			StaticLinearMagSolver solver= new StaticLinearMagSolver();
-			x= solver.solve(model,  step);
+			//StaticLinearMagSolver solver= new StaticLinearMagSolver();
+				//x= solver.solve(model,  step);
+			BlockStaticLinearMagSolver solver=new BlockStaticLinearMagSolver();
+			solver.solve(model,  step);
+		
+		
+			
 			
 		}
 		else if(model.analysisMode>0){

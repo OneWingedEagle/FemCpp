@@ -83,26 +83,12 @@ import components.GUI;
 			
 				model.loadData(model.dataFilePath);
 			
-	
 				
 				if(model.seepage){
 					runGeo(); 
 					}
-				if(model.wavePC){
-					runPC(); 
-					}
-				else if(model.magAnalysis && !model.mechAnalysis) {
-
-					runMag(); 
-
-					}
-				else if(!model.magAnalysis && model.mechAnalysis) {
-
-					runMech(); 
-
-					}
-
 		
+				
 				String logFilePath = model.resultFolder+ "\\log.txt";
 				gui.writeLog(logFilePath);
 				gui.Run.setBackground(Color.green);
@@ -113,21 +99,7 @@ import components.GUI;
 		this.thread.start();		
 	}
 
-	public void runMag(){
-		//if(model.numberOfRegions==10 && model.motor){
-			// RunMagGear mt=new RunMagGear();
-			 //mt.runMag(model, this);
-			//	}
-		 if(model.numberOfRegions==17 && model.motor){
-		 RunMagIPM mt=new RunMagIPM();
-		 mt.runMag(model, this);
-		}else{
-			 RunMag mt=new RunMag();
-			 mt.runMag(model, this);
-		}
-		
-}
-	
+
 	public void runMech(){
 		 RunMech mt=new RunMech();
 		 mt.runMech(model, this);
@@ -141,12 +113,6 @@ import components.GUI;
 		
 }
 	
-	public void runPC(){
-		
-		 PC pc=new PC();
-		 pc.runPC(model, this);
-		
-}
 
 
 		public void prepare(){

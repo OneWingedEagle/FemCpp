@@ -1,0 +1,22 @@
+data file format code  (0. Magnetic, 1. Mechanical, 2. coupled, 3:seepage) : 3
+
+dimension : 2
+
+Number_of_Regions: 2
+
+(name, material,[E,] nonlinear, murx mury, Mx, My,[ Jz/sigma,freq,phase ,stranded sigz/R,nloop]
+
+middle, 1e10,1e10,
+
+around, 1e-2,1e-2,
+
+boundary condition:
+Boundary 1:D
+Boundary 2:D
+Boundary 3:D
+Boundary 4:D
+x,-.1001,.1001,y,-.1001,.1001,10.0
+x,-1.1,-.999,0
+y,-1.1,-.999,0
+x,.9999,1.1,0
+y,.9999,1.1,0

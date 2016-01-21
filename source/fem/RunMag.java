@@ -201,6 +201,7 @@ public class RunMag {
 							model.setJe();
 
 				
+						if(x!=null)
 							this.xp=x.deepCopy();
 
 							if(model.saveFlux){

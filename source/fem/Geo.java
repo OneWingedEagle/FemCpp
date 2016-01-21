@@ -26,8 +26,6 @@ public class Geo {
 	public void runGeo(Model model, Main main){
 
 
-
-		String Trq = System.getProperty("user.dir") + "//torque.txt";
 		model.resultFolder=System.getProperty("user.dir") + "//geoResults";
 		String folder=model.resultFolder;
 		String tmpFile =model.resultFolder+"//appen.txt";
@@ -43,12 +41,12 @@ public class Geo {
 
 		 model.setSeepBC();
 
-			//model.rdt=2;
+			model.dt=1000e20;
 			
 			//==========================
 
 
-			int nT=50;
+			int nT=1;
 	
 			
 			double[] hh=new double[nT];
@@ -72,6 +70,8 @@ public class Geo {
 
 		//	if(model.Hs==null)
 			 model.setSeepMat(true);
+			 
+			 
 			 
 			 double rdt=1.0/model.dt;
 
@@ -103,9 +103,10 @@ public class Geo {
 					model.Ls=Hs.ichol();
 
 				if(model.xp==null)
-					h=model.solver.ICCG(Hs,model.Ls, bU1,1e-5,5000);
+					h=model.solver.ICCG(Hs,model.Ls, bU1,model.errCGmax,model.iterMax);
 				else{
-					h=model.solver.err0ICCG(Hs,model.Ls, bU1,1e-6,5000,model.xp);	
+					h=model.solver.ICCG(Hs,model.Ls, bU1,model.errCGmax,model.iterMax,model.xp);
+				//	h=model.solver.err0ICCG(Hs,model.Ls, bU1,1e-6,5000,model.xp);	
 
 				}
 
@@ -118,15 +119,12 @@ public class Geo {
 
 
 				model.setHead(h);
-				//model.setVelocity();
+				model.setVelocity();
 				
 				//hh[i]=model.node[16].T;
 				hh[i]=model.node[model.element[16].getVertNumb(0)].T;
 				
 				if(writeFiles){
-
-				
-			
 
 					String ff=folder+"\\bun"+i+".txt";
 					if(i==0)
@@ -134,15 +132,17 @@ public class Geo {
 					
 
 
-					ff=folder+"\\Tmp"+i+".txt";
+					ff=folder+"\\head"+i+".txt";
 					
 				/*	if(i%10==0)*/{
 						
-						model.appendScalarField(tmpFile,0,nn,i);
-				//	model.writeNodalScalar(ff);
+						//model.appendScalarField(tmpFile,0,nn,i);
 
-				/*	ff=folder+"\\veloc"+i+".txt";
-					model.writeB(ff);*/
+					model.writeNodalScalar(ff);
+					
+
+					ff=folder+"\\veloc"+i+".txt";
+					model.writeB(ff);
 					}
 
 					}

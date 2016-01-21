@@ -263,7 +263,6 @@ public static void main2(String[] args){
 
 			int dataType =getIntData(line);
 			model.dataType=dataType;
-			
 			line=getNextDataLine(br);
 			int dim =getIntData(line);
 			
@@ -872,6 +871,7 @@ public static void main2(String[] args){
 		try {
 			line=br.readLine();
 			line=br.readLine();
+	
 			int nRegions =getIntData(line);		
 			
 			if(nRegions!=model.numberOfRegions){

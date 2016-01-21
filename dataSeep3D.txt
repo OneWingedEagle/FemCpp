@@ -1,0 +1,27 @@
+//(0. Magnetic, 1. Mechanical, 2. coupled, 3. seepage)
+3
+//dimension :
+ 3
+//coord :
+0
+
+Number_of_Regions: 2
+
+(name, material,[E,] nonlinear, murx mury, Mx, My,[ Jz/sigma,freq,phase ,stranded sigz/R,nloop]
+
+middle, 1e-1,1e-1,1e1
+
+around, 2e-1,2e-1,2e-1
+
+boundary condition:
+Boundary 1:D
+Boundary 2:D
+Boundary 3:D
+Boundary 4:D
+Boundary 5:D
+Boundary 6:D
+x,-.1001,.1001,y,-.1001,.1001,z,.19999,.20001,10.0
+x,-1.1,-.999,0
+y,-1.1,-.999,0
+x,.9999,1.1,0
+y,.9999,1.1,0
